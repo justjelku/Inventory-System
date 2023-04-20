@@ -1,5 +1,4 @@
 import 'package:firebase_login_auth/auth/mainpage.dart';
-import 'package:firebase_login_auth/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,18 +26,30 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> signIn() async {
     try {
+      showDialog(
+          context: context,
+          builder: (context){
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+        },
+      );
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      //pop the loading circle
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       _showMsg('Logged In Successful!', true);
       // ignore: use_build_context_synchronously
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MainPage(),
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => const MainPage(),
+      //   ),
+      // );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showMsg('No user found for that email.', false);
@@ -48,57 +59,19 @@ class _LoginPageState extends State<LoginPage> {
         _showMsg('Error: ${e.message}', false);
       }
     } catch (e) {
-      _showMsg('Error: ${e.toString()}', false);
+      _showMsg('Please enter your Email and Password  ', false);
     }
   }
-
-  void _showMsg(String message, bool isSuccess) {
-    Color color = isSuccess ? Colors.green : Colors.red;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: color,
-            width: 2,
-          ),
-        ),
-        content: Text(
-          message,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-        ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-
-
-
-
-  Future addUserDetails(String firstName, String lastName, String userName, String email) async{
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
-      'first name': firstName,
-      'last name': lastName,
-      'username': userName,
-      'email': email,
-    });
-  }
-
-  bool passwordConfirmed() {
-    if(_passwordController.text.trim() == _confirmPasswordController.text.trim()){
-      return true;
-    } else{
-      return false;
-    }
-  }
-
   Future<void> signUp() async {
     try {
+      showDialog(
+        context: context,
+        builder: (context){
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
       if (passwordConfirmed()) {
         //create user
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -132,9 +105,46 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _showMsg(String message, bool isSuccess) {
+    Color color = isSuccess ? Colors.green : Colors.red;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: color,
+            width: 2,
+          ),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
+  Future addUserDetails(String firstName, String lastName, String userName, String email) async{
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+      'first name': firstName,
+      'last name': lastName,
+      'username': userName,
+      'email': email,
+    });
+  }
 
-
+  bool passwordConfirmed() {
+    if(_passwordController.text.trim() == _confirmPasswordController.text.trim()){
+      return true;
+    } else{
+      return false;
+    }
+  }
 
   @override
   void dispose() {
@@ -205,28 +215,26 @@ class _LoginPageState extends State<LoginPage> {
                       )
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(
-                      onPressed: () {
-                        signIn();
-                      },
-                      style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
-                        ),
-                        backgroundColor: MaterialStateProperty.all<Color>(primaryBtnColor),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: GestureDetector(
+                      onTap: signIn,
+                      child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: primaryBtnColor,
                             borderRadius: BorderRadius.circular(50),
                           ),
-                        ),
-                      ),
-
-                      child: const Text("Sign In",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17
+                          child: const Center(
+                            child: Text("Sign In",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17
+                                )
+                            ),
                           )
-                      )
+                      ),
+                    ),
                   ),
                   TextButton(
                       onPressed: (){
