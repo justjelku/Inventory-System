@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/home.dart';
-import 'package:firebase_login_auth/homepage.dart';
-import 'package:firebase_login_auth/login.dart';
+import 'package:firebase_login_auth/auth/login.dart';
+import 'package:firebase_login_auth/pages/homepage.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {

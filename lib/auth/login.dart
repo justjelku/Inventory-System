@@ -1,7 +1,7 @@
-import 'package:firebase_login_auth/mainpage.dart';
-import 'package:firebase_login_auth/user.dart';
+import 'package:firebase_login_auth/auth/mainpage.dart';
+import 'package:firebase_login_auth/model/user.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_login_auth/constant.dart';
+import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:themed/themed.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

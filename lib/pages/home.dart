@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/user.dart';
-import 'package:firebase_login_auth/userlist.dart';
+import 'package:firebase_login_auth/model/constant.dart';
+import 'package:firebase_login_auth/model/user.dart';
+import 'package:firebase_login_auth/pages/userlist.dart';
 import 'package:flutter/material.dart';
-
-import 'constant.dart';
 
 List<UserModel> userList = [];
 

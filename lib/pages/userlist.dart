@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_login_auth/user.dart';
+import 'package:firebase_login_auth/model/user.dart';
 import 'package:flutter/material.dart';
 
 class UserListPage extends StatelessWidget {

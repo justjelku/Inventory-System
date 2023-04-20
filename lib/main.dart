@@ -1,8 +1,8 @@
-import 'package:firebase_login_auth/login.dart';
+import 'package:firebase_login_auth/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'constant.dart';
+import 'model/constant.dart';
 
 
 Future main() async {
