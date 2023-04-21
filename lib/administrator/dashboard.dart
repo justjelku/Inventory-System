@@ -1,22 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_login_auth/administrator/adminsetting.dart';
 import 'package:flutter/material.dart';
-import 'settings.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class AdminDashboard extends StatefulWidget {
+  const AdminDashboard({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<AdminDashboard> createState() => _AdminDashboardState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _AdminDashboardState extends State<AdminDashboard> {
   final user = FirebaseAuth.instance.currentUser!;
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Text('Basic User Page'),
-    Text('Profile Page'),
-    Settings(),
+    Text('Admin Dashboard'),
+    Text('Manage Users'),
+    AdminSettings(),
   ];
 
 
@@ -29,6 +29,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
@@ -38,11 +41,11 @@ class _HomePageState extends State<HomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'Manage Users',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

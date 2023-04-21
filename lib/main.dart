@@ -1,4 +1,9 @@
-import 'package:firebase_login_auth/auth/mainpage.dart';
+import 'package:firebase_login_auth/auth/adminlogin.dart';
+import 'package:firebase_login_auth/auth/adminmainpage.dart';
+import 'package:firebase_login_auth/auth/userlogin.dart';
+import 'package:firebase_login_auth/auth/usermainpage.dart';
+import 'package:firebase_login_auth/pages/homepage.dart';
+import 'package:firebase_login_auth/userroleselection.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -22,7 +27,13 @@ class MyApp extends StatelessWidget{
       theme: ThemeData(
         backgroundColor: gradientStartColor,
       ),
-      home: const MainPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => UserMainPage(),
+        '/basicUserLoginPage': (context) => BasicUserLogin(),
+        '/adminLoginPage': (context) => AdminLogin(),
+        '/admin': (context) => AdminMainPage(),
+      },
     );
   }
 }

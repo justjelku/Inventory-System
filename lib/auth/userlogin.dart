@@ -1,4 +1,6 @@
-import 'package:firebase_login_auth/auth/mainpage.dart';
+import 'package:firebase_login_auth/auth/adminlogin.dart';
+import 'package:firebase_login_auth/auth/usermainpage.dart';
+import 'package:firebase_login_auth/userroleselection.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,14 +9,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class BasicUserLogin extends StatefulWidget {
+  // final VoidCallback showAdminLogin;
+  const BasicUserLogin({
+    // required this.showAdminLogin,
+    Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<BasicUserLogin> createState() => _BasicUserLoginState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _BasicUserLoginState extends State<BasicUserLogin> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -38,10 +43,6 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-
-      //pop the loading circle
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
       _showMsg('Logged In Successful!', true);
       // ignore: use_build_context_synchronously
       // Navigator.push(
@@ -130,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future addUserDetails(String firstName, String lastName, String userName, String email) async{
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+    await FirebaseFirestore.instance.collection('basic_users').doc(FirebaseAuth.instance.currentUser!.uid).set({
       'first name': firstName,
       'last name': lastName,
       'username': userName,
@@ -174,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                           width: 300,
                           height: 300)
                   ),
-                  const Text("Login",
+                  const Text("User Portal",
                       style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -182,7 +183,22 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       textAlign: TextAlign.center
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 5),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context); // Navigate back to previous screen
+                    },
+                    child: Center(
+                      child: Text("Change Role",
+                          style: TextStyle(
+                              color: primaryBtnColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14
+                          )
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   const Text("Welcome back, you've been missed!",
                       style: TextStyle(
                           fontSize: 15,
@@ -262,6 +278,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
   void showMyDialogue() async {
+
     return showDialog(
         context: context,
         builder: (BuildContext context) {

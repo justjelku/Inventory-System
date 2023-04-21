@@ -1,17 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/auth/login.dart';
+import 'package:firebase_login_auth/auth/userlogin.dart';
 import 'package:firebase_login_auth/pages/homepage.dart';
+import 'package:firebase_login_auth/userroleselection.dart';
 import 'package:flutter/material.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({
+class UserMainPage extends StatefulWidget {
+  const UserMainPage({
     Key? key}) : super(key: key);
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<UserMainPage> createState() => _UserMainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _UserMainPageState extends State<UserMainPage> {
+  // bool _isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // _checkAdmin();
+  }
+
+  // Future<void> _checkAdmin() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     final doc = await FirebaseFirestore.instance
+  //         .collection('admin_users')
+  //         .doc(user.uid)
+  //         .get();
+  //     setState(() {
+  //       _isAdmin = doc.exists;
+  //     });
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +57,7 @@ class _MainPageState extends State<MainPage> {
           }
           if (snapshot.data == null) {
             // User is not logged in
-            return const LoginPage();
+            return const BasicUserLogin();
           }
           // User is logged in
           return const HomePage();
@@ -44,3 +66,4 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
+

@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 
 List<UserModel> userList = [];
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class Settings extends StatefulWidget {
+  const Settings({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Settings> createState() => _SettingsState();
 }
 
-class _HomeState extends State<Home> {
+class _SettingsState extends State<Settings> {
   final user = FirebaseAuth.instance.currentUser!;
 
   @override
