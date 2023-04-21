@@ -29,10 +29,11 @@ class MyApp extends StatelessWidget{
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => UserMainPage(),
+        '/': (context) => UserRoleSelectionPage(),
         '/basicUserLoginPage': (context) => BasicUserLogin(),
         '/adminLoginPage': (context) => AdminLogin(),
         '/admin': (context) => AdminMainPage(),
+        '/user': (context) => UserMainPage(),
       },
     );
   }

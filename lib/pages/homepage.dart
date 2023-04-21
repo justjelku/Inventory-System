@@ -19,6 +19,12 @@ class _HomePageState extends State<HomePage> {
     Settings(),
   ];
 
+  static const List<String> _appBarTitles = <String>[
+    'HomePage',
+    'Profile',
+    'Settings',
+  ];
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -29,6 +35,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(_appBarTitles[_selectedIndex]),
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),

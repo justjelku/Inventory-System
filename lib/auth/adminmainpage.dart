@@ -12,6 +12,9 @@ class AdminMainPage extends StatefulWidget {
 }
 
 class _AdminMainPageState extends State<AdminMainPage> {
+
+  bool isLoading = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,25 +22,29 @@ class _AdminMainPageState extends State<AdminMainPage> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.hasError) {
+            isLoading = false; // set isLoading to false
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16.0),
-                  Text('Loading'),
+                children: [
+                  if (isLoading) // show CircularProgressIndicator conditionally
+                    const CircularProgressIndicator(),
+                  const SizedBox(height: 16.0),
+                  const Text('Loading'),
                 ],
               ),
             );
           }
           if (snapshot.data == null) {
             // User is not logged in
+            isLoading = false; // set isLoading to false
             return const AdminLogin();
           }
           // User is logged in
+          isLoading = false; // set isLoading to false
           return const AdminDashboard();
         },
       ),

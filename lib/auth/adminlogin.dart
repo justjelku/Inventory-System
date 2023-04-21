@@ -28,15 +28,8 @@ class _AdminLoginState extends State<AdminLogin> {
 
   Future<void> signIn() async {
     try {
-      showDialog(
-        context: context,
-        builder: (context){
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      );
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final userCredential =
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -47,9 +40,7 @@ class _AdminLoginState extends State<AdminLogin> {
           .get();
       if (userDoc.exists) {
         // User is in admin_users collection
-        setState(() {
-          Navigator.pushNamed(context, '/admin');
-        });
+        Navigator.pushNamed(context, '/admin');
         // Do something here, such as navigating to a page for admins
       }
       // } else {
@@ -57,9 +48,6 @@ class _AdminLoginState extends State<AdminLogin> {
       //   // Do something else here, such as displaying an error message
       // }
 
-      //pop the loading circle
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
       _showMsg('Logged In Successful!', true);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -70,7 +58,7 @@ class _AdminLoginState extends State<AdminLogin> {
         _showMsg('Error: ${e.message}', false);
       }
     } catch (e) {
-      _showMsg('Please enter valid admin credentials', false);
+      _showMsg('You are not authorized to login!', false);
     }
   }
 

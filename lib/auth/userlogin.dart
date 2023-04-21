@@ -44,13 +44,10 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
         password: _passwordController.text.trim(),
       );
       _showMsg('Logged In Successful!', true);
-      // ignore: use_build_context_synchronously
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => const MainPage(),
-      //   ),
-      // );
+      setState(() {
+        Navigator.pushNamed(context, '/user');
+      });
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showMsg('No user found for that email.', false);

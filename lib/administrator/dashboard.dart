@@ -19,6 +19,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
     AdminSettings(),
   ];
 
+  static const List<String> _appBarTitles = <String>[
+    'Dashboard',
+    'Manage Users',
+    'Settings',
+  ];
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -30,7 +36,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        automaticallyImplyLeading: false,
+        title: Text(_appBarTitles[_selectedIndex]),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
