@@ -7,174 +7,314 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
 
-  late TextEditingController _firstNameController;
-  late TextEditingController _lastNameController;
-  late TextEditingController _usernameController;
+  late String _initialUserName = "";
+  late String _initialFirstName = "";
+  late String _initialLastName = "";
+  late String _initialPassword = "";
+  late String _initialEmail = "";
+
+  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   bool _isEditing = false;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
-    final user = FirebaseAuth.instance.currentUser!;
-    _firstNameController = TextEditingController(text: user.displayName?.split(' ')[0] ?? '');
-    _lastNameController = TextEditingController(text: user.displayName?.split(' ')[1] ?? '');
-    _usernameController = TextEditingController(text: user.email!.split('@')[0]);
+    // _initialUserName = "";
+    // _initialFirstName = "";
+    // _initialLastName = "";
+    // _initialUserName = "";
+    // _initialEmail = "";
+    // _initialPassword = "";
+    _getUserData();
   }
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _usernameController.dispose();
+    _userNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _updateUserProfile() async {
+  Future<void> _getUserData() async {
     final user = FirebaseAuth.instance.currentUser!;
     final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userData = await userRef.get();
 
-    await userRef.update({
-      'firstName': _firstNameController.text,
-      'lastName': _lastNameController.text,
-      'username': _usernameController.text,
+    final data = userData.data() as Map<String, dynamic>;
+    setState(() {
+      _initialUserName = data['username'];
+      _initialFirstName = data['firstName'];
+      _initialLastName = data['lastName'];
+      _initialEmail = data['email'];
+      _initialPassword = data['password'];
     });
+  }
 
-    await user.updateDisplayName('${_firstNameController.text} ${_lastNameController.text}');
+  Future _updateUserProfile(String firstName, String lastName, String userName,
+      String email) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    // Update the user's display name
+    await user?.updateDisplayName('$firstName $lastName');
+
+    // Add the user details to the Firestore collection
+    await FirebaseFirestore.instance.collection('users')
+        .doc(user!.uid)
+        .set({
+      'firstName': firstName,
+      'lastName': lastName,
+      'username': userName,
+      'email': email,
+    });
   }
 
   Future<void> _deleteUser() async {
     final user = FirebaseAuth.instance.currentUser!;
-    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userRef = FirebaseFirestore.instance.collection('users').doc(
+        user.uid);
 
     await userRef.delete();
     await user.delete();
 
-    // TODO: navigate to login screen
+    // Navigate to login screen
+    // ignore: use_build_context_synchronously
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/basicUserLoginPage',
+          (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
-    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    _userNameController.text = _initialUserName;
+    _firstNameController.text = _initialFirstName;
+    _lastNameController.text = _initialLastName;
+    _emailController.text = _initialEmail;
+    _passwordController.text = _initialPassword;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
+    final user = FirebaseAuth.instance.currentUser!;
+    final userRef = FirebaseFirestore.instance.collection('users').doc(
+        user.uid);
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: userRef.get(),
+      builder: (BuildContext context,
+          AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return const Text('Error retrieving user data.');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text('Retrieving user data...');
+        }
+        final data = snapshot.data?.data() as Map<String, dynamic>;
+        _firstNameController.text = data?['firstName'] as String? ?? '';
+        _lastNameController.text = data?['lastName'] as String? ?? '';
+        _userNameController.text = data?['username'] as String? ?? '';
+        _emailController.text = data?['email'] as String? ?? '';
+        _passwordController.text = data?['password'] as String? ?? '';
+        return Scaffold(
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircleAvatar(
+                        radius: 50,
+                        backgroundImage: AssetImage('assets/logo.png'),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        '${data['firstName']} ${data['lastName']}',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFormField(
+                          controller: _firstNameController,
+                          enabled: _isEditing,
+                          // initialValue: _initialFirstName,
+                          decoration: const InputDecoration(
+                            labelText: 'First Name',
+                            hintText: 'Enter your first name',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your first name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _lastNameController,
+                          enabled: _isEditing,
+                          // initialValue: _initialLastName,
+                          decoration: const InputDecoration(
+                            labelText: 'Last Name',
+                            hintText: 'Enter your last name',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your last name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _userNameController,
+                          enabled: _isEditing,
+                          // initialValue: _initialUserName,
+                          decoration: const InputDecoration(
+                            labelText: 'UserName',
+                            hintText: 'Enter your username',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your username';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _emailController,
+                          enabled: _isEditing,
+                          // initialValue: _initialEmail,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            hintText: 'Enter your email',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _passwordController,
+                          enabled: _isEditing,
+                          // initialValue: _initialPassword,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            hintText: 'Enter your password',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                _updateUserProfile(
+                                  _firstNameController.text,
+                                  _lastNameController.text,
+                                  _userNameController.text,
+                                  _emailController.text,
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('User updated successfully!'),
+                                  ),
+                                );
+                              },
+                              child: const Text('Update'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await FirebaseService().deleteUser(user.uid);
+                                _deleteUser();
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('User deleted successfully!'),
+                                  ),
+                                );
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                // Other widgets in your app
+              ],
+            ),
+          ),
+          floatingActionButton: _isEditing
+              ? FloatingActionButton(
+            onPressed: () async {
+              if (_formKey.currentState!.validate()) {
+                await FirebaseService().updateUser(
+                  user.uid,
+                  _firstNameController.text,
+                  _lastNameController.text,
+                  _userNameController.text,
+                );
+                setState(() {
+                  _isEditing = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('User updated successfully!'),
+                  ),
+                );
+              }
+            },
+            child: const Icon(Icons.save),
+          )
+              : FloatingActionButton(
             onPressed: () {
               setState(() {
                 _isEditing = true;
               });
             },
+            child: const Icon(Icons.edit),
           ),
-        ],
-      ),
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: userRef.snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final userData = snapshot.data!.data()!;
-          return Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(user.photoURL ?? ''),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _firstNameController,
-                    enabled: _isEditing,
-                    decoration: const InputDecoration(
-                      labelText: 'First Name',
-                      hintText: 'Enter your first name',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your first name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _lastNameController,
-                    enabled: _isEditing,
-                    decoration: const InputDecoration(
-                      labelText: 'Last Name',
-                      hintText: 'Enter your last name',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your first name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-			TextFormField(
-                    controller: _usernameController,
-                    enabled: _isEditing,
-                    decoration: const InputDecoration(
-                      labelText: 'UserName',
-                      hintText: 'Enter your username',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your username';
-                      }
-                      return null;
-                    },
-                  ),
-                  Row(
-  				          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  				          children: [
-    					        ElevatedButton(
-      					        onPressed: () async {
-        						      await DatabaseService(uid: user.uid).updateUser(
-          							    _firstNameController.text,
-          							    _lastNameController.text,
-          							    _usernameController.text,
-       						        );
-       						        ScaffoldMessenger.of(context).showSnackBar(
-          							    const SnackBar(
-            							    content: Text('User updated successfully!'),
-         							      ),
-        						      );
-      					        },
-      				        child: const Text('Update'),
-    					        ),
-    					ElevatedButton(
-      					onPressed: () async {
-        						await FirebaseService(uid: user.uid).deleteUser();
-        						ScaffoldMessenger.of(context).showSnackBar(
-          							const SnackBar(
-            							content: Text('User deleted successfully!'),
-          							),
-        						);
-      					},
-      				child: const Text('Delete'),
-    					),
-  				],
-		  ),
-    )
-	);
+        );
+      },
+    );
+  }
 }
-

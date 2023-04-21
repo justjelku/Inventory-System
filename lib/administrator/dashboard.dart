@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/administrator/adminsetting.dart';
+import 'package:firebase_login_auth/administrator/manageusers.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -15,7 +16,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Admin Dashboard'),
-    Text('Manage Users'),
+    ManageUsers(),
     AdminSettings(),
   ];
 

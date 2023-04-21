@@ -128,7 +128,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
   }
 
   Future addUserDetails(String firstName, String lastName, String userName, String email) async{
-    await FirebaseFirestore.instance.collection('basic_users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
       'first name': firstName,
       'last name': lastName,
       'username': userName,
@@ -385,8 +385,8 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
             actions: [
               ElevatedButton(
                 onPressed: () {
-                  signUp();
                   Navigator.pop(context);
+                  signUp();
                 },
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(

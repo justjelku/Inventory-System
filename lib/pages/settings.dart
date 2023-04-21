@@ -70,18 +70,6 @@ class _SettingsState extends State<Settings> {
               color: secondaryBtnColor,
               child: const Text('Sign Out'),
             ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserListPage(users: userList),
-                  ),
-                );
-              },
-              color: primaryBtnColor,
-              child: const Text('View all users'),
-            )
           ],
         ),
       ),

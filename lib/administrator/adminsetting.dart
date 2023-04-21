@@ -75,13 +75,6 @@ class _AdminSettingsState extends State<AdminSettings> {
               color: secondaryBtnColor,
               child: const Text('Sign Out'),
             ),
-            if (_isAdmin)
-              MaterialButton(
-                onPressed: () {
-                },
-                color: primaryBtnColor,
-                child: const Text('View all users'),
-              ),
           ],
         ),
       ),

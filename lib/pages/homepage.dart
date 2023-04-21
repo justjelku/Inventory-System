@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_login_auth/pages/profilepage.dart';
 import 'package:flutter/material.dart';
 import 'settings.dart';
 
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Basic User Page'),
-    Text('Profile Page'),
+    ProfilePage(),
     Settings(),
   ];
 
