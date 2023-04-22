@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/pages/profilepage.dart';
+import 'package:firebase_login_auth/todo/todolist.dart';
 import 'package:flutter/material.dart';
 import 'settings.dart';
 
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Text('Basic User Page'),
+    TodoList(),
     ProfilePage(),
     Settings(),
   ];
