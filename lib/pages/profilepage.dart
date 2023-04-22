@@ -31,12 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   initState() {
     super.initState();
-    // _initialUserName = "";
-    // _initialFirstName = "";
-    // _initialLastName = "";
-    // _initialUserName = "";
-    // _initialEmail = "";
-    // _initialPassword = "";
     _getUserData();
   }
 
@@ -51,15 +45,18 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _getUserData() async {
-    final user = FirebaseAuth.instance.currentUser!;
-    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    // final user = FirebaseAuth.instance.currentUser!;
+    final userRef = FirebaseFirestore.instance.collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
     final userData = await userRef.get();
 
     final data = userData.data() as Map<String, dynamic>;
     setState(() {
       _initialUserName = data['username'];
-      _initialFirstName = data['firstName'];
-      _initialLastName = data['lastName'];
+      _initialFirstName = data['first name'];
+      _initialLastName = data['last name'];
       _initialEmail = data['email'];
       _initialPassword = data['password'];
     });
@@ -74,10 +71,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // Add the user details to the Firestore collection
     await FirebaseFirestore.instance.collection('users')
-        .doc(user!.uid)
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
         .set({
-      'firstName': firstName,
-      'lastName': lastName,
+      'first name': firstName,
+      'last name': lastName,
       'username': userName,
       'email': email,
     });
@@ -85,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _deleteUser() async {
     final user = FirebaseAuth.instance.currentUser!;
-    final userRef = FirebaseFirestore.instance.collection('users').doc(
+    final userRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('basic_users').doc(
         user.uid);
 
     await userRef.delete();
@@ -108,9 +107,11 @@ class _ProfilePageState extends State<ProfilePage> {
     _emailController.text = _initialEmail;
     _passwordController.text = _initialPassword;
 
-    final user = FirebaseAuth.instance.currentUser!;
-    final userRef = FirebaseFirestore.instance.collection('users').doc(
-        user.uid);
+    // final user = FirebaseAuth.instance.currentUser!;
+    final userRef = FirebaseFirestore.instance.collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
 
     return FutureBuilder<DocumentSnapshot>(
       future: userRef.get(),
@@ -123,8 +124,8 @@ class _ProfilePageState extends State<ProfilePage> {
           return const Text('Retrieving user data...');
         }
         final data = snapshot.data?.data() as Map<String, dynamic>;
-        _firstNameController.text = data?['firstName'] as String? ?? '';
-        _lastNameController.text = data?['lastName'] as String? ?? '';
+        _firstNameController.text = data?['first name'] as String? ?? '';
+        _lastNameController.text = data?['last name'] as String? ?? '';
         _userNameController.text = data?['username'] as String? ?? '';
         _emailController.text = data?['email'] as String? ?? '';
         _passwordController.text = data?['password'] as String? ?? '';
@@ -144,7 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '${data['firstName']} ${data['lastName']}',
+                        '${data?['first name'] ?? 'Error:'} ${data?['last name'] ?? 'Null'}',
                         style: const TextStyle(
                           fontSize: 22,
                           color: Colors.black,
@@ -262,7 +263,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             ElevatedButton(
                               onPressed: () async {
-                                await FirebaseService().deleteUser(user.uid);
+                                await FirebaseService().deleteUser(FirebaseAuth.instance.currentUser!.uid);
                                 _deleteUser();
                                 // ignore: use_build_context_synchronously
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -288,7 +289,7 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 await FirebaseService().updateUser(
-                  user.uid,
+                  FirebaseAuth.instance.currentUser!.uid,
                   _firstNameController.text,
                   _lastNameController.text,
                   _userNameController.text,

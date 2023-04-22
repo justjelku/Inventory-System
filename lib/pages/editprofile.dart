@@ -1,9 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _EditProfilePageState createState() => _EditProfilePageState();
 }
 
@@ -43,7 +47,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         Navigator.of(context).pop();
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update profile.')));
+            const SnackBar(content: Text('Failed to update profile.')));
       }
     }
   }
@@ -51,7 +55,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Profile'),
+        title: const Text('Edit Profile'),
       ),
       body: Form(
         key: _formKey,
@@ -62,22 +66,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             } else {
               var userDocument = snapshot.data;
               return ListView(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 children: [
                   CircleAvatar(
                     radius: 50,
                     backgroundImage: NetworkImage(userDocument!['photoUrl']),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextFormField(
                     initialValue: _displayName,
-                    decoration: InputDecoration(labelText: 'Display Name'),
+                    decoration: const InputDecoration(labelText: 'Display Name'),
                     validator: (value) {
                       if (value!.trim().length < 3) {
                         return 'Display Name must be at least 3 characters long.';
@@ -88,19 +92,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       _displayName = value!;
                     },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextFormField(
                     initialValue: _bio,
-                    decoration: InputDecoration(labelText: 'Bio'),
+                    decoration: const InputDecoration(labelText: 'Bio'),
                     maxLength: 200,
                     onSaved: (value) {
                       _bio = value!;
                     },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: updateUserProfile,
-                    child: Text('Save Changes'),
+                    child: const Text('Save Changes'),
                   ),
                 ],
               );

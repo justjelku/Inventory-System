@@ -1,9 +1,9 @@
 class UserModel {
   final String uid;
   final String email;
-  final String firstName;
-  final String lastName;
-  final String username;
+  late final String firstName;
+  late final String lastName;
+  late final String username;
 
   UserModel({
     required this.uid,
@@ -19,8 +19,8 @@ class UserModel {
         UserModel(
           uid: data['uid'],
           email: data['email'],
-          firstName: data['firstName'],
-          lastName: data['lastName'],
+          firstName: data['first name'],
+          lastName: data['last name'],
           username: data['username'],
         ),
       );
@@ -29,8 +29,8 @@ class UserModel {
         UserModel(
           uid: data['uid'],
           email: data['email'],
-          firstName: data['firstName'],
-          lastName: data['lastName'],
+          firstName: data['first name'],
+          lastName: data['last name'],
           username: data['username'],
         ),
       );
@@ -42,8 +42,8 @@ class UserModel {
     return {
       'uid': uid,
       'email': email,
-      'firstName': firstName,
-      'lastName': lastName,
+      'first name': firstName,
+      'last name': lastName,
       'username': username,
     };
   }

@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_login_auth/model/user.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DB {
+  // ignore: deprecated_member_use
   final DatabaseReference _userRef = FirebaseDatabase.instance.reference()
       .child('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;

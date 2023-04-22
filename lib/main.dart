@@ -2,7 +2,6 @@ import 'package:firebase_login_auth/auth/adminlogin.dart';
 import 'package:firebase_login_auth/auth/adminmainpage.dart';
 import 'package:firebase_login_auth/auth/userlogin.dart';
 import 'package:firebase_login_auth/auth/usermainpage.dart';
-import 'package:firebase_login_auth/pages/homepage.dart';
 import 'package:firebase_login_auth/userroleselection.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,11 +28,11 @@ class MyApp extends StatelessWidget{
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => UserRoleSelectionPage(),
-        '/basicUserLoginPage': (context) => BasicUserLogin(),
-        '/adminLoginPage': (context) => AdminLogin(),
-        '/admin': (context) => AdminMainPage(),
-        '/user': (context) => UserMainPage(),
+        '/': (context) => const UserRoleSelectionPage(),
+        '/basicUserLoginPage': (context) => const BasicUserLogin(),
+        '/adminLoginPage': (context) => const AdminLogin(),
+        '/admin': (context) => const AdminMainPage(),
+        '/user': (context) => const UserMainPage(),
       },
     );
   }

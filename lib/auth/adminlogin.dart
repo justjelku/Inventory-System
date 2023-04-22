@@ -35,20 +35,16 @@ class _AdminLoginState extends State<AdminLogin> {
       );
 
       final userDoc = await FirebaseFirestore.instance
-          .collection('admin_users')
+          .collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('admin_users')
           .doc(userCredential.user!.uid)
           .get();
       if (userDoc.exists) {
         // User is in admin_users collection
+        _showMsg('Logged In Successful!', true);
+        // ignore: use_build_context_synchronously
         Navigator.pushNamed(context, '/admin');
         // Do something here, such as navigating to a page for admins
       }
-      // } else {
-      //   // User is not in admin_users collection
-      //   // Do something else here, such as displaying an error message
-      // }
-
-      _showMsg('Logged In Successful!', true);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showMsg('No user found for that email.', false);
@@ -133,12 +129,15 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   Future addUserDetails(String firstName, String lastName, String userName, String email) async{
-    await FirebaseFirestore.instance.collection('admin_users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+    final userRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu');
+    final userDetailsRef = userRef.collection('admin_users').doc(FirebaseAuth.instance.currentUser!.uid);
+    final userDetails = {
       'first name': firstName,
       'last name': lastName,
       'username': userName,
       'email': email,
-    });
+    };
+    await userDetailsRef.set(userDetails);
   }
 
   bool passwordConfirmed() {

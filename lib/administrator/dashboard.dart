@@ -14,10 +14,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final user = FirebaseAuth.instance.currentUser!;
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Admin Dashboard'),
-    ManageUsers(),
-    AdminSettings(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Text('Admin Dashboard'),
+    Builder(
+      builder: (BuildContext context) {
+        String userId = FirebaseAuth.instance.currentUser!.uid;
+        return ManageUser(userId: userId);
+      },
+    ),
+    const AdminSettings(),
   ];
 
   static const List<String> _appBarTitles = <String>[

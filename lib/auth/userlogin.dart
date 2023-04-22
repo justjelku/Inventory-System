@@ -1,6 +1,4 @@
-import 'package:firebase_login_auth/auth/adminlogin.dart';
-import 'package:firebase_login_auth/auth/usermainpage.dart';
-import 'package:firebase_login_auth/userroleselection.dart';
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,23 +29,22 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
 
   Future<void> signIn() async {
     try {
-      showDialog(
-          context: context,
-          builder: (context){
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-        },
-      );
+      final userCredential =
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      _showMsg('Logged In Successful!', true);
-      setState(() {
-        Navigator.pushNamed(context, '/user');
-      });
 
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('basic_users')
+          .doc(userCredential.user!.uid)
+          .get();
+      if (userDoc.exists) {
+        // User is in admin_users collection
+        _showMsg('Logged In Successful!', true);
+        Navigator.pushNamed(context, '/user');
+        // Do something here, such as navigating to a page for admins
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showMsg('No user found for that email.', false);
@@ -57,9 +54,10 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
         _showMsg('Error: ${e.message}', false);
       }
     } catch (e) {
-      _showMsg('Please enter your Email and Password  ', false);
+      _showMsg('You are not authorized to login!', false);
     }
   }
+
   Future<void> signUp() async {
     try {
       showDialog(
@@ -128,7 +126,11 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
   }
 
   Future addUserDetails(String firstName, String lastName, String userName, String email) async{
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+    await FirebaseFirestore.instance.collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({
       'first name': firstName,
       'last name': lastName,
       'username': userName,
