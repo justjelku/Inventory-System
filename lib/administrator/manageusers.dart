@@ -125,30 +125,30 @@ class _ManageUserState extends State<ManageUser> {
 
   Future<void> _listAuthorizedUsers() async {
     try {
-      final adminUsersRef = FirebaseFirestore.instance.collection('users')
-          .doc('qIglLalZbFgIOnO0r3Zu')
-          .collection('admin_users');
+      // final adminUsersRef = FirebaseFirestore.instance.collection('users')
+      //     .doc('qIglLalZbFgIOnO0r3Zu')
+      //     .collection('admin_users');
       final basicUsersRef = FirebaseFirestore.instance.collection('users')
           .doc('qIglLalZbFgIOnO0r3Zu')
           .collection('basic_users');
 
-      final adminUsersSnapshot = await adminUsersRef.get();
+      // final adminUsersSnapshot = await adminUsersRef.get();
       final basicUsersSnapshot = await basicUsersRef.get();
 
-      final adminUserDocs = adminUsersSnapshot.docs;
+      // final adminUserDocs = adminUsersSnapshot.docs;
       final basicUserDocs = basicUsersSnapshot.docs;
 
       final List<Map<String, dynamic>> authorizedUsers = [];
 
-      for (var adminUserDoc in adminUserDocs) {
-        final data = adminUserDoc.data();
-        authorizedUsers.add({
-          'uid': adminUserDoc.id,
-          'email': data['email'],
-          'role': 'admin'
-        });
-        // uids.add(data['uid']);
-      }
+      // for (var adminUserDoc in adminUserDocs) {
+      //   final data = adminUserDoc.data();
+      //   authorizedUsers.add({
+      //     'uid': adminUserDoc.id,
+      //     'email': data['email'],
+      //     'role': 'admin'
+      //   });
+      //   // uids.add(data['uid']);
+      // }
 
       for (var basicUserDoc in basicUserDocs) {
         final data = basicUserDoc.data();
@@ -198,17 +198,23 @@ class _ManageUserState extends State<ManageUser> {
           .get();
       if (userSnapshot.exists) {
         final userData = userSnapshot.data()!;
-        setState(() {
-          _user = UserModel.fromMap(userData);
-          _isAdmin =
-              userData['isAdmin'] == true || userData['isAdmin'] == true;
-          _user.firstName = currentUser.displayName?.split(' ')[0] ?? '';
-          _user.lastName = currentUser.displayName?.split(' ')[1] ?? '';
-          _user.username = currentUser.email?.split('@')[0] ?? '';
-        });
+        if (userData['enabled'] == true) {
+          setState(() {
+            _user = UserModel.fromMap(userData);
+            _isAdmin =
+                userData['isAdmin'] == true || userData['isAdmin'] == true;
+            _user.firstName = currentUser.displayName?.split(' ')[0] ?? '';
+            _user.lastName = currentUser.displayName?.split(' ')[1] ?? '';
+            _user.username = currentUser.email?.split('@')[0] ?? '';
+          });
+        } else {
+          // User is not enabled
+          _showMsg('User is not enabled', false);
+        }
       }
     }
   }
+
   // userData['isAdmin'] == true || userData['isSuperAdmin'] == true;
 
   void _showMsg(String message, bool isSuccess) {
@@ -322,6 +328,8 @@ class _ManageUserState extends State<ManageUser> {
                   Text('Email: ${_user.email}'),
                   const SizedBox(height: 8.0),
                   Text('Username: ${data['username']}'),
+                  const SizedBox(height: 8.0),
+                  Text('Status: ${data['enabled'] ? 'Enabled' : 'Disabled'}'),
                   const SizedBox(height: 16.0),
                   _isAdmin
                       ? GestureDetector(
@@ -374,13 +382,42 @@ class _ManageUserState extends State<ManageUser> {
                                 ),
                               ),
                               subtitle: Text(user['role'] ?? ''), //user['role'] == 'admin' ?
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.edit,
-                                  size: 30,
-                                ),
-                                onPressed: () => _editUser(user['uid']),
-                              ) //: null,
+                              trailing: PopupMenuButton(
+                                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                                  PopupMenuItem(
+                                    value: user['enabled'] != null && user['enabled'] ? 'disable' : 'enable',
+                                    child: Text(user['enabled'] != null && user['enabled'] ? 'Disable' : 'Enable'),
+                                  ),
+                                  const PopupMenuDivider(),
+                                  const PopupMenuItem(
+                                    value: 'edit',
+                                    child: Text('Edit'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text('Delete'),
+                                  ),
+                                ],
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'disable':
+                                      _disableUser(user['uid']);
+                                      break;
+                                    case 'enable':
+                                      _enableUser(user['uid']);
+                                      break;
+                                    case 'edit':
+                                      _editUser(user['uid']);
+                                      break;
+                                    case 'delete':
+                                      _deleteUser(user['uid']);
+                                      break;
+                                    default:
+                                      break;
+                                  }
+                                },
+
+                              ),
                             ),
                           )).toList(),
                         ),
@@ -395,89 +432,6 @@ class _ManageUserState extends State<ManageUser> {
       },
     );
   }
-  // void _editUser(String uid) {
-  //   final user = _authorizedUsers.firstWhere((user) => user['uid'] == uid);
-  //   final emailController = TextEditingController(text: user['email']);
-  //   final firstNameController = TextEditingController(text: user['first name']);
-  //   final lastNameController = TextEditingController(text: user['last name']);
-  //   final usernameController = TextEditingController(text: user['username']);
-  //   final passwordController = TextEditingController();
-  //
-  //   print(uid);
-  //   print(user['first name']);
-  //   print(user['last name']);
-  //   print(user['username']);
-  //   print(user['email']);
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (_) => AlertDialog(
-  //       title: const Text('Edit User'),
-  //       content: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           TextField(
-  //             controller: firstNameController,
-  //             decoration: const InputDecoration(hintText: 'First Name'),
-  //           ),
-  //           TextField(
-  //             controller: firstNameController,
-  //             decoration: const InputDecoration(hintText: 'Last Name'),
-  //           ),
-  //           TextField(
-  //             controller: firstNameController,
-  //             decoration: const InputDecoration(hintText: 'Username'),
-  //           ),
-  //           TextField(
-  //             controller: emailController,
-  //             decoration: const InputDecoration(hintText: 'Email'),
-  //           ),
-  //           TextField(
-  //             controller: firstNameController,
-  //             obscureText: true,
-  //             decoration: const InputDecoration(hintText: 'Password'),
-  //           ),
-  //           // Add additional text fields for last name, username, and password here
-  //         ],
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () {
-  //             Navigator.pop(context);
-  //           },
-  //           child: const Text('Cancel'),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             final newEmail = emailController.text.trim();
-  //             final newFirstName = firstNameController.text.trim();
-  //             final newLastName = lastNameController.text.trim();
-  //             final newUsername = usernameController.text.trim();
-  //             final newPassword = passwordController.text.trim();
-  //             if (newEmail.isNotEmpty) {
-  //               // Update the user's email in Firestore
-  //               FirebaseFirestore.instance
-  //                   .collection('users')
-  //                   .doc('qIglLalZbFgIOnO0r3Zu')
-  //                   .collection('admin_users')
-  //                   .doc(uid)
-  //                   .update({'email': newEmail, 'first name': newFirstName, 'last name': newFirstName, 'username': newFirstName, 'password': newFirstName});
-  //
-  //               // Update the user's email in the authorized users list
-  //               setState(() {
-  //                 final index = _authorizedUsers.indexWhere((user) => user['uid'] == uid);
-  //                 _authorizedUsers[index]['email'] = newEmail;
-  //               });
-  //
-  //               Navigator.pop(context);
-  //             }
-  //           },
-  //           child: const Text('Save'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   void _editUser(String uid) async {
 
@@ -620,6 +574,136 @@ class _ManageUserState extends State<ManageUser> {
       ),
     );
   }
+
+  Future<void> _deleteUser(String uid) async {
+    try {
+      final adminUserRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc('qIglLalZbFgIOnO0r3Zu')
+          .collection('admin_users')
+          .doc(uid);
+      final basicUserRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc('qIglLalZbFgIOnO0r3Zu')
+          .collection('basic_users')
+          .doc(uid);
+
+      await adminUserRef.delete();
+      await basicUserRef.delete();
+
+      setState(() {
+        _authorizedUsers.removeWhere((user) => user['uid'] == uid);
+      });
+
+      _showMsg('User deleted successfully', true);
+    } catch (error) {
+      _showMsg('Failed to delete user', false);
+    }
+  }
+
+  // Future<void> _disableUser(String uid) async {
+  //   try {
+  //     final adminUserRef = FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc('qIglLalZbFgIOnO0r3Zu')
+  //         .collection('admin_users')
+  //         .doc(uid);
+  //     final basicUserRef = FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc('qIglLalZbFgIOnO0r3Zu')
+  //         .collection('basic_users')
+  //         .doc(uid);
+  //
+  //     await adminUserRef.update({'enabled': false});
+  //     await basicUserRef.update({'enabled': false});
+  //
+  //     setState(() {
+  //       for (var user in _authorizedUsers) {
+  //         if (user['uid'] == uid) {
+  //           user['enabled'] = false;
+  //         }
+  //       }
+  //     });
+  //
+  //     _showMsg('User disabled successfully.', true);
+  //   } catch (error) {
+  //     _showMsg('Error disabling user: $error', false);
+  //   }
+  // }
+  //
+  // // Future<void> _enableUser(String uid) async {
+  // //   try {
+  // //     final adminUserRef = FirebaseFirestore.instance
+  // //         .collection('users')
+  // //         .doc('qIglLalZbFgIOnO0r3Zu')
+  // //         .collection('admin_users')
+  // //         .doc(uid);
+  // //     final basicUserRef = FirebaseFirestore.instance
+  // //         .collection('users')
+  // //         .doc('qIglLalZbFgIOnO0r3Zu')
+  // //         .collection('basic_users')
+  // //         .doc(uid);
+  // //
+  // //     await adminUserRef.update({'enabled': true});
+  // //     await basicUserRef.update({'enabled': true});
+  // //
+  // //     setState(() {
+  // //       for (var user in _authorizedUsers) {
+  // //         if (user['uid'] == uid) {
+  // //           user['enabled'] = true;
+  // //         }
+  // //       }
+  // //     });
+  // //
+  // //     _showMsg('User enabled successfully.', true);
+  // //   } catch (error) {
+  // //     _showMsg('Error enabling user: $error', false);
+  // //   }
+  // // }
+
+  Future<void> _disableUser(String uid) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc('qIglLalZbFgIOnO0r3Zu')
+          .collection('basic_users')
+          .doc(uid)
+          .update({'enabled': false});
+      setState(() {
+        for (var user in _authorizedUsers) {
+          if (user['uid'] == uid) {
+            user['enabled'] = false;
+          }
+        }
+      });
+      _showMsg('User disabled successfully.', true);
+    } catch (error) {
+      _showMsg('Error disabling user: $error', false);
+    }
+  }
+
+
+  Future<void> _enableUser(String uid) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc('qIglLalZbFgIOnO0r3Zu')
+          .collection('basic_users')
+          .doc(uid)
+          .update({'enabled': true});
+      setState(() {
+        for (var user in _authorizedUsers) {
+          if (user['uid'] == uid) {
+            user['enabled'] = true;
+          }
+        }
+      });
+      _showMsg('User enabled successfully.', true);
+    } catch (error) {
+      _showMsg('Error enabling user: $error', false);
+    }
+  }
+
 
 }
 

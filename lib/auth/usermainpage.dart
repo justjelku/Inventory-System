@@ -21,19 +21,6 @@ class _UserMainPageState extends State<UserMainPage> {
     // _checkAdmin();
   }
 
-  // Future<void> _checkAdmin() async {
-  //   final user = FirebaseAuth.instance.currentUser;
-  //   if (user != null) {
-  //     final doc = await FirebaseFirestore.instance
-  //         .collection('admin_users')
-  //         .doc(user.uid)
-  //         .get();
-  //     setState(() {
-  //       _isAdmin = doc.exists;
-  //     });
-  //   }
-  // }
-
   bool isLoading = true;
 
   @override

@@ -15,7 +15,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const Text('Admin Dashboard'),
+    const Text("This is dashboard"),
     Builder(
       builder: (BuildContext context) {
         String userId = FirebaseAuth.instance.currentUser!.uid;

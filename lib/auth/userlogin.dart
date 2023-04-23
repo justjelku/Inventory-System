@@ -39,11 +39,12 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
           .collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('basic_users')
           .doc(userCredential.user!.uid)
           .get();
-      if (userDoc.exists) {
-        // User is in admin_users collection
+
+      if (userDoc.exists && userDoc.get('enabled')) {
         _showMsg('Logged In Successful!', true);
         Navigator.pushNamed(context, '/user');
-        // Do something here, such as navigating to a page for admins
+      } else {
+        _showMsg('You are not authorized, contact your administrator', false);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -53,8 +54,6 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
       } else {
         _showMsg('Error: ${e.message}', false);
       }
-    } catch (e) {
-      _showMsg('You are not authorized to login!', false);
     }
   }
 

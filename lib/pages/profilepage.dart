@@ -152,6 +152,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Status: ${data['enabled'] ? 'Enabled' : 'Disabled'}',
+                      ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),

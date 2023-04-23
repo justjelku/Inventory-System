@@ -35,15 +35,24 @@ class _AdminLoginState extends State<AdminLogin> {
       );
 
       final userDoc = await FirebaseFirestore.instance
-          .collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('admin_users')
+          .collection('users')
+          .doc('qIglLalZbFgIOnO0r3Zu')
+          .collection('admin_users')
           .doc(userCredential.user!.uid)
           .get();
+
       if (userDoc.exists) {
-        // User is in admin_users collection
-        _showMsg('Logged In Successful!', true);
-        // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, '/admin');
-        // Do something here, such as navigating to a page for admins
+        final userData = userDoc.data();
+        if (userData != null && userData['enabled'] == true) {
+          // User is in admin_users collection and status is enabled
+          _showMsg('Logged In Successful!', true);
+          // ignore: use_build_context_synchronously
+          Navigator.pushNamed(context, '/admin');
+          // Do something here, such as navigating to a page for admins
+        } else {
+          _showMsg('User account is disabled.', false);
+          await FirebaseAuth.instance.signOut();
+        }
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
