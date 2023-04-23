@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/model/user.dart';
+import 'package:firebase_login_auth/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
 List<UserModel> userList = [];

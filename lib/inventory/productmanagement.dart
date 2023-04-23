@@ -1,5 +1,6 @@
-import 'package:firebase_login_auth/todo/addproduct.dart';
-import 'package:firebase_login_auth/todo/productlist.dart';
+import 'package:firebase_login_auth/model/constant.dart';
+import 'package:firebase_login_auth/inventory/addproduct.dart';
+import 'package:firebase_login_auth/inventory/productlist.dart';
 import 'package:flutter/material.dart';
 
 class ProductManagementScreen extends StatelessWidget {
@@ -8,6 +9,12 @@ class ProductManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home Page'),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+      ),
+      backgroundColor: gradientEndColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

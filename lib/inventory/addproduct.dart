@@ -1,11 +1,10 @@
 import 'dart:math';
+import 'package:firebase_login_auth/model/productprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/todo/productmodel.dart';
-import 'package:firebase_login_auth/todo/productprovider.dart';
-import 'package:flutter/rendering.dart';
+import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:provider/provider.dart';
 
 

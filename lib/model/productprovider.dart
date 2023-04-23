@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/todo/productmodel.dart';
+import 'package:firebase_login_auth/model/productmodel.dart';
 
 class ProductProvider {
   final CollectionReference todos =

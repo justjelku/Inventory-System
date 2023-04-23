@@ -160,6 +160,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: gradientEndColor,
         body: Form(
             key: formKey,
             child: ListView(
@@ -189,7 +190,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
                     child: Center(
                       child: Text("Change Role",
                           style: TextStyle(
-                              color: primaryBtnColor,
+                              color: mainTextColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 14
                           )

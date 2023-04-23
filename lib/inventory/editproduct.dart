@@ -1,5 +1,5 @@
-import 'package:firebase_login_auth/todo/productmodel.dart';
-import 'package:firebase_login_auth/todo/productprovider.dart';
+import 'package:firebase_login_auth/model/productmodel.dart';
+import 'package:firebase_login_auth/model/productprovider.dart';
 import 'package:flutter/material.dart';
 
 class EditProduct extends StatefulWidget {

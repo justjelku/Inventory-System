@@ -1,4 +1,5 @@
 import 'package:firebase_login_auth/database/firebaseservice.dart';
+import 'package:firebase_login_auth/model/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -124,12 +125,18 @@ class _ProfilePageState extends State<ProfilePage> {
           return const Text('Retrieving user data...');
         }
         final data = snapshot.data?.data() as Map<String, dynamic>;
-        _firstNameController.text = data?['first name'] as String? ?? '';
-        _lastNameController.text = data?['last name'] as String? ?? '';
-        _userNameController.text = data?['username'] as String? ?? '';
-        _emailController.text = data?['email'] as String? ?? '';
-        _passwordController.text = data?['password'] as String? ?? '';
+        _firstNameController.text = data['first name'] as String? ?? '';
+        _lastNameController.text = data['last name'] as String? ?? '';
+        _userNameController.text = data['username'] as String? ?? '';
+        _emailController.text = data['email'] as String? ?? '';
+        _passwordController.text = data['password'] as String? ?? '';
         return Scaffold(
+          backgroundColor: gradientEndColor,
+          appBar: AppBar(
+            title: const Text('Profile Page'),
+            automaticallyImplyLeading: false,
+            centerTitle: true,
+          ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -141,11 +148,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       const CircleAvatar(
                         radius: 50,
-                        backgroundImage: AssetImage('assets/logo.png'),
+                        backgroundImage: const AssetImage('assets/logo.png'),
+                        backgroundColor: Colors.white,
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '${data?['first name'] ?? 'Error:'} ${data?['last name'] ?? 'Null'}',
+                        '${data['first name'] ?? 'Error:'} ${data['last name'] ?? 'Null'}',
                         style: const TextStyle(
                           fontSize: 22,
                           color: Colors.black,
@@ -175,12 +183,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'First Name',
                             hintText: 'Enter your first name',
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your first name';
-                            }
-                            return null;
-                          },
+                          // validator: (value) {
+                          //   if (value == null || value.isEmpty) {
+                          //     return 'Please enter your first name';
+                          //   }
+                          //   return null;
+                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -191,12 +199,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'Last Name',
                             hintText: 'Enter your last name',
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your last name';
-                            }
-                            return null;
-                          },
+                          // validator: (value) {
+                          //   if (value == null || value.isEmpty) {
+                          //     return 'Please enter your last name';
+                          //   }
+                          //   return null;
+                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -207,12 +215,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'UserName',
                             hintText: 'Enter your username',
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your username';
-                            }
-                            return null;
-                          },
+                          // validator: (value) {
+                          //   if (value == null || value.isEmpty) {
+                          //     return 'Please enter your username';
+                          //   }
+                          //   return null;
+                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -223,12 +231,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'Email',
                             hintText: 'Enter your email',
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
-                            }
-                            return null;
-                          },
+                          // validator: (value) {
+                          //   if (value == null || value.isEmpty) {
+                          //     return 'Please enter your email';
+                          //   }
+                          //   return null;
+                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -239,19 +247,19 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'Password',
                             hintText: 'Enter your password',
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
-                            }
-                            return null;
-                          },
+                          // validator: (value) {
+                          //   if (value == null || value.isEmpty) {
+                          //     return 'Please enter your password';
+                          //   }
+                          //   return null;
+                          // },
                         ),
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            ElevatedButton(
-                              onPressed: () async {
+                            TextButton(
+                              onPressed: () {
                                 _updateUserProfile(
                                   _firstNameController.text,
                                   _lastNameController.text,
@@ -259,14 +267,36 @@ class _ProfilePageState extends State<ProfilePage> {
                                   _emailController.text,
                                 );
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('User updated successfully!'),
-                                  ),
+                                    const SnackBar(
+                                      content: Text('User updated successfully!'),
+                                    ),
                                 );
                               },
-                              child: const Text('Update'),
+                              style: ButtonStyle(
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                                ),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                ),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: primaryBtnColor,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: const Text('Update',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 17
+                                    )
+                                ),
+                              ),
                             ),
-                            ElevatedButton(
+                            TextButton(
                               onPressed: () async {
                                 await FirebaseService().deleteUser(FirebaseAuth.instance.currentUser!.uid);
                                 _deleteUser();
@@ -277,7 +307,29 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 );
                               },
-                              child: const Text('Delete'),
+                              style: ButtonStyle(
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                                ),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                ),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: secondaryBtnColor,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: const Text('Delete',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 17
+                                    )
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -291,34 +343,49 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           floatingActionButton: _isEditing
               ? FloatingActionButton(
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                await FirebaseService().updateUser(
-                  FirebaseAuth.instance.currentUser!.uid,
-                  _firstNameController.text,
-                  _lastNameController.text,
-                  _userNameController.text,
-                );
-                setState(() {
-                  _isEditing = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('User updated successfully!'),
-                  ),
-                );
-              }
-            },
-            child: const Icon(Icons.save),
-          )
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await FirebaseService().updateUser(
+                        FirebaseAuth.instance.currentUser!.uid,
+                        _firstNameController.text,
+                        _lastNameController.text,
+                        _userNameController.text,
+                      );
+                      setState(() {
+                      _isEditing = false;
+                      });
+                      // ignore: use_build_context_synchronously
+                      ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('User updated successfully!'),
+                      ));
+                    }else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please make changes before saving.'),
+                        ),
+                      );
+                    }
+                  },
+                  backgroundColor: gradientEndColor,
+                  child: const Icon(Icons.save),
+              )
               : FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                _isEditing = true;
-              });
-            },
-            child: const Icon(Icons.edit),
-          ),
+                  onPressed: () {
+                      setState(() {
+                        _isEditing = true;
+                      });
+                  },
+                  backgroundColor: gradientEndColor,
+                  child: Icon(
+                    _firstNameController.text != '' ||
+                    _lastNameController.text != '' ||
+                    _userNameController.text != ''
+                    ? Icons.edit
+                    : Icons.save,
+                    color: mainTextColor,
+                  ),
+              ),
         );
       },
     );

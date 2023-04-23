@@ -2,9 +2,10 @@ import 'package:firebase_login_auth/auth/adminlogin.dart';
 import 'package:firebase_login_auth/auth/adminmainpage.dart';
 import 'package:firebase_login_auth/auth/userlogin.dart';
 import 'package:firebase_login_auth/auth/usermainpage.dart';
-import 'package:firebase_login_auth/todo/addproduct.dart';
-import 'package:firebase_login_auth/todo/productlist.dart';
+import 'package:firebase_login_auth/inventory/addproduct.dart';
+import 'package:firebase_login_auth/inventory/productlist.dart';
 import 'package:firebase_login_auth/auth/userroleselection.dart';
+import 'package:firebase_login_auth/screens/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget{
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const UserRoleSelectionPage(),
+        '/': (context) => const SplashScreen(),
         '/basicUserLoginPage': (context) => const BasicUserLogin(),
         '/adminLoginPage': (context) => const AdminLogin(),
         '/admin': (context) => const AdminMainPage(),

@@ -1,97 +1,15 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:flutter/material.dart';
-//
-// class ManageUsers extends StatefulWidget {
-//   const ManageUsers({Key? key}) : super(key: key);
-//
-//   @override
-//   State<ManageUsers> createState() => _ManageUsersState();
-// }
-//
-// class _ManageUsersState extends State<ManageUsers> {
-//   List<Map<String, dynamic>> _authorizedUsers = [];
-//
-//   Future<void> _listAuthorizedUsers() async {
-//     try {
-//       final adminUsersRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('admin_users');
-//       final basicUsersRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('basic_users');
-//
-//       final adminUsersSnapshot = await adminUsersRef.get();
-//       final basicUsersSnapshot = await basicUsersRef.get();
-//
-//       final adminUserDocs = adminUsersSnapshot.docs;
-//       final basicUserDocs = basicUsersSnapshot.docs;
-//
-//       final List<Map<String, dynamic>> authorizedUsers = [];
-//
-//       for (var adminUserDoc in adminUserDocs) {
-//         final data = adminUserDoc.data();
-//         authorizedUsers.add({
-//           'uid': data['uid'],
-//           'email': data['email'],
-//           'role': 'admin'
-//         });
-//       }
-//
-//       for (var basicUserDoc in basicUserDocs) {
-//         final data = basicUserDoc.data();
-//         authorizedUsers.add({
-//           'uid': data['uid'],
-//           'email': data['email'],
-//           'role': 'basic'
-//         });
-//       }
-//
-//       print('List authorized users successful.');
-//       print('Collection: admin_users');
-//       for (var user in authorizedUsers) {
-//         print('User: ${user['email']}, Role: ${user['role']}');
-//       }
-//
-//       setState(() {
-//         _authorizedUsers = authorizedUsers;
-//       });
-//
-//     } catch (error) {
-//       print('Error listing authorized users: $error');
-//     }
-//   }
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _listAuthorizedUsers();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: ListView.builder(
-//         itemCount: _authorizedUsers.length,
-//         itemBuilder: (context, index) {
-//           final user = _authorizedUsers[index];
-//           return ListTile(
-//             title: Text(user['email'] ?? ''),
-//             subtitle: Text(user['uid'] ?? ''),
-//             trailing: Text(user['role'] ?? ''),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
+// ignore_for_file: library_private_types_in_public_api
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/administrator/edituser.dart';
 import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/model/user.dart';
+import 'package:firebase_login_auth/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
 class ManageUser extends StatefulWidget {
   final String userId;
 
-  ManageUser({required this.userId});
+  const ManageUser({super.key, required this.userId});
 
   @override
   _ManageUserState createState() => _ManageUserState();
@@ -125,9 +43,6 @@ class _ManageUserState extends State<ManageUser> {
 
   Future<void> _listAuthorizedUsers() async {
     try {
-      // final adminUsersRef = FirebaseFirestore.instance.collection('users')
-      //     .doc('qIglLalZbFgIOnO0r3Zu')
-      //     .collection('admin_users');
       final basicUsersRef = FirebaseFirestore.instance.collection('users')
           .doc('qIglLalZbFgIOnO0r3Zu')
           .collection('basic_users');
@@ -139,16 +54,6 @@ class _ManageUserState extends State<ManageUser> {
       final basicUserDocs = basicUsersSnapshot.docs;
 
       final List<Map<String, dynamic>> authorizedUsers = [];
-
-      // for (var adminUserDoc in adminUserDocs) {
-      //   final data = adminUserDoc.data();
-      //   authorizedUsers.add({
-      //     'uid': adminUserDoc.id,
-      //     'email': data['email'],
-      //     'role': 'admin'
-      //   });
-      //   // uids.add(data['uid']);
-      // }
 
       for (var basicUserDoc in basicUserDocs) {
         final data = basicUserDoc.data();
@@ -600,66 +505,6 @@ class _ManageUserState extends State<ManageUser> {
       _showMsg('Failed to delete user', false);
     }
   }
-
-  // Future<void> _disableUser(String uid) async {
-  //   try {
-  //     final adminUserRef = FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc('qIglLalZbFgIOnO0r3Zu')
-  //         .collection('admin_users')
-  //         .doc(uid);
-  //     final basicUserRef = FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc('qIglLalZbFgIOnO0r3Zu')
-  //         .collection('basic_users')
-  //         .doc(uid);
-  //
-  //     await adminUserRef.update({'enabled': false});
-  //     await basicUserRef.update({'enabled': false});
-  //
-  //     setState(() {
-  //       for (var user in _authorizedUsers) {
-  //         if (user['uid'] == uid) {
-  //           user['enabled'] = false;
-  //         }
-  //       }
-  //     });
-  //
-  //     _showMsg('User disabled successfully.', true);
-  //   } catch (error) {
-  //     _showMsg('Error disabling user: $error', false);
-  //   }
-  // }
-  //
-  // // Future<void> _enableUser(String uid) async {
-  // //   try {
-  // //     final adminUserRef = FirebaseFirestore.instance
-  // //         .collection('users')
-  // //         .doc('qIglLalZbFgIOnO0r3Zu')
-  // //         .collection('admin_users')
-  // //         .doc(uid);
-  // //     final basicUserRef = FirebaseFirestore.instance
-  // //         .collection('users')
-  // //         .doc('qIglLalZbFgIOnO0r3Zu')
-  // //         .collection('basic_users')
-  // //         .doc(uid);
-  // //
-  // //     await adminUserRef.update({'enabled': true});
-  // //     await basicUserRef.update({'enabled': true});
-  // //
-  // //     setState(() {
-  // //       for (var user in _authorizedUsers) {
-  // //         if (user['uid'] == uid) {
-  // //           user['enabled'] = true;
-  // //         }
-  // //       }
-  // //     });
-  // //
-  // //     _showMsg('User enabled successfully.', true);
-  // //   } catch (error) {
-  // //     _showMsg('Error enabling user: $error', false);
-  // //   }
-  // // }
 
   Future<void> _disableUser(String uid) async {
     try {

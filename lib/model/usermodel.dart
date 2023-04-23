@@ -56,7 +56,7 @@ class AdminUserModel extends UserModel {
     required String email,
     required String firstName,
     required String lastName,
-    required String username,
+    required String username, required isAdmin,
   }) : super(
     uid: uid,
     email: email,
@@ -71,7 +71,7 @@ class AdminUserModel extends UserModel {
       email: userModel.email,
       firstName: userModel.firstName,
       lastName: userModel.lastName,
-      username: userModel.username,
+      username: userModel.username, isAdmin: true,
     );
   }
   @override

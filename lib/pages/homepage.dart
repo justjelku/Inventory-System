@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/pages/profilepage.dart';
-import 'package:firebase_login_auth/screens/productmanagement.dart';
-import 'package:firebase_login_auth/todo/productlist.dart';
+import 'package:firebase_login_auth/inventory/productmanagement.dart';
+import 'package:firebase_login_auth/inventory/productlist.dart';
 import 'package:flutter/material.dart';
 import 'settings.dart';
 
@@ -39,10 +39,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(_appBarTitles[_selectedIndex]),
-      ),
+      // appBar: AppBar(
+      //   automaticallyImplyLeading: false,
+      //   title: Text(_appBarTitles[_selectedIndex]),
+      // ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
