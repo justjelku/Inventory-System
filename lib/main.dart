@@ -2,8 +2,9 @@ import 'package:firebase_login_auth/auth/adminlogin.dart';
 import 'package:firebase_login_auth/auth/adminmainpage.dart';
 import 'package:firebase_login_auth/auth/userlogin.dart';
 import 'package:firebase_login_auth/auth/usermainpage.dart';
-import 'package:firebase_login_auth/todo/todolist.dart';
-import 'package:firebase_login_auth/userroleselection.dart';
+import 'package:firebase_login_auth/todo/addproduct.dart';
+import 'package:firebase_login_auth/todo/productlist.dart';
+import 'package:firebase_login_auth/auth/userroleselection.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -34,7 +35,6 @@ class MyApp extends StatelessWidget{
         '/adminLoginPage': (context) => const AdminLogin(),
         '/admin': (context) => const AdminMainPage(),
         '/user': (context) => const UserMainPage(),
-        '/inventory': (context) => const TodoList(),
       },
     );
   }

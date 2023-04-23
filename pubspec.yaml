@@ -44,6 +44,17 @@ dependencies:
   firebase_admin: ^0.2.0
   sqflite: ^2.2.7
   provider: ^6.0.5
+  barcode_widgets: ^2.0.0
+  barcode: ^2.1.0
+  firebase_storage: ^11.1.1
+  barcode_widget: ^2.0.3
+  universal_html: ^2.2.1
+  path_provider: ^2.0.14
+  flutter_svg: ^1.1.6
+  uuid: ^3.0.7
+  flutter_barcode_scanner: ^2.0.0
+  image: ^4.0.15
+
 
 dev_dependencies:
   flutter_test:

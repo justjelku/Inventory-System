@@ -1,19 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/todo/todomodel.dart';
+import 'package:firebase_login_auth/todo/productmodel.dart';
 
-class TodoProvider {
+class ProductProvider {
   final CollectionReference todos =
   FirebaseFirestore.instance.collection('todos');
 
-  Stream<List<Todo>> get todoStream {
+  Stream<List<Product>> get todoStream {
     final user = FirebaseAuth.instance.currentUser;
     final userId = user!.uid;
-    return getTodos(userId);
+    return getProduct(userId);
   }
 
 
-  Future<void> addTodo(Todo todo) async {
+  Future<void> addProduct(Product todo) async {
+
     final user = FirebaseAuth.instance.currentUser;
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
@@ -22,17 +23,18 @@ class TodoProvider {
     final todoCollection = userRef.collection('todos');
 
     final todoData = {
-      'id': todo.id,
-      'title': todo.title,
-      'description': todo.description,
+      'productId': todo.productId,
+      'productTitle': todo.productTitle,
+      'productPrice': todo.productPrice,
       'completed': todo.completed,
       'userId': todo.userId,
+      'barcodeId' : todo.barcodeId,
     };
 
     await todoCollection.add(todoData);
   }
 
-  Future<void> updateTodo(Todo todo) async {
+  Future<void> updateProduct(Product todo) async {
     final user = FirebaseAuth.instance.currentUser;
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
@@ -41,17 +43,18 @@ class TodoProvider {
     final todoCollection = userRef.collection('todos');
 
     final todoData = {
-      'id': todo.id,
-      'title': todo.title,
-      'description': todo.description,
+      'productId': todo.productId,
+      'productTitle': todo.productTitle,
+      'productPrice': todo.productPrice,
       'completed': todo.completed,
       'userId': todo.userId,
+      'barcodeId' : todo.barcodeId,
     };
 
-    await todoCollection.doc(todo.id).update(todoData);
+    await todoCollection.doc(todo.productId).update(todoData);
   }
 
-  Stream<List<Todo>> getTodos(String userId) {
+  Stream<List<Product>> getProduct(String userId) {
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users').doc(userId);
@@ -60,17 +63,18 @@ class TodoProvider {
 
     return todoCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((doc) {
       final data = doc.data();
-      return Todo(
-        id: doc.id,
-        title: data['title'],
-        description: data['description'],
+      return Product(
+        productId: doc.id,
+        productTitle: data['productTitle'],
+        productPrice: data['productPrice'],
         completed: data['completed'],
         userId: data['userId'],
+        barcodeId: data['barcodeId'],
       );
     }).toList());
   }
 
-  Future<void> deleteTodo(String todoId) async {
+  Future<void> deleteProduct(String todoId) async {
     final user = FirebaseAuth.instance.currentUser;
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')

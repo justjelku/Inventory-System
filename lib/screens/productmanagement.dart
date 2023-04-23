@@ -1,3 +1,5 @@
+import 'package:firebase_login_auth/todo/addproduct.dart';
+import 'package:firebase_login_auth/todo/productlist.dart';
 import 'package:flutter/material.dart';
 
 class ProductManagementScreen extends StatelessWidget {
@@ -6,10 +8,6 @@ class ProductManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        title: const Text('Inventory'),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -24,6 +22,12 @@ class ProductManagementScreen extends StatelessWidget {
                   color: Colors.orange,
                   onPressed: () {
                     // Navigate to the Edit Products screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProductList(action: 'edit'),
+                      ),
+                    );
                   },
                 ),
                 _buildButton(
@@ -33,6 +37,12 @@ class ProductManagementScreen extends StatelessWidget {
                   color: Colors.red,
                   onPressed: () {
                     // Navigate to the Delete Products screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProductList(action: 'delete'),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -49,7 +59,13 @@ class ProductManagementScreen extends StatelessWidget {
                   onPressed: () {
                     // Navigate to the View Inventory screen
 
-                    Navigator.pushNamed(context, '/inventory');
+                    // Navigator.pushNamed(context, '/inventory');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddProduct(),
+                      ),
+                    );
                   },
                 ),
                 _buildButton(
@@ -59,6 +75,12 @@ class ProductManagementScreen extends StatelessWidget {
                   color: Colors.blue,
                   onPressed: () {
                     // Navigate to the View Products screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProductList(action: 'view'),
+                      ),
+                    );
                   },
                 ),
               ],
