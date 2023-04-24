@@ -1,82 +1,137 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/model/usermodel.dart';
+import 'package:flutter/foundation.dart';
 
-class UserProvider {
-  final CollectionReference _usersCollection =
-  FirebaseFirestore.instance.collection('users');
-  late BasicUserModel _basicCurrentUser;
-  late AdminUserModel _adminCurrentUser;
+class UserProvider with ChangeNotifier {
+  // late UserModel _user;
+  //
+  // UserModel get user => _user;
 
-  BasicUserModel get basicCurrentUser => _basicCurrentUser;
-  AdminUserModel get adminCurrentUser => _adminCurrentUser;
+  final CollectionReference usersCollection = FirebaseFirestore.instance
+      .collection('users')
+      .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+      .collection('basic_users');
 
-  Stream<BasicUserModel> get basicUserStream {
+  Stream<List<UserModel>> get basicUserStream {
     final user = FirebaseAuth.instance.currentUser;
     final userId = user!.uid;
-    final userRef = _usersCollection.doc(userId).collection('basic_users').doc(userId);
-    return userRef.snapshots().map((doc) {
-      final data = doc.data();
-      return BasicUserModel(
-        uid: doc.id,
-        firstName: data!['first_name'],
-        lastName: data['last_name'],
-        email: data['email'],
-        username: data['username'],
-      );
+    return getAllBasicUsers(userId);
+  }
+
+  StreamSubscription<List<UserModel>>? _userSubscription;
+
+  void listenToUsers() {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user!.uid;
+    _userSubscription?.cancel();
+    _userSubscription = getAllBasicUsers(userId).listen((users) {
+      if (users.isNotEmpty) {
+        // data is available
+        print('Found ${users.length} users in the basic_users subcollection:');
+        for (var user in users) {
+          print(user.firstName + ' ' + user.lastName);
+        }
+      } else {
+        // no data available
+        print('No users found in the basic_users subcollection');
+      }
     });
   }
 
-  Stream<AdminUserModel> get adminUserStream {
+  @override
+  void dispose() {
+    _userSubscription?.cancel();
+    super.dispose();
+  }
+
+  Stream<List<UserModel>> getAllBasicUsers(String userId) {
     final user = FirebaseAuth.instance.currentUser;
     final userId = user!.uid;
-    final userRef = _usersCollection.doc(userId).collection('admin_users').doc(userId);
-    return userRef.snapshots().map((doc) {
-      final data = doc.data();
-      return AdminUserModel(
-        uid: doc.id,
-        firstName: data!['first_name'],
-        lastName: data['last_name'],
-        email: data['email'],
-        username: data['username'],
-        isAdmin: data['is_admin'],
+
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+        .collection('basic_users')
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs
+        .map((doc) => UserModel(
+      uid: doc.id,
+      firstName: doc.data()['first name'],
+      lastName: doc.data()['last name'],
+      username: doc.data()['username'],
+      email: doc.data()['email'],
+      role: doc.data()['role'],
+      status: doc.data()['enabled'],
+    )).toList(growable: true)
+    );
+  }
+
+
+
+  Stream<List<UserModel>> get userStream {
+    final user = FirebaseAuth.instance.currentUser;
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+        .collection('basic_users')
+        .doc(user!.uid);
+
+    return userRef.snapshots().map((snapshot) {
+      final userModel = UserModel(
+        uid: snapshot.id,
+        firstName: snapshot.data()!['first name'],
+        lastName: snapshot.data()!['last name'],
+        username: snapshot.data()!['username'],
+        email: snapshot.data()!['email'],
+        role: snapshot.data()!['role'],
+        status: snapshot.data()!['enabled'],
       );
+      print('Successfull ${userModel.toMap()}');
+      return [userModel];
     });
   }
 
-  Future<void> addBasicUser(BasicUserModel user) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final userRef = _usersCollection.doc(currentUser!.uid).collection('basic_users').doc(user.uid);
-    await userRef.set(user.toMap());
+
+  Future<void> updateUser(UserModel user) async {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+        .collection('basic_users')
+        .doc(user.uid);
+
+    final userData = {
+      'first name': user.firstName,
+      'last name': user.lastName,
+      'username': user.username,
+      'email': user.email,
+      'role': user.role,
+      'enabled':user.status,
+    };
+
+    await userRef.update(userData);
+
+    // _user = user;
+    notifyListeners();
   }
 
-  Future<void> addAdminUser(AdminUserModel user) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final userRef = _usersCollection.doc(currentUser!.uid).collection('admin_users').doc(user.uid);
-    await userRef.set(user.toMap());
-  }
+  Future<void> addBasicUser(UserModel user) async {
+    final userCollection = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('basic_users');
 
-  Future<void> updateBasicUser(BasicUserModel user) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final userRef = _usersCollection.doc(currentUser!.uid).collection('basic_users').doc(user.uid);
-    await userRef.update(user.toMap());
-  }
+    final userData = {
+      'first name': user.firstName,
+      'last name': user.lastName,
+      'username': user.username,
+      'email': user.email,
+      'role': user.role,
+      'enabled': true,
+    };
 
-  Future<void> updateAdminUser(AdminUserModel user) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final userRef = _usersCollection.doc(currentUser!.uid).collection('admin_users').doc(user.uid);
-    await userRef.update(user.toMap());
-  }
-
-  Future<void> deleteBasicUser(String uid) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final userRef = _usersCollection.doc(currentUser!.uid).collection('basic_users').doc(uid);
-    await userRef.delete();
-  }
-
-  Future<void> deleteAdminUser(String uid) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final userRef = _usersCollection.doc(currentUser!.uid).collection('admin_users').doc(uid);
-    await userRef.delete();
+    await userCollection.add(userData);
   }
 }

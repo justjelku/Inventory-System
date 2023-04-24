@@ -3,13 +3,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/model/constant.dart';
+import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:firebase_login_auth/model/usermodel.dart';
+import 'package:firebase_login_auth/model/userprovider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ManageUser extends StatefulWidget {
-  final String userId;
+  final List<UserModel> usersId;
 
-  const ManageUser({super.key, required this.userId});
+  const ManageUser({Key? key, required this.usersId}) : super(key: key);
 
   @override
   _ManageUserState createState() => _ManageUserState();
@@ -26,6 +29,16 @@ class _ManageUserState extends State<ManageUser> {
       .collection('admin_users')
       .doc(FirebaseAuth.instance.currentUser!.uid);
 
+  final TextEditingController _roleController = TextEditingController();
+  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+
+  var formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +50,8 @@ class _ManageUserState extends State<ManageUser> {
       firstName: '',
       lastName: '',
       username: '',
+      role: '',
+      status: false,
     );
     _getUserDetails();
   }
@@ -44,7 +59,7 @@ class _ManageUserState extends State<ManageUser> {
   Future<void> _listAuthorizedUsers() async {
     try {
       final basicUsersRef = FirebaseFirestore.instance.collection('users')
-          .doc('qIglLalZbFgIOnO0r3Zu')
+          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
           .collection('basic_users');
 
       // final adminUsersSnapshot = await adminUsersRef.get();
@@ -60,7 +75,8 @@ class _ManageUserState extends State<ManageUser> {
         authorizedUsers.add({
           'uid': basicUserDoc.id,
           'email': data['email'],
-          'role': 'basic'
+          'role': data['role'],
+          'enabled': data['enabled'],
         });
         // uids.add(data['uid']);
       }
@@ -68,7 +84,7 @@ class _ManageUserState extends State<ManageUser> {
       print('List authorized users successful.');
       print('Collection: admin_users');
       for (var user in authorizedUsers) {
-        print('User: ${user['email']}, UID: ${user['uid']}, Role: ${user['role']}');
+        print('User: ${user['email']}, UID: ${user['uid']}, Role: ${user['role']}, Status: ${user['enabled']}');
       }
 
       setState(() {
@@ -105,12 +121,24 @@ class _ManageUserState extends State<ManageUser> {
         final userData = userSnapshot.data()!;
         if (userData['enabled'] == true) {
           setState(() {
-            _user = UserModel.fromMap(userData);
+            _user = UserModel(
+              uid: currentUser.uid,
+              firstName: currentUser.displayName?.split(' ')[0] ?? '',
+              lastName: currentUser.displayName?.split(' ')[1] ?? '',
+              email: currentUser.email ?? '',
+              username: currentUser.email?.split('@')[0] ?? '',
+              role: '',
+              status: true,
+            ).copyWith(
+              uid: userData['uid'],
+              firstName: userData['firstName'],
+              lastName: userData['lastName'],
+              username: userData['username'],
+              role: userData['role'],
+              status: userData['enabled'],
+            );
             _isAdmin =
-                userData['isAdmin'] == true || userData['isAdmin'] == true;
-            _user.firstName = currentUser.displayName?.split(' ')[0] ?? '';
-            _user.lastName = currentUser.displayName?.split(' ')[1] ?? '';
-            _user.username = currentUser.email?.split('@')[0] ?? '';
+                userData['isAdmin'] == true || userData['superAdmin'] == true;
           });
         } else {
           // User is not enabled
@@ -119,8 +147,6 @@ class _ManageUserState extends State<ManageUser> {
       }
     }
   }
-
-  // userData['isAdmin'] == true || userData['isSuperAdmin'] == true;
 
   void _showMsg(String message, bool isSuccess) {
     Color color = isSuccess ? Colors.green : Colors.red;
@@ -148,274 +174,350 @@ class _ManageUserState extends State<ManageUser> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: showUsers(),
-    );
-  }
-
-  Widget showUsers() {
-    // If user details are not loaded yet, show a loading spinner
-    if (_user == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
     // final user = FirebaseAuth.instance.currentUser!;
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('admin_users')
         .doc(FirebaseAuth.instance.currentUser!.uid);
 
-    // Build the UI once user details are loaded
     return FutureBuilder<DocumentSnapshot>(
-      future: userRef.get(),
-      builder: (BuildContext context,
-          AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text('Error retrieving user data...'),
-              ],
-            ),
-          );
-        }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                Text('Retrieving user data...'),
-                ],
-            ),
-          );
-        }
-        final data = snapshot.data?.data() as Map<String, dynamic>;
-        return Scaffold(
-          body: Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+        future: userRef.get(),
+        builder: (BuildContext context,
+            AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: const CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.blue, // Change background color here
-                      backgroundImage: AssetImage('assets/logo.png'),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Admin Information',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  Text('Name: ${data['first name'] ?? 'N/A'}${data['last name'] ?? 'N/A'} '),
-                  const SizedBox(height: 8.0),
-                  Text('Email: ${_user.email}'),
-                  const SizedBox(height: 8.0),
-                  Text('Username: ${data['username']}'),
-                  const SizedBox(height: 8.0),
-                  Text('Status: ${data['enabled'] ? 'Enabled' : 'Disabled'}'),
-                  const SizedBox(height: 16.0),
-                  _isAdmin
-                      ? GestureDetector(
-                        onTap: (){
-                        // Perform admin-specific action here
-                        setState(() {
-                          showUsersList = true;
-                        });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: primaryBtnColor,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: const Center(
-                            child: Text("View all users",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17
-                              )
+                children: const [
+                  Text('Error retrieving user data...'),
+                ],
+              ),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text('Retrieving user data...'),
+                ],
+              ),
+            );
+          }
+          final data = snapshot.data?.data() as Map<String, dynamic>;
+          return Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 20),
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
-                          )
-                        ),
-                      )
-                      : const SizedBox(height: 20),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: Visibility(
-                      visible: showUsersList,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: _authorizedUsers.map((user) => Container(
-                            padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)
-                              ),
-                              tileColor: const Color(0xFF3a506b),
-                              iconColor: Colors.white,
-                              textColor: Colors.white,
-                              leading: const Icon(
-                                Icons.account_circle_rounded,
-                                size: 30,
-                              ),
-                              title: Text(user['email'] ?? '',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                            child: const CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.blue, // Change background color here
+                              backgroundImage: AssetImage('assets/logo.png'),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Admin Information',
+                            style: TextStyle(
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Text('Name: ${data['first name']}${data['last name']}'),
+                          const SizedBox(height: 8.0),
+                          Text('Email: ${_user.email}'),
+                          const SizedBox(height: 8.0),
+                          Text('Username: ${data['username']}'),
+                          const SizedBox(height: 8.0),
+                          Text('Status: ${data['enabled'] ? 'Enabled' : 'Disabled'}'),
+                          const SizedBox(height: 16.0),
+                          if (!_isAdmin)
+                            GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) => _showUserList(),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: primaryBtnColor,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "View all users",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              subtitle: Text(user['role'] ?? ''), //user['role'] == 'admin' ?
-                              trailing: PopupMenuButton(
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                                  PopupMenuItem(
-                                    value: user['enabled'] != null && user['enabled'] ? 'disable' : 'enable',
-                                    child: Text(user['enabled'] != null && user['enabled'] ? 'Disable' : 'Enable'),
-                                  ),
-                                  const PopupMenuDivider(),
-                                  const PopupMenuItem(
-                                    value: 'edit',
-                                    child: Text('Edit'),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 'delete',
-                                    child: Text('Delete'),
-                                  ),
-                                ],
-                                onSelected: (value) {
-                                  switch (value) {
-                                    case 'disable':
-                                      _disableUser(user['uid']);
-                                      break;
-                                    case 'enable':
-                                      _enableUser(user['uid']);
-                                      break;
-                                    case 'edit':
-                                      _editUser(user['uid']);
-                                      break;
-                                    case 'delete':
-                                      _deleteUser(user['uid']);
-                                      break;
-                                    default:
-                                      break;
-                                  }
-                                },
-
-                              ),
-                            ),
-                          )).toList(),
-                        ),
+                            )
+                          else
+                            const SizedBox(height: 20),
+                          const SizedBox(height: 20),
+                        ],
                       ),
                     ),
+                    // if (showUsersList) const UserList()
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+    );
+  }
+
+  Widget _showUserList() {
+    return MultiProvider(
+      providers: [
+        Provider<List<UserModel>>(
+          // Add the create method
+          create: (_) {
+            UserProvider().listenToUsers();
+            return []; // Initialize an empty list
+          },
+        ),
+        StreamProvider<List<UserModel>>.value(
+          value: UserProvider().basicUserStream,
+          initialData: [],
+          catchError: (context, error) {
+            // Handle the error here
+            return [];
+          },
+          updateShouldNotify: (_, __) => true,
+        ),
+      ],
+      child: Column(
+        children: [
+          Expanded(
+            child: Consumer<List<UserModel>>(
+              builder: (context, list, child) {
+                if (list.isEmpty) {
+                  return const Center(
+                    child: Text('No info found.'),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    final item = list[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)
+                        ),
+                        tileColor: const Color(0xFF3a506b),
+                        iconColor: Colors.white,
+                        textColor: Colors.white,
+                        leading: const Icon(
+                          Icons.account_circle_rounded,
+                          size: 30,
+                        ),
+                        title: Text(item.email,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(item.role),
+                        trailing: PopupMenuButton(
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                            PopupMenuItem(
+                              value: item.status != null && item.status ? 'disable' : 'enable',
+                              child: Text(item.status != null && item.status ? 'Disable' : 'Enable'),
+                            ),
+                            const PopupMenuDivider(),
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete'),
+                            ),
+                          ],
+                          onSelected: (value) {
+                            switch (value) {
+                              case 'disable':
+                                _disableUser(item.uid);
+                                break;
+                              case 'enable':
+                                _enableUser(item.uid);
+                                break;
+                              case 'edit':
+                                _editUser(item.uid);
+                                break;
+                              case 'delete':
+                                _deleteUser(item.uid);
+                                break;
+                              default:
+                                break;
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              onTap: () {
+                showMyDialogue();
+              },
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: primaryBtnColor,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: const Center(
+                  child: Text(
+                    "Add User",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        );
-      },
+          const SizedBox(
+            height: 20,
+          )
+        ],
+      ),
     );
   }
 
   void _editUser(String uid) async {
 
-    final adminUserRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('admin_users')
-        .doc(uid);
-
     final basicUserRef = FirebaseFirestore.instance
         .collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
+        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
         .collection('basic_users')
         .doc(uid);
 
-    final adminUserSnapshot = await adminUserRef.get();
     final basicUserSnapshot = await basicUserRef.get();
 
-    final userDetails = adminUserSnapshot.exists ? adminUserSnapshot : basicUserSnapshot;
+    final userDetails = basicUserSnapshot;
 
     final user = _authorizedUsers.firstWhere((user) => user['uid'] == uid);
     final roleController = TextEditingController(text: user['role']);
     final firstNameController = TextEditingController(text: userDetails['first name']);
     final lastNameController = TextEditingController(text: userDetails['last name']);
     final usernameController = TextEditingController(text: userDetails['username']);
+    final statusController = TextEditingController(text: user['enabled'] ? 'enabled' : 'disabled');
     final emailController = TextEditingController(text: user['email']);
     final passwordController = TextEditingController();
-
-    print(uid);
-    print(userDetails['first name']);
-    print(userDetails['last name']);
-    print(userDetails['username']);
-    print(user['email']);
-    print(user['role']);
 
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Edit User'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: roleController,
-                decoration: const InputDecoration(hintText: 'Role (admin or basic user)'),
-              ),
-              TextField(
-                controller: firstNameController,
-                decoration: const InputDecoration(hintText: 'First Name'),
-              ),
-              TextField(
-                controller: lastNameController,
-                decoration: const InputDecoration(hintText: 'Last Name'),
-              ),
-              TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(hintText: 'Username'),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(hintText: 'Email'),
-              ),
-              TextField(
-                controller: passwordController,
-                decoration: const InputDecoration(hintText: 'New Password'),
-                obscureText: true,
-              ),
-            ],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        backgroundColor: gradientEndColor,
+        scrollable: true,
+        title: const Center(
+            child: Text('Edit User')
+        ),
+        content: Form(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: roleController,
+                  decoration: InputDecoration(
+                      hintText: 'Role (admin or basic user)',
+                    labelStyle: TextStyle(color: mainTextColor),
+                    hintStyle: TextStyle(color: mainTextColor),
+                  ),
+                ),
+                TextField(
+                  controller: statusController,
+                  decoration: InputDecoration(
+                    hintText: 'Status',
+                    labelStyle: TextStyle(color: mainTextColor),
+                    hintStyle: TextStyle(color: mainTextColor),
+                  ),
+                ),
+                TextField(
+                  controller: firstNameController,
+                  decoration: InputDecoration(hintText: 'First Name',
+                    labelStyle: TextStyle(color: mainTextColor),
+                    hintStyle: TextStyle(color: mainTextColor),
+                  ),
+                ),
+                TextField(
+                  controller: lastNameController,
+                  decoration: InputDecoration(
+                      hintText: 'Last Name',
+                    labelStyle: TextStyle(color: mainTextColor),
+                    hintStyle: TextStyle(color: mainTextColor),
+                  ),
+                ),
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(hintText: 'Username',
+                    labelStyle: TextStyle(color: mainTextColor),
+                    hintStyle: TextStyle(color: mainTextColor),
+                  ),
+                ),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                      hintText: 'Email',
+                    labelStyle: TextStyle(color: mainTextColor),
+                    hintStyle: TextStyle(color: mainTextColor),
+                  ),
+                ),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                      hintText: 'New Password',
+                    labelStyle: TextStyle(color: mainTextColor),
+                    hintStyle: TextStyle(color: mainTextColor),
+                  ),
+                  obscureText: true,
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Cancel'),
-          ),
           ElevatedButton(
             onPressed: () async {
               final newRole = roleController.text.trim();
@@ -470,10 +572,50 @@ class _ManageUserState extends State<ManageUser> {
                   _authorizedUsers[index]['email'] = newEmail;
                 });
 
+                // ignore: use_build_context_synchronously
                 Navigator.pop(context);
               }
             },
-            child: const Text('Save'),
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(
+                const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+              ),
+              backgroundColor: MaterialStateProperty.all<Color>(primaryBtnColor),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+            ),
+            child: Center(
+              child: Text('Update',
+                style: TextStyle(
+                  color: mainTextColor,
+                ),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+              ),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+            ),
+            child: Center(
+              child: Text("Cancel",
+                style: TextStyle(
+                  color: mainTextColor,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -482,18 +624,12 @@ class _ManageUserState extends State<ManageUser> {
 
   Future<void> _deleteUser(String uid) async {
     try {
-      final adminUserRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc('qIglLalZbFgIOnO0r3Zu')
-          .collection('admin_users')
-          .doc(uid);
       final basicUserRef = FirebaseFirestore.instance
           .collection('users')
-          .doc('qIglLalZbFgIOnO0r3Zu')
+          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
           .collection('basic_users')
           .doc(uid);
 
-      await adminUserRef.delete();
       await basicUserRef.delete();
 
       setState(() {
@@ -510,7 +646,7 @@ class _ManageUserState extends State<ManageUser> {
     try {
       await FirebaseFirestore.instance
           .collection('users')
-          .doc('qIglLalZbFgIOnO0r3Zu')
+          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
           .collection('basic_users')
           .doc(uid)
           .update({'enabled': false});
@@ -527,12 +663,11 @@ class _ManageUserState extends State<ManageUser> {
     }
   }
 
-
   Future<void> _enableUser(String uid) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')
-          .doc('qIglLalZbFgIOnO0r3Zu')
+          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
           .collection('basic_users')
           .doc(uid)
           .update({'enabled': true});
@@ -549,7 +684,193 @@ class _ManageUserState extends State<ManageUser> {
     }
   }
 
+  void showMyDialogue() async {
 
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            backgroundColor: gradientEndColor,
+            scrollable: true,
+            title: Center(
+              child: Text('Add New Account',
+                style: TextStyle(
+                  color: mainTextColor,
+                ),
+              ),
+            ),
+            content: Container(
+              padding: const EdgeInsets.all(10.0),
+              child: Form(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _roleController,
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          labelText: "Role",
+                          hintText: "Admin or Basic",
+                          labelStyle: TextStyle(color: mainTextColor),
+                          hintStyle: TextStyle(color: mainTextColor),
+                        ),
+                        validator: (value){
+                          return (value == '')? "First Name" : null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _firstNameController,
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          labelText: "First Name",
+                          labelStyle: TextStyle(color: mainTextColor),
+                          hintStyle: TextStyle(color: mainTextColor),
+                        ),
+                        validator: (value){
+                          return (value == '')? "First Name" : null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _lastNameController,
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          labelText: "Last Name",
+                          labelStyle: TextStyle(color: mainTextColor),
+                          hintStyle: TextStyle(color: mainTextColor),
+                        ),
+                        validator: (value){
+                          return (value == '')? "Last Name" : null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _userNameController,
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          labelText: "Username",
+                          labelStyle: TextStyle(color: mainTextColor),
+                          hintStyle: TextStyle(color: mainTextColor),
+                        ),
+                        validator: (value){
+                          return (value == '')? "Username" : null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          labelText: "Email Address",
+                          labelStyle: TextStyle(color: mainTextColor),
+                          hintStyle: TextStyle(color: mainTextColor),
+                        ),
+                        validator: (value){
+                          return (value == '')? "Email Address" : null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _passwordController,
+                        keyboardType: TextInputType.name,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          labelStyle: TextStyle(color: mainTextColor),
+                          hintStyle: TextStyle(color: mainTextColor),
+                        ),
+                        validator: (value){
+                          return (value == '')? "Password" : null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  try {
+                    // Call your authentication provider's sign-up function here...
+                    final UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                    );
+
+                    // Create a new user object from the form data
+                    final newUser = UserModel(
+                      uid: userCredential.user!.uid,
+                      firstName: _firstNameController.text.trim(),
+                      lastName: _lastNameController.text.trim(),
+                      email: _emailController.text.trim(),
+                      username: _userNameController.text.trim(),
+                      role: _roleController.text.trim(), // Set the role to 'user' for new users
+                      status: true, // Set the status to true for new users
+                    );
+
+                    // Add the new user to the basic_users subcollection
+                    await UserProvider().addBasicUser(newUser);
+
+                    // Update the user in the provider
+                    await UserProvider().updateUser(newUser);
+                  } on FirebaseAuthException catch (e) {
+                    // Handle sign-up errors here...
+                  }
+                },
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                    const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+                  ),
+                  backgroundColor: MaterialStateProperty.all<Color>(primaryBtnColor),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: Text("Submit",
+                    style: TextStyle(
+                      color: mainTextColor,
+                    ),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                  ),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: Text("Cancel",
+                    style: TextStyle(
+                      color: mainTextColor,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        }
+    );
+  }
 }
 
 

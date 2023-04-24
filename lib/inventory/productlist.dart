@@ -42,16 +42,16 @@ class _ProductListState extends State<ProductList> {
           ),
         ),
         body: Consumer<List<Product>>(
-          builder: (context, todos, child) {
-            if (todos.isEmpty) {
+          builder: (context, prod, child) {
+            if (prod.isEmpty) {
               return const Center(
                 child: Text('No products found.'),
               );
             }
             return ListView.builder(
-              itemCount: todos.length,
+              itemCount: prod.length,
               itemBuilder: (context, index) {
-                final todo = todos[index];
+                final item = prod[index];
                 return Column(
                   children: [
                     const SizedBox(
@@ -59,24 +59,24 @@ class _ProductListState extends State<ProductList> {
                     ),
                     BarcodeWidget(
                       barcode: Barcode.code128(),
-                      data: todo.barcodeId,
+                      data: item.barcodeId,
                       width: 200,
                       height: 100,
                       drawText: true,
                     ),
                     ListTile(
-                      title: Text(todo.productTitle),
-                      subtitle: Text(todo.productPrice),
+                      title: Text(item.productTitle),
+                      subtitle: Text(item.productPrice),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (widget.action == 'view') Checkbox(
-                            value: todo.completed,
+                            value: item.completed,
                             onChanged: (newValue) {
                               setState(() {
-                                todo.completed = newValue!;
+                                item.completed = newValue!;
                               });
-                              ProductProvider().updateProduct(todo);
+                              ProductProvider().updateProduct(item);
                             },
                           ),
                           if (widget.action == 'edit') IconButton(
@@ -86,7 +86,7 @@ class _ProductListState extends State<ProductList> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => EditProduct(
-                                    todo: todo,
+                                    todo: item,
                                   ),
                                 ),
                               );
@@ -95,7 +95,7 @@ class _ProductListState extends State<ProductList> {
                           if (widget.action == 'delete') IconButton(
                             icon: const Icon(Icons.delete),
                             onPressed: () {
-                              ProductProvider().deleteProduct(todo.productId);
+                              ProductProvider().deleteProduct(item.productId);
                             },
                           ),
                         ],

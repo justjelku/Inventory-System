@@ -7,8 +7,6 @@ import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:provider/provider.dart';
 
-
-
 class AddProduct extends StatefulWidget {
   const AddProduct({Key? key}) : super(key: key);
 
@@ -95,8 +93,6 @@ class _AddProductState extends State<AddProduct> {
       ),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {

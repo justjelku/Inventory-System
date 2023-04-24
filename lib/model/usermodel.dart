@@ -1,116 +1,52 @@
 class UserModel {
   final String uid;
+  final String firstName;
+  final String lastName;
+  final String username;
   final String email;
-  late final String firstName;
-  late final String lastName;
-  late final String username;
+  final String role;
+  late bool status;
 
   UserModel({
     required this.uid,
-    required this.email,
     required this.firstName,
     required this.lastName,
     required this.username,
+    required this.email,
+    required this.role,
+    required this.status,
   });
 
-  factory UserModel.fromMap(Map<String, dynamic> data) {
-    if (data['type'] == 'admin') {
-      return AdminUserModel.fromUserModel(
-        UserModel(
-          uid: data['uid'],
-          email: data['email'],
-          firstName: data['first name'],
-          lastName: data['last name'],
-          username: data['username'],
-        ),
-      );
-    } else {
-      return BasicUserModel.fromUserModel(
-        UserModel(
-          uid: data['uid'],
-          email: data['email'],
-          firstName: data['first name'],
-          lastName: data['last name'],
-          username: data['username'],
-        ),
-      );
-    }
+  UserModel copyWith({
+    String? uid,
+    String? firstName,
+    String? lastName,
+    String? username,
+    String? email,
+    String? role,
+    bool? status,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      status: status ?? this.status
+    );
   }
-
-
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
-      'email': email,
-      'first name': firstName,
-      'last name': lastName,
+      'firstName': firstName,
+      'lastName': lastName,
       'username': username,
+      'email': email,
+      'role': role,
+      'enabled': status,
     };
   }
-}
 
 
-class AdminUserModel extends UserModel {
-  AdminUserModel({
-    required String uid,
-    required String email,
-    required String firstName,
-    required String lastName,
-    required String username, required isAdmin,
-  }) : super(
-    uid: uid,
-    email: email,
-    firstName: firstName,
-    lastName: lastName,
-    username: username,
-  );
-
-  factory AdminUserModel.fromUserModel(UserModel userModel) {
-    return AdminUserModel(
-      uid: userModel.uid,
-      email: userModel.email,
-      firstName: userModel.firstName,
-      lastName: userModel.lastName,
-      username: userModel.username, isAdmin: true,
-    );
-  }
-  @override
-  Map<String, dynamic> toMap() {
-    final Map<String, dynamic> data = super.toMap();
-    data['type'] = 'admin';
-    return data;
-  }
-}
-
-class BasicUserModel extends UserModel {
-  BasicUserModel({
-    required String uid,
-    required String email,
-    required String firstName,
-    required String lastName,
-    required String username,
-  }) : super(
-    uid: uid,
-    email: email,
-    firstName: firstName,
-    lastName: lastName,
-    username: username,
-  );
-
-  factory BasicUserModel.fromUserModel(UserModel userModel) {
-    return BasicUserModel(
-      uid: userModel.uid,
-      email: userModel.email,
-      firstName: userModel.firstName,
-      lastName: userModel.lastName,
-      username: userModel.username,
-    );
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    final Map<String, dynamic> data = super.toMap();
-    data['type'] = 'basic';
-    return data;
-  }
 }

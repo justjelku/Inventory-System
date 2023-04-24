@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/administrator/adminsetting.dart';
 import 'package:firebase_login_auth/administrator/manageusers.dart';
+import 'package:firebase_login_auth/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -14,12 +16,56 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final user = FirebaseAuth.instance.currentUser!;
   int _selectedIndex = 0;
 
+  static Future<List<UserModel>> _fetchUsers(String userId) async {
+    try {
+      final usersRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('basic_users');
+      final snapshot = await usersRef.get();
+
+      if (snapshot.docs.isEmpty) {
+        return [];
+      }
+
+      final users = snapshot.docs
+          .map((doc) => UserModel(
+        uid: doc.id,
+        firstName: doc.data()['first name'],
+        lastName: doc.data()['last name'],
+        username: doc.data()['username'],
+        email: doc.data()['email'],
+        role: doc.data()['role'],
+        status: doc.data()['enabled'],
+      )).toList();
+
+      return users;
+    } catch (e) {
+      print('Error fetching users: $e');
+      return [];
+    }
+  }
+
+
   static final List<Widget> _widgetOptions = <Widget>[
     const Text("This is dashboard"),
     Builder(
       builder: (BuildContext context) {
-        String userId = FirebaseAuth.instance.currentUser!.uid;
-        return ManageUser(userId: userId);
+        final user = FirebaseAuth.instance.currentUser;
+        final userId = user!.uid;
+        return FutureBuilder<List<UserModel>>(
+          future: _fetchUsers(userId),
+          builder: (BuildContext context, AsyncSnapshot<List<UserModel>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final usersList = snapshot.data ?? [];
+              return ManageUser(usersId: usersList);
+            }
+          },
+        );
       },
     ),
     const AdminSettings(),

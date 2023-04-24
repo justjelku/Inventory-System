@@ -19,7 +19,6 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    getUsers();
   }
 
   void _showMsg(String message, bool isSuccess) {
@@ -44,13 +43,6 @@ class _SettingsState extends State<Settings> {
         duration: const Duration(seconds: 2),
       ),
     );
-  }
-
-  Future<void> getUsers() async {
-    final snapshot = await FirebaseFirestore.instance.collection('users').get();
-    setState(() {
-      userList = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
-    });
   }
 
   @override
