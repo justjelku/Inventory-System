@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:firebase_login_auth/model/usermodel.dart';
+import 'package:firebase_login_auth/model/userprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,16 +38,20 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
       );
 
       final userDoc = await FirebaseFirestore.instance
-          .collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('basic_users')
+          .collection('users')
+          .doc('qIglLalZbFgIOnO0r3Zu')
+          .collection('basic_users')
           .doc(userCredential.user!.uid)
           .get();
 
-      if (userDoc.exists && userDoc.get('enabled')) {
+      if (userDoc.exists && userDoc.get('enabled') == true) {
         _showMsg('Logged In Successful!', true);
         Navigator.pushNamed(context, '/user');
       } else {
-        _showMsg('You are not authorized, contact your administrator', false);
+        _showMsg('User account is disabled.', false);
+        await FirebaseAuth.instance.signOut();
       }
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showMsg('No user found for that email.', false);
@@ -56,6 +62,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
       }
     }
   }
+
 
   Future<void> signUp() async {
     try {
@@ -80,6 +87,8 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
           _lastNameController.text.trim(),
           _userNameController.text.trim(),
           _emailController.text.trim(),
+          'basic',
+          true,
         );
         _showMsg('Account created!', true);
       } else {
@@ -124,7 +133,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
     );
   }
 
-  Future addUserDetails(String firstName, String lastName, String userName, String email) async{
+  Future addUserDetails(String firstName, String lastName, String userName, String email, String role, bool status) async{
     await FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
@@ -134,6 +143,8 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
       'last name': lastName,
       'username': userName,
       'email': email,
+      'enabled': status,
+      'role': role,
     });
   }
 
@@ -386,9 +397,34 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
             ),
             actions: [
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
-                  signUp();
+                  try {
+                    // Call your authentication provider's sign-up function here...
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                    );
+
+                    // Create a new user object from the form data
+                    final newUser = UserModel(
+                      uid: '',
+                      firstName: _firstNameController.text.trim(),
+                      lastName: _lastNameController.text.trim(),
+                      email: _emailController.text.trim(),
+                      username: _userNameController.text.trim(),
+                      role: 'basic', // Set the role to 'user' for new users
+                      status: true, // Set the status to true for new users
+                    );
+
+                    // Add the new user to the basic_users subcollection
+                    await UserProvider().addBasicUser(newUser);
+
+                    // Update the user in the provider
+                    await UserProvider().updateUser(newUser);
+                  } on FirebaseAuthException catch (e) {
+                    // Handle sign-up errors here...
+                  }
                 },
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(

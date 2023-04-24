@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_login_auth/model/usermodel.dart';
+import 'package:firebase_login_auth/model/userprovider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -62,70 +64,31 @@ class DB {
     final Database db = await initDB();
     await db.delete("userTable", where: "id=?", whereArgs: [uid]);
   }
-
-  // Future<void> syncUserData() async {
-  //   final List<UserModel> localUsersList = await getUserData();
-  //
-  //   final User? firebaseUser = _auth.currentUser;
-  //   if (firebaseUser == null) {
-  //     // Handle case where user is not authenticated
-  //     return;
-  //   }
-  //
-  //   final DatabaseReference userRef = _userRef.child(firebaseUser.uid);
+  // Future<void> syncUserData(UserModel user) async {
   //
   //   try {
-  //     final DataSnapshot snapshot = (await userRef.once()) as DataSnapshot;
-  //     final Object? usersMap = snapshot.value;
-  //     final List<UserModel> firebaseUsersList = [];
+  //     // Get the current user
+  //     final user = FirebaseAuth.instance.currentUser;
+  //     final userId = user!.uid;
   //
-  //     if (usersMap is Map<String, dynamic>) {
-  //       final List<UserModel> firebaseUsersList = [];
+  //     // Get the user data from the user provider
+  //     final userModel = UserProvider().getAllBasicUsers(userId);
   //
-  //       usersMap.forEach((key, value) {
-  //         final UserModel userModel = UserModel.fromMap(value);
-  //         if (value['type'] == 'admin') {
-  //           firebaseUsersList.add(AdminUserModel.fromUserModel(userModel));
-  //         } else {
-  //           firebaseUsersList.add(BasicUserModel.fromUserModel(userModel));
-  //         }
-  //       });
-  //     }
+  //     // Update the user data in the database
+  //     final userData = {
+  //       'name': user.firstName,
+  //       'email': userModel.email,
+  //       'last_login': DateTime.now().toUtc(),
+  //     };
+  //     final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+  //     await userRef.update(userData);
   //
-  //
-  //     // Sync local SQLite data with Firebase data
-  //     for (final localUser in localUsersList) {
-  //       final matchingUsers = firebaseUsersList.where((user) => user.uid == localUser.uid);
-  //       if (matchingUsers.isEmpty) {
-  //         // User does not exist in Firebase, delete from SQLite
-  //         await deleteUserData(localUser.uid);
-  //       } else {
-  //         final matchingUser = matchingUsers.first;
-  //         // Update user in Firebase with local data
-  //         final Map<String, dynamic> updateData = {
-  //           'firstName': localUser.firstName,
-  //           'lastName': localUser.lastName,
-  //           'username': localUser.username,
-  //           'email': localUser.email,
-  //           'type': localUser is AdminUserModel ? 'admin' : 'basic',
-  //         };
-  //         await userRef.child(localUser.uid).update(updateData);
-  //
-  //         // Delete updated user from local list
-  //         firebaseUsersList.remove(matchingUser);
-  //       }
-  //     }
-  //
-  //
-  //     // Add remaining Firebase users to local SQLite
-  //     for (final firebaseUser in firebaseUsersList) {
-  //       await insertUserData(firebaseUser);
-  //     }
-  //   } catch (e) {
-  //     // Handle any exceptions that may occur
-  //     print('Error syncing user data: $e');
+  //     // Log the successful sync
+  //     print('User data synced successfully');
+  //   } catch (error) {
+  //     // Log the error
+  //     print('Error syncing user data: $error');
   //   }
   // }
-
 
 }

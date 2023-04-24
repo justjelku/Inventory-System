@@ -64,43 +64,50 @@ class _ProductListState extends State<ProductList> {
                       height: 100,
                       drawText: true,
                     ),
-                    ListTile(
-                      title: Text(item.productTitle),
-                      subtitle: Text(item.productPrice),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.action == 'view') Checkbox(
-                            value: item.completed,
-                            onChanged: (newValue) {
-                              setState(() {
-                                item.completed = newValue!;
-                              });
-                              ProductProvider().updateProduct(item);
-                            },
-                          ),
-                          if (widget.action == 'edit') IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditProduct(
-                                    todo: item,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(item.productTitle),
+                        subtitle: Text(item.productPrice),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.action == 'view') Checkbox(
+                              value: item.completed,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  item.completed = newValue!;
+                                });
+                                ProductProvider().updateProduct(item);
+                              },
+                            ),
+                            if (widget.action == 'edit') IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditProduct(
+                                      todo: item,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                          if (widget.action == 'delete') IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              ProductProvider().deleteProduct(item.productId);
-                            },
-                          ),
-                        ],
+                                );
+                              },
+                            ),
+                            if (widget.action == 'delete') IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                ProductProvider().deleteProduct(item.productId);
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    const Divider(
+                      height: 5,
+                      thickness: 5,
+                    )
                   ],
                 );
               },

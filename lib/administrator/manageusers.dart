@@ -3,7 +3,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:firebase_login_auth/model/usermodel.dart';
 import 'package:firebase_login_auth/model/userprovider.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +58,7 @@ class _ManageUserState extends State<ManageUser> {
   Future<void> _listAuthorizedUsers() async {
     try {
       final basicUsersRef = FirebaseFirestore.instance.collection('users')
-          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+          .doc('qIglLalZbFgIOnO0r3Zu')
           .collection('basic_users');
 
       // final adminUsersSnapshot = await adminUsersRef.get();
@@ -349,8 +348,8 @@ class _ManageUserState extends State<ManageUser> {
                         trailing: PopupMenuButton(
                           itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                             PopupMenuItem(
-                              value: item.status != null && item.status ? 'disable' : 'enable',
-                              child: Text(item.status != null && item.status ? 'Disable' : 'Enable'),
+                              value: item.status ? 'disable' : 'enable',
+                              child: Text(item.status ? 'Disable' : 'Enable'),
                             ),
                             const PopupMenuDivider(),
                             const PopupMenuItem(
@@ -375,6 +374,7 @@ class _ManageUserState extends State<ManageUser> {
                                 break;
                               case 'delete':
                                 _deleteUser(item.uid);
+                                // _deleteUser(item.uid);
                                 break;
                               default:
                                 break;
@@ -424,7 +424,7 @@ class _ManageUserState extends State<ManageUser> {
 
     final basicUserRef = FirebaseFirestore.instance
         .collection('users')
-        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+        .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(uid);
 
@@ -626,7 +626,7 @@ class _ManageUserState extends State<ManageUser> {
     try {
       final basicUserRef = FirebaseFirestore.instance
           .collection('users')
-          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+          .doc('qIglLalZbFgIOnO0r3Zu')
           .collection('basic_users')
           .doc(uid);
 
@@ -646,7 +646,7 @@ class _ManageUserState extends State<ManageUser> {
     try {
       await FirebaseFirestore.instance
           .collection('users')
-          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+          .doc('qIglLalZbFgIOnO0r3Zu')
           .collection('basic_users')
           .doc(uid)
           .update({'enabled': false});
@@ -667,7 +667,7 @@ class _ManageUserState extends State<ManageUser> {
     try {
       await FirebaseFirestore.instance
           .collection('users')
-          .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+          .doc('qIglLalZbFgIOnO0r3Zu')
           .collection('basic_users')
           .doc(uid)
           .update({'enabled': true});
@@ -797,7 +797,6 @@ class _ManageUserState extends State<ManageUser> {
             actions: [
               ElevatedButton(
                 onPressed: () async {
-                  Navigator.pop(context);
                   try {
                     // Call your authentication provider's sign-up function here...
                     final UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -818,9 +817,11 @@ class _ManageUserState extends State<ManageUser> {
 
                     // Add the new user to the basic_users subcollection
                     await UserProvider().addBasicUser(newUser);
+                    // ignore: use_build_context_synchronously
+                    Navigator.pop(context);
 
-                    // Update the user in the provider
-                    await UserProvider().updateUser(newUser);
+                    // // Update the user in the provider
+                    // await UserProvider().updateUser(newUser);
                   } on FirebaseAuthException catch (e) {
                     // Handle sign-up errors here...
                   }

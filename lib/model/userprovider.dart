@@ -12,7 +12,7 @@ class UserProvider with ChangeNotifier {
 
   final CollectionReference usersCollection = FirebaseFirestore.instance
       .collection('users')
-      .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+      .doc('qIglLalZbFgIOnO0r3Zu')
       .collection('basic_users');
 
   Stream<List<UserModel>> get basicUserStream {
@@ -32,7 +32,7 @@ class UserProvider with ChangeNotifier {
         // data is available
         print('Found ${users.length} users in the basic_users subcollection:');
         for (var user in users) {
-          print(user.firstName + ' ' + user.lastName);
+          print('${user.firstName} ${user.lastName}');
         }
       } else {
         // no data available
@@ -49,11 +49,11 @@ class UserProvider with ChangeNotifier {
 
   Stream<List<UserModel>> getAllBasicUsers(String userId) {
     final user = FirebaseAuth.instance.currentUser;
-    final userId = user!.uid;
+    // final userId = user!.uid;
 
     return FirebaseFirestore.instance
         .collection('users')
-        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+        .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs
@@ -75,7 +75,7 @@ class UserProvider with ChangeNotifier {
     final user = FirebaseAuth.instance.currentUser;
     final userRef = FirebaseFirestore.instance
         .collection('users')
-        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+        .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(user!.uid);
 
@@ -89,7 +89,7 @@ class UserProvider with ChangeNotifier {
         role: snapshot.data()!['role'],
         status: snapshot.data()!['enabled'],
       );
-      print('Successfull ${userModel.toMap()}');
+      print('Successful ${userModel.toMap()}');
       return [userModel];
     });
   }
@@ -98,7 +98,7 @@ class UserProvider with ChangeNotifier {
   Future<void> updateUser(UserModel user) async {
     final userRef = FirebaseFirestore.instance
         .collection('users')
-        .doc('tCXUW53Af0YogvwSFGRiXr24h3K3')
+        .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(user.uid);
 
@@ -120,7 +120,7 @@ class UserProvider with ChangeNotifier {
   Future<void> addBasicUser(UserModel user) async {
     final userCollection = FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users');
 
     final userData = {
@@ -133,5 +133,20 @@ class UserProvider with ChangeNotifier {
     };
 
     await userCollection.add(userData);
+    notifyListeners();
   }
+
+  // Future<void> deleteUser(String userId) async {
+  //   await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc('qIglLalZbFgIOnO0r3Zu')
+  //       .collection('basic_users')
+  //       .doc(userId)
+  //       .delete();
+  //
+  //   await FirebaseAuth.instance.currentUser?.delete();
+  //   notifyListeners();
+  // }
+
+
 }

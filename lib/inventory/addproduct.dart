@@ -146,17 +146,17 @@ class _AddProductState extends State<AddProduct> {
                           onPressed: _generateBarcode,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryBtnColor,
-                            padding: const EdgeInsets.all(20),
+                            // padding: const EdgeInsets.all(20),
                             shadowColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
                           ),
                           child: Container(
-                            // padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
                               color: primaryBtnColor,
-                              // borderRadius: BorderRadius.circular(50),
+                              borderRadius: BorderRadius.circular(50),
                             ),
                             child: const Center(
                               child: Text("Generate Barcode",

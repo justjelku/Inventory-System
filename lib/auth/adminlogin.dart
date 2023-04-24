@@ -23,6 +23,8 @@ class _AdminLoginState extends State<AdminLogin> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController();
+  final TextEditingController _statusController = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
 
@@ -41,19 +43,15 @@ class _AdminLoginState extends State<AdminLogin> {
           .doc(userCredential.user!.uid)
           .get();
 
-      if (userDoc.exists) {
-        final userData = userDoc.data();
-        if (userData != null && userData['enabled'] == true) {
-          // User is in admin_users collection and status is enabled
-          _showMsg('Logged In Successful!', true);
-          // ignore: use_build_context_synchronously
-          Navigator.pushNamed(context, '/admin');
-          // Do something here, such as navigating to a page for admins
-        } else {
-          _showMsg('User account is disabled.', false);
-          await FirebaseAuth.instance.signOut();
-        }
+      if (userDoc.exists && userDoc.get('enabled') == true) {
+        _showMsg('Logged In Successful!', true);
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, '/admin');
+      } else {
+        _showMsg('User account is disabled.', false);
+        await FirebaseAuth.instance.signOut();
       }
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showMsg('No user found for that email.', false);
@@ -62,8 +60,6 @@ class _AdminLoginState extends State<AdminLogin> {
       } else {
         _showMsg('Error: ${e.message}', false);
       }
-    } catch (e) {
-      _showMsg('You are not authorized to login!', false);
     }
   }
 
@@ -90,6 +86,8 @@ class _AdminLoginState extends State<AdminLogin> {
           _lastNameController.text.trim(),
           _userNameController.text.trim(),
           _emailController.text.trim(),
+          true,
+          'admin',
         );
         // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
@@ -137,7 +135,7 @@ class _AdminLoginState extends State<AdminLogin> {
     );
   }
 
-  Future addUserDetails(String firstName, String lastName, String userName, String email) async{
+  Future addUserDetails(String firstName, String lastName, String userName, String email, bool status, String role) async{
     final userRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu');
     final userDetailsRef = userRef.collection('admin_users').doc(FirebaseAuth.instance.currentUser!.uid);
     final userDetails = {
@@ -145,6 +143,8 @@ class _AdminLoginState extends State<AdminLogin> {
       'last name': lastName,
       'username': userName,
       'email': email,
+      'enabled': status,
+      'role': role,
     };
     await userDetailsRef.set(userDetails);
   }
