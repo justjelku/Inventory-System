@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
+import 'package:flutter/foundation.dart';
 
-class ProductProvider {
+class ProductProvider with ChangeNotifier{
   final CollectionReference todos =
   FirebaseFirestore.instance.collection('todos');
 
@@ -11,6 +12,19 @@ class ProductProvider {
     final userId = user!.uid;
     return getProduct(userId);
   }
+
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // User? _user;
+  //
+  // User? get user => _user;
+  //
+  // // other methods and properties go here
+  //
+  // void getCurrentUser() async {
+  //   _user = await _auth.currentUser;
+  //   notifyListeners();
+  // }
 
 
   Future<void> addProduct(Product todo) async {
@@ -83,5 +97,4 @@ class ProductProvider {
     final todoRef = userRef.collection('todos').doc(todoId);
     await todoRef.delete();
   }
-
 }

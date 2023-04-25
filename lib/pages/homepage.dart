@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/pages/profilepage.dart';
-import 'package:firebase_login_auth/inventory/productmanagement.dart';
+import 'package:firebase_login_auth/inventory/productdashboard.dart';
 import 'package:firebase_login_auth/inventory/productlist.dart';
 import 'package:flutter/material.dart';
 import 'settings.dart';
@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     // TodoList(),
-    ProductManagementScreen(),
+    ProductDashboard(),
     ProfilePage(),
     Settings(),
   ];
@@ -47,20 +47,25 @@ class _HomePageState extends State<HomePage> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.home, size: 30,),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.person, size: 30,),
+            label: '',
           ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.person, size: 35,),
+          //   label: '',
+          // ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.settings_outlined, size: 30,),
+            label: '',
           ),
         ],
       ),

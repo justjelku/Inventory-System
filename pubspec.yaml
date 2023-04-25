@@ -54,6 +54,10 @@ dependencies:
   uuid: ^3.0.7
   flutter_barcode_scanner: ^2.0.0
   image: ^4.0.15
+  intl: ^0.17.0
+  image_picker: ^0.8.7+4
+  path: ^1.8.2
+  permission_handler: ^10.2.0
 
 
 dev_dependencies:

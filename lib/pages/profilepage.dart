@@ -1,8 +1,12 @@
 import 'package:firebase_login_auth/database/firebaseservice.dart';
 import 'package:firebase_login_auth/model/constant.dart';
+import 'package:firebase_login_auth/model/usermodel.dart';
+import 'package:firebase_login_auth/model/userprovider.dart';
+import 'package:firebase_login_auth/pages/editprofile.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -20,6 +24,8 @@ class _ProfilePageState extends State<ProfilePage> {
   late String _initialLastName = "";
   late String _initialPassword = "";
   late String _initialEmail = "";
+  late String _initialRole;
+  late String _initialStatus;
 
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -60,6 +66,8 @@ class _ProfilePageState extends State<ProfilePage> {
       _initialLastName = data['last name'];
       _initialEmail = data['email'];
       _initialPassword = data['password'];
+      _initialRole = data['role'];
+      _initialStatus = data['enabled'];
     });
   }
 
@@ -80,6 +88,8 @@ class _ProfilePageState extends State<ProfilePage> {
       'last name': lastName,
       'username': userName,
       'email': email,
+      'enabled': true,
+      'role':'basic'
     });
   }
 
@@ -109,20 +119,22 @@ class _ProfilePageState extends State<ProfilePage> {
     _passwordController.text = _initialPassword;
 
     // final user = FirebaseAuth.instance.currentUser!;
-    final userRef = FirebaseFirestore.instance.collection('users')
+    Stream<DocumentSnapshot> userDataStream = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
-        .doc(FirebaseAuth.instance.currentUser!.uid);
+        .doc(FirebaseAuth.instance.currentUser!.uid).snapshots();
 
-    return FutureBuilder<DocumentSnapshot>(
-      future: userRef.get(),
+    return StreamBuilder<DocumentSnapshot>(
+      stream: userDataStream,
       builder: (BuildContext context,
           AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
           return const Text('Error retrieving user data.');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text('Retrieving user data...');
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
         final data = snapshot.data?.data() as Map<String, dynamic>;
         _firstNameController.text = data['first name'] as String? ?? '';
@@ -131,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _emailController.text = data['email'] as String? ?? '';
         _passwordController.text = data['password'] as String? ?? '';
         return Scaffold(
-          backgroundColor: gradientEndColor,
+          // backgroundColor: gradientEndColor,
           appBar: AppBar(
             title: const Text('Profile Page'),
             automaticallyImplyLeading: false,
@@ -146,10 +158,32 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const CircleAvatar(
-                        radius: 50,
+                      CircleAvatar(
+                        radius: 43,
                         backgroundImage: const AssetImage('assets/logo.png'),
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.grey,
+                        child: ClipOval(
+                          child: FutureBuilder<String?>(
+                            future: Provider.of<UserProvider>(context).getProfilePicture(FirebaseAuth.instance.currentUser!.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                              if (snapshot.hasError) {
+                                return const Center(child: Text('Error retrieving profile picture'));
+                              }
+                              if (snapshot.data == null) {
+                                return const Center(child: Text(''));
+                              }
+                              return Center(
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage: NetworkImage(snapshot.data!),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -183,12 +217,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'First Name',
                             hintText: 'Enter your first name',
                           ),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Please enter your first name';
-                          //   }
-                          //   return null;
-                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -199,12 +227,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'Last Name',
                             hintText: 'Enter your last name',
                           ),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Please enter your last name';
-                          //   }
-                          //   return null;
-                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -215,12 +237,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'UserName',
                             hintText: 'Enter your username',
                           ),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Please enter your username';
-                          //   }
-                          //   return null;
-                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -231,12 +247,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'Email',
                             hintText: 'Enter your email',
                           ),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Please enter your email';
-                          //   }
-                          //   return null;
-                          // },
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
@@ -247,145 +257,37 @@ class _ProfilePageState extends State<ProfilePage> {
                             labelText: 'Password',
                             hintText: 'Enter your password',
                           ),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Please enter your password';
-                          //   }
-                          //   return null;
-                          // },
                         ),
                         const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                _updateUserProfile(
-                                  _firstNameController.text,
-                                  _lastNameController.text,
-                                  _userNameController.text,
-                                  _emailController.text,
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('User updated successfully!'),
-                                    ),
-                                );
-                              },
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                                ),
-                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                ),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: primaryBtnColor,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: const Text('Update',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 17
-                                    )
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                await FirebaseService().deleteUser(FirebaseAuth.instance.currentUser!.uid);
-                                _deleteUser();
-                                // ignore: use_build_context_synchronously
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('User deleted successfully!'),
-                                  ),
-                                );
-                              },
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                                ),
-                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                ),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: secondaryBtnColor,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: const Text('Delete',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 17
-                                    )
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                   ),
-                )
-                // Other widgets in your app
+                ) // Other widgets in your app
               ],
             ),
           ),
-          floatingActionButton: _isEditing
-              ? FloatingActionButton(
+          floatingActionButton: FloatingActionButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      await FirebaseService().updateUser(
-                        FirebaseAuth.instance.currentUser!.uid,
-                        _firstNameController.text,
-                        _lastNameController.text,
-                        _userNameController.text,
-                      );
-                      setState(() {
-                      _isEditing = false;
-                      });
-                      // ignore: use_build_context_synchronously
-                      ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('User updated successfully!'),
-                      ));
-                    }else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please make changes before saving.'),
-                        ),
-                      );
-                    }
+                    final userData = UserModel(
+                        uid: FirebaseAuth.instance.currentUser!.uid,
+                        firstName: _firstNameController.text,
+                        lastName: _lastNameController.text,
+                        username: _userNameController.text,
+                        email: _emailController.text,
+                        role: 'basic',
+                        status: true,
+                    );
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfile(userData: userData),
+                      ),
+                    );
                   },
                   backgroundColor: gradientEndColor,
-                  child: const Icon(Icons.save),
-              )
-              : FloatingActionButton(
-                  onPressed: () {
-                      setState(() {
-                        _isEditing = true;
-                      });
-                  },
-                  backgroundColor: gradientEndColor,
-                  child: Icon(
-                    _firstNameController.text != '' ||
-                    _lastNameController.text != '' ||
-                    _userNameController.text != ''
-                    ? Icons.edit
-                    : Icons.save,
-                    color: mainTextColor,
-                  ),
-              ),
+                  child: const Icon(Icons.edit),
+          ),
         );
       },
     );

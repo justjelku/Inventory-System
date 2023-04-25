@@ -77,7 +77,6 @@ class _ManageUserState extends State<ManageUser> {
           'role': data['role'],
           'enabled': data['enabled'],
         });
-        // uids.add(data['uid']);
       }
 
       print('List authorized users successful.');
@@ -135,6 +134,7 @@ class _ManageUserState extends State<ManageUser> {
               username: userData['username'],
               role: userData['role'],
               status: userData['enabled'],
+              profilePictureUrl: userData['profileUrl'],
             );
             _isAdmin =
                 userData['isAdmin'] == true || userData['superAdmin'] == true;

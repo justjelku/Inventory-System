@@ -6,7 +6,6 @@ class UserModel {
   final String email;
   final String role;
   late bool status;
-
   UserModel({
     required this.uid,
     required this.firstName,
@@ -25,6 +24,7 @@ class UserModel {
     String? email,
     String? role,
     bool? status,
+    String? profilePictureUrl,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -33,7 +33,7 @@ class UserModel {
       username: username ?? this.username,
       email: email ?? this.email,
       role: role ?? this.role,
-      status: status ?? this.status
+      status: status ?? this.status,
     );
   }
   Map<String, dynamic> toMap() {

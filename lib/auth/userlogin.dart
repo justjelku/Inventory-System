@@ -420,8 +420,8 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
                     // Add the new user to the basic_users subcollection
                     await UserProvider().addBasicUser(newUser);
 
-                    // Update the user in the provider
-                    await UserProvider().updateUser(newUser);
+                    // // Update the user in the provider
+                    // await UserProvider().updateUser(newUser);
                   } on FirebaseAuthException catch (e) {
                     // Handle sign-up errors here...
                   }

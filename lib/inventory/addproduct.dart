@@ -17,7 +17,7 @@ class _AddProductState extends State<AddProduct> {
 
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController();
 
   String? barcodeData;
   late GlobalKey _barcodeKey;
@@ -128,7 +128,7 @@ class _AddProductState extends State<AddProduct> {
                       },
                     ),
                     TextFormField(
-                      controller: _descriptionController,
+                      controller: _priceController,
                       decoration: const InputDecoration(
                           hintText: "0.00",
                           labelText: 'Price'
@@ -183,7 +183,7 @@ class _AddProductState extends State<AddProduct> {
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   final title = _titleController.text.trim();
-                                  final description = _descriptionController.text.trim();
+                                  final description = _priceController.text.trim();
                                   final todo = Product(
                                     productId: '',
                                     productTitle: title,
@@ -196,7 +196,7 @@ class _AddProductState extends State<AddProduct> {
                                   _showMsg('You have added a new product!', true);
                                   // Clear form fields and reset barcodeData
                                   _titleController.clear();
-                                  _descriptionController.clear();
+                                  _priceController.clear();
                                   setState(() {
                                     barcodeData = null;
                                   });
