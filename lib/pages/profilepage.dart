@@ -1,4 +1,3 @@
-import 'package:firebase_login_auth/database/firebaseservice.dart';
 import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_login_auth/model/usermodel.dart';
 import 'package:firebase_login_auth/model/userprovider.dart';
@@ -24,8 +23,6 @@ class _ProfilePageState extends State<ProfilePage> {
   late String _initialLastName = "";
   late String _initialPassword = "";
   late String _initialEmail = "";
-  late String _initialRole;
-  late String _initialStatus;
 
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -66,48 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _initialLastName = data['last name'];
       _initialEmail = data['email'];
       _initialPassword = data['password'];
-      _initialRole = data['role'];
-      _initialStatus = data['enabled'];
     });
-  }
-
-  Future _updateUserProfile(String firstName, String lastName, String userName,
-      String email) async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    // Update the user's display name
-    await user?.updateDisplayName('$firstName $lastName');
-
-    // Add the user details to the Firestore collection
-    await FirebaseFirestore.instance.collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .set({
-      'first name': firstName,
-      'last name': lastName,
-      'username': userName,
-      'email': email,
-      'enabled': true,
-      'role':'basic'
-    });
-  }
-
-  Future<void> _deleteUser() async {
-    final user = FirebaseAuth.instance.currentUser!;
-    final userRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu').collection('basic_users').doc(
-        user.uid);
-
-    await userRef.delete();
-    await user.delete();
-
-    // Navigate to login screen
-    // ignore: use_build_context_synchronously
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      '/basicUserLoginPage',
-          (route) => false,
-    );
   }
 
   @override

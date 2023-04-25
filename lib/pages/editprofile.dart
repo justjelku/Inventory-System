@@ -303,6 +303,8 @@ class _EditProfileState extends State<EditProfile> {
                                     email: _emailController.text,
                                     role: 'basic',
                                     status: true,
+                                    profilePictureUrl: '',
+                                    barcodeUrl: '',
                                   );
                                   UserProvider().updateUser(updatedUsers);
                                   setState(() {

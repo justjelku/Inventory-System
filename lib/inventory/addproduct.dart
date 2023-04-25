@@ -1,11 +1,16 @@
 import 'dart:math';
 import 'package:firebase_login_auth/model/productprovider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({Key? key}) : super(key: key);
@@ -20,6 +25,7 @@ class _AddProductState extends State<AddProduct> {
   final _priceController = TextEditingController();
 
   String? barcodeData;
+  GlobalKey globalKey = GlobalKey();
   late GlobalKey _barcodeKey;
   BarcodeWidget? _barcodeImage;
 
@@ -50,8 +56,6 @@ class _AddProductState extends State<AddProduct> {
     barcodeData =
     '2023${userId.substring(0, 4)}${lastProductId.substring(lastProductId.length - 3)}';
 
-    // print("BarcodeId: ${barcodeData}");
-
     setState(() {
       _barcodeImage = BarcodeWidget(
         barcode: Barcode.code128(),
@@ -62,6 +66,7 @@ class _AddProductState extends State<AddProduct> {
       );
     });
   }
+
   Future<String> getLastProductId() async {
     final random = Random();
     final number = random.nextInt(99999);

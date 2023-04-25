@@ -58,6 +58,10 @@ dependencies:
   image_picker: ^0.8.7+4
   path: ^1.8.2
   permission_handler: ^10.2.0
+  image_gallery_saver: ^1.7.1
+  file_picker: ^5.2.10
+  syncfusion_flutter_barcodes: ^21.1.41
+  pretty_qr_code: ^2.0.3
 
 
 dev_dependencies:
