@@ -8,9 +8,9 @@ import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({Key? key}) : super(key: key);
@@ -28,6 +28,7 @@ class _AddProductState extends State<AddProduct> {
   GlobalKey globalKey = GlobalKey();
   late GlobalKey _barcodeKey;
   BarcodeWidget? _barcodeImage;
+  String? productTitle;
 
 
   @override
@@ -196,6 +197,8 @@ class _AddProductState extends State<AddProduct> {
                                     completed: false,
                                     userId: FirebaseAuth.instance.currentUser!.uid,
                                     barcodeId: barcodeData!,
+                                    barcodeUrl: '',
+                                    qrcodeUrl: '',
                                   );
                                   await ProductProvider().addProduct(todo);
                                   _showMsg('You have added a new product!', true);

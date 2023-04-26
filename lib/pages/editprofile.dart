@@ -304,7 +304,6 @@ class _EditProfileState extends State<EditProfile> {
                                     role: 'basic',
                                     status: true,
                                     profilePictureUrl: '',
-                                    barcodeUrl: '',
                                   );
                                   UserProvider().updateUser(updatedUsers);
                                   setState(() {

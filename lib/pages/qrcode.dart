@@ -1,7 +1,6 @@
-import 'package:firebase_login_auth/model/userprovider.dart';
-import 'package:firebase_login_auth/pages/barcode.dart';
+import 'package:firebase_login_auth/model/productprovider.dart';
+import 'package:firebase_login_auth/pages/qrscan.dart';
 import 'package:flutter/material.dart';
-import 'package:barcode_widget/barcode_widget.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +10,10 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 
 class QrcodePage extends StatefulWidget {
@@ -24,20 +27,35 @@ class QrcodePage extends StatefulWidget {
 
 class _QrcodePageState extends State<QrcodePage> {
 
-  late String _title;
-  late String _barcodeId;
-
-  String? barcodeData;
-  GlobalKey globalKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    _title = widget.todo.productTitle;
-    _barcodeId = widget.todo.barcodeId;
+  Future<void> startBarcodeScanStream() async {
+    FlutterBarcodeScanner.getBarcodeStreamReceiver(
+        '#ff6666', 'Cancel', true, ScanMode.BARCODE)!
+        .listen((barcode) => print(barcode));
   }
 
-  Future<void> renderImage(String userId, UserProvider userProvider) async {
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+    });
+  }
+
+  Future<void> renderImage(String userId, ProductProvider productProvider, Product todo) async {
     final RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
     final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -73,11 +91,22 @@ class _QrcodePageState extends State<QrcodePage> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      await userProvider.uploadBarcodes(userId, file);
+                      // ignore: unnecessary_null_comparison
+                      if (file != null) {
+                        await productProvider.uploadQrcodes(userId, file, todo);
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Successfully Saved!')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Failed to save QR code to gallery')),
+                        );
+                      }
                       // ignore: use_build_context_synchronously
                       Navigator.pop(context);
                     },
-                    child: const Text('Upload'),
+                    child: const Text('Save to database'),
                   ),
                 ],
               ),
@@ -88,6 +117,81 @@ class _QrcodePageState extends State<QrcodePage> {
     );
   }
 
+  late String _title;
+  late String _barcodeId;
+  String _scanBarcode = 'Unknown';
+
+  String? barcodeData;
+  GlobalKey globalKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _title = widget.todo.productTitle;
+    // _scanBarcode = widget.todo.barcodeId;
+    _barcodeId = widget.todo.barcodeId;
+  }
+
+
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+      _barcodeId = barcodeScanRes;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Scanned QR code successfully! $_barcodeId")),
+    );
+    // ignore: use_build_context_synchronously
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Download Qrcode'),
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'Scanned Barcode:',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Text(
+                    _scanBarcode,
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                scanQR();
+              },
+              tooltip: 'Scan QR Code',
+              child: const Icon(Icons.camera_alt),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
 
   @override
@@ -98,7 +202,6 @@ class _QrcodePageState extends State<QrcodePage> {
         title: const Text('Qrcode Page'),
       ),
       body: Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -145,8 +248,8 @@ class _QrcodePageState extends State<QrcodePage> {
             ),
             ElevatedButton(
                 onPressed: (){
-                  final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-                  renderImage(FirebaseAuth.instance.currentUser!.uid, userProvider);
+                  final ProductProvider productProvider = Provider.of<ProductProvider>(context, listen: false);
+                  renderImage(FirebaseAuth.instance.currentUser!.uid, productProvider, widget.todo);
                 },
                 child: Text('Download Qrcode', style: TextStyle(color: mainTextColor),)
             )
@@ -154,8 +257,13 @@ class _QrcodePageState extends State<QrcodePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to barcode scanner page
+        onPressed: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QRCodeScanner(),
+            ),
+          );
         },
         child: const Icon(Icons.camera_alt),
       ),

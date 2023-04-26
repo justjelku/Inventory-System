@@ -215,32 +215,32 @@ class UserProvider with ChangeNotifier {
     final newDocRef = await todoCollection.add({'profileUrl': downloadUrl});
 
     // Update the profile picture URL of the current user in the app state
-    final updatedUser = user.copyWith(profilePictureUrl: downloadUrl, barcodeUrl: '');
+    final updatedUser = user.copyWith(profilePictureUrl: downloadUrl);
     _user = updatedUser;
     notifyListeners();
   }
 
-  Future<void> uploadBarcodes(String userId, File file) async {
-    final fileName = basename(file.path);
-    final ref = FirebaseStorage.instance.ref().child('barcodeImages/$fileName');
-    final uploadTask = ref.putFile(file);
-    final snapshot = await uploadTask.whenComplete(() {});
-    final downloadUrl = await snapshot.ref.getDownloadURL();
-
-    // Update the profile picture URL of the current user in Firestore database
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users')
-        .doc(_user.uid);
-    final todoCollection = userRef.collection('barcodeImages');
-    final newDocRef = await todoCollection.add({'barcodeUrl': downloadUrl});
-
-    // Update the profile picture URL of the current user in the app state
-    final updatedUser = user.copyWith(barcodeUrl: downloadUrl);
-    _user = updatedUser;
-    notifyListeners();
-  }
+  // Future<void> uploadBarcodes(String userId, File file) async {
+  //   final fileName = basename(file.path);
+  //   final ref = FirebaseStorage.instance.ref().child('barcodeImages/$fileName');
+  //   final uploadTask = ref.putFile(file);
+  //   final snapshot = await uploadTask.whenComplete(() {});
+  //   final downloadUrl = await snapshot.ref.getDownloadURL();
+  //
+  //   // Update the profile picture URL of the current user in Firestore database
+  //   final userRef = FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc('qIglLalZbFgIOnO0r3Zu')
+  //       .collection('basic_users')
+  //       .doc(_user.uid);
+  //   final todoCollection = userRef.collection('barcodeImages');
+  //   final newDocRef = await todoCollection.add({'barcodeUrl': downloadUrl});
+  //
+  //   // Update the barcode URL of the current user in the app state
+  //   final updatedUser = user.copyWith(barcodeUrl: downloadUrl);
+  //   _user = updatedUser;
+  //   notifyListeners();
+  // }
 
   Future<String?> getProfilePicture(String userId) async {
     final userRef = FirebaseFirestore.instance

@@ -1,5 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
-import 'package:barcode_widget/barcode_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/inventory/addproduct.dart';
 import 'package:firebase_login_auth/inventory/editproduct.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
@@ -27,8 +27,8 @@ class _ProductListState extends State<ProductList> {
           create: (_) => [], // Initialize an empty list
         ),
         StreamProvider<List<Product>>.value(
-          value: ProductProvider().todoStream,
-          initialData: [], // Use an empty list as the initial data
+          value: ProductProvider().getProduct(FirebaseAuth.instance.currentUser!.uid),
+          initialData: const [], // Use an empty list as the initial data
         ),
       ],
       child: Scaffold(
@@ -54,21 +54,24 @@ class _ProductListState extends State<ProductList> {
                 final item = prod[index];
                 return Column(
                   children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    BarcodeWidget(
-                      barcode: Barcode.code128(),
-                      data: item.barcodeId,
-                      width: 200,
-                      height: 100,
-                      drawText: true,
-                    ),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
+                    // BarcodeWidget(
+                    //   barcode: Barcode.code128(),
+                    //   data: item.barcodeId,
+                    //   width: 200,
+                    //   height: 100,
+                    //   drawText: true,
+                    // ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ListTile(
                         title: Text(item.productTitle),
-                        subtitle: Text(item.productPrice),
+                        subtitle: Text('\$${item.productPrice}.00', style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold, fontSize: 20,
+                        ),),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

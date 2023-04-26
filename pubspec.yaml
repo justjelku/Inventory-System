@@ -62,6 +62,9 @@ dependencies:
   file_picker: ^5.2.10
   syncfusion_flutter_barcodes: ^21.1.41
   pretty_qr_code: ^2.0.3
+  gallery_saver: ^2.3.2
+  barcode_scanner: ^3.2.4
+  qr_code_scanner: ^1.0.1
 
 
 dev_dependencies:

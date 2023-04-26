@@ -24,7 +24,7 @@ class UserModel {
     String? email,
     String? role,
     bool? status,
-    String? profilePictureUrl, required String barcodeUrl,
+    String? profilePictureUrl,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -47,6 +47,4 @@ class UserModel {
       'enabled': status,
     };
   }
-
-
 }

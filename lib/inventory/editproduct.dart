@@ -68,6 +68,8 @@ class _EditProductState extends State<EditProduct> {
                 final updatedTodo = widget.todo.copyWith(
                   productTitle: _title,
                   productPrice: _description,
+                  barcodeUrl: '',
+                  qrcodeUrl: '',
                 );
                 ProductProvider().updateProduct(updatedTodo);
                 Navigator.pop(context);

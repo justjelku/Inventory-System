@@ -135,7 +135,6 @@ class _ManageUserState extends State<ManageUser> {
               role: userData['role'],
               status: userData['enabled'],
               profilePictureUrl: userData['profileUrl'],
-              barcodeUrl: userData['barcodeUrl'],
             );
             _isAdmin =
                 userData['isAdmin'] == true || userData['superAdmin'] == true;

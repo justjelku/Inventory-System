@@ -1,5 +1,7 @@
-import 'package:firebase_login_auth/model/userprovider.dart';
+import 'package:firebase_login_auth/model/productprovider.dart';
+import 'package:firebase_login_auth/pages/barcodescan.dart';
 import 'package:firebase_login_auth/pages/qrcode.dart';
+import 'package:firebase_login_auth/pages/qrscan.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
@@ -36,7 +38,7 @@ class _BarcodePageState extends State<BarcodePage> {
     _barcodeId = widget.todo.barcodeId;
   }
 
-  Future<void> renderImage(String userId, UserProvider userProvider) async {
+  Future<void> renderImage(String userId, ProductProvider productProvider, Product todo) async {
     final RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
     final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -72,11 +74,22 @@ class _BarcodePageState extends State<BarcodePage> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      await userProvider.uploadBarcodes(userId, file);
+                      // await productProvider.uploadBarcodes(userId, file);
+                      if (file != null) {
+                        await productProvider.uploadBarcodes(userId, file, todo);
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Successfully Saved!')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Failed to save QR code to gallery')),
+                        );
+                      }
                       // ignore: use_build_context_synchronously
                       Navigator.pop(context);
                     },
-                    child: const Text('Upload'),
+                    child: const Text('Save'),
                   ),
                 ],
               ),
@@ -151,8 +164,8 @@ class _BarcodePageState extends State<BarcodePage> {
             ),
             ElevatedButton(
                 onPressed: (){
-                  final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-                  renderImage(FirebaseAuth.instance.currentUser!.uid, userProvider);
+                  final ProductProvider productProvider = Provider.of<ProductProvider>(context, listen: false);
+                  renderImage(FirebaseAuth.instance.currentUser!.uid, productProvider, widget.todo);
                 },
                 child: Text('Download Barcode', style: TextStyle(color: mainTextColor),)
             )
@@ -162,6 +175,12 @@ class _BarcodePageState extends State<BarcodePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to barcode scanner page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const BarcodeScanner(),
+            ),
+          );
         },
         child: const Icon(Icons.camera_alt),
       ),
