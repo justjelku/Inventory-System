@@ -30,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  bool _isEditing = false;
+  final bool _isEditing = false;
 
   @override
   initState() {
@@ -99,11 +99,12 @@ class _ProfilePageState extends State<ProfilePage> {
         _emailController.text = data['email'] as String? ?? '';
         _passwordController.text = data['password'] as String? ?? '';
         return Scaffold(
-          // backgroundColor: gradientEndColor,
-          appBar: AppBar(
-            title: const Text('Profile Page'),
-            automaticallyImplyLeading: false,
-            centerTitle: true,
+          appBar: MyAppBar(
+            // dropdownItems: ['Option 1', 'Option 2', 'Option 3'],
+            title: '${data['username']}',
+            // onItemSelected: (selectedItem) {
+            //   // do something when a dropdown item is selected
+            // },
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -249,3 +250,159 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  // final List<String> dropdownItems;
+  final String title;
+  // final Function(String) onItemSelected;
+
+  const MyAppBar({super.key,
+    // required this.dropdownItems,
+    required this.title,
+    // required this.onItemSelected,
+  });
+
+  void handleDropdownItemSelected(String? newValue) {
+    // Your code here
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      title: Row(
+        children: [
+          Text(title),
+          const SizedBox(width: 8),
+          GestureDetector(
+            child: const Icon(Icons.arrow_drop_down, size: 30,),
+            onTap: (){
+              _showBottomSheet(context);
+            },
+          )
+        ],
+      ),
+    );
+  }
+}
+void _showBottomSheet(BuildContext context) {
+  Stream<DocumentSnapshot> userDataStream = FirebaseFirestore.instance.collection('users')
+      .doc('qIglLalZbFgIOnO0r3Zu')
+      .collection('basic_users')
+      .doc(FirebaseAuth.instance.currentUser!.uid).snapshots();
+
+  showModalBottomSheet(
+    context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext context) {
+      // ignore: no_leading_underscores_for_local_identifiers
+      void _showMsg(String message, bool isSuccess) {
+        Color color = isSuccess ? Colors.green : Colors.red;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: color,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: color,
+                width: 2,
+              ),
+            ),
+            content: Text(
+              message,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
+      return StreamBuilder<DocumentSnapshot>(
+        stream: userDataStream,
+        builder: (BuildContext context,
+            AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Error retrieving user data.');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final data = snapshot.data?.data() as Map<String, dynamic>;
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    height: 50,
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.arrow_drop_down),
+                  ),
+                ),
+                ListTile(
+                  leading: CircleAvatar(
+                    radius: 43,
+                    backgroundImage: const AssetImage('assets/logo.png'),
+                    backgroundColor: Colors.grey,
+                    child: ClipOval(
+                      child: FutureBuilder<String?>(
+                        future: Provider.of<UserProvider>(context)
+                            .getProfilePicture(
+                            FirebaseAuth.instance.currentUser!.uid),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState
+                              .waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return const Center(
+                                child: Text('Error retrieving profile picture'));
+                          }
+                          if (snapshot.data == null) {
+                            return const Center(child: Text(''));
+                          }
+                          return Center(
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundImage: NetworkImage(snapshot.data!),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  title: Text('${data['username']}'),
+                  trailing: MaterialButton(
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                      _showMsg('Signed out successfully.', true);
+                    },
+                    child: const Icon(Icons.logout),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  );
+}
+

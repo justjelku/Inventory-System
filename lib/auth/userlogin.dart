@@ -51,7 +51,6 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
         _showMsg('User account is disabled.', false);
         await FirebaseAuth.instance.signOut();
       }
-
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         _showMsg('No user found for that email.', false);
@@ -63,6 +62,29 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
     }
   }
 
+  Future addUserDetails(String firstName, String lastName, String userName, String email, String role, bool status) async{
+    final userRef = FirebaseFirestore.instance.collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu');
+    final userDetailsRef = userRef.collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+    final userDetails = {
+      'first name': firstName,
+      'last name': lastName,
+      'username': userName,
+      'email': email,
+      'role': role,
+      'enabled': status,
+    };
+    await userDetailsRef.set(userDetails);
+  }
+
+  bool passwordConfirmed() {
+    if(_passwordController.text.trim() == _confirmPasswordController.text.trim()){
+      return true;
+    } else{
+      return false;
+    }
+  }
 
   Future<void> signUp() async {
     try {
@@ -90,6 +112,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
           'basic',
           true,
         );
+        Navigator.of(context).pop();
         _showMsg('Account created!', true);
       } else {
         _showMsg('The password confirmation does not match.', false);
@@ -131,29 +154,6 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
         duration: const Duration(seconds: 2),
       ),
     );
-  }
-
-  Future addUserDetails(String firstName, String lastName, String userName, String email, String role, bool status) async{
-    await FirebaseFirestore.instance.collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .set({
-      'first name': firstName,
-      'last name': lastName,
-      'username': userName,
-      'email': email,
-      'enabled': status,
-      'role': role,
-    });
-  }
-
-  bool passwordConfirmed() {
-    if(_passwordController.text.trim() == _confirmPasswordController.text.trim()){
-      return true;
-    } else{
-      return false;
-    }
   }
 
   @override
@@ -398,33 +398,8 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
             actions: [
               ElevatedButton(
                 onPressed: () async {
+                  signUp();
                   Navigator.pop(context);
-                  try {
-                    // Call your authentication provider's sign-up function here...
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                    );
-
-                    // Create a new user object from the form data
-                    final newUser = UserModel(
-                      uid: '',
-                      firstName: _firstNameController.text.trim(),
-                      lastName: _lastNameController.text.trim(),
-                      email: _emailController.text.trim(),
-                      username: _userNameController.text.trim(),
-                      role: 'basic', // Set the role to 'user' for new users
-                      status: true, // Set the status to true for new users
-                    );
-
-                    // Add the new user to the basic_users subcollection
-                    await UserProvider().addBasicUser(newUser);
-
-                    // // Update the user in the provider
-                    // await UserProvider().updateUser(newUser);
-                  } on FirebaseAuthException catch (e) {
-                    // Handle sign-up errors here...
-                  }
                 },
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(

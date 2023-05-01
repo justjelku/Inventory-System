@@ -165,7 +165,7 @@ class _BarcodePageState extends State<BarcodePage> {
             ElevatedButton(
                 onPressed: (){
                   final ProductProvider productProvider = Provider.of<ProductProvider>(context, listen: false);
-                  renderImage(FirebaseAuth.instance.currentUser!.uid, productProvider, widget.todo);
+                  renderImage(widget.todo.productId, productProvider, widget.todo);
                 },
                 child: Text('Download Barcode', style: TextStyle(color: mainTextColor),)
             )

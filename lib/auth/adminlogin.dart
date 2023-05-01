@@ -136,8 +136,10 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   Future addUserDetails(String firstName, String lastName, String userName, String email, bool status, String role) async{
-    final userRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu');
-    final userDetailsRef = userRef.collection('admin_users').doc(FirebaseAuth.instance.currentUser!.uid);
+    final userRef = FirebaseFirestore.instance.collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu');
+    final userDetailsRef = userRef.collection('admin_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
     final userDetails = {
       'first name': firstName,
       'last name': lastName,

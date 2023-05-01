@@ -55,7 +55,7 @@ class _QrcodePageState extends State<QrcodePage> {
     });
   }
 
-  Future<void> renderImage(String userId, ProductProvider productProvider, Product todo) async {
+  Future<void> renderImage(String productId, ProductProvider productProvider, Product todo) async {
     final RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
     final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
@@ -93,7 +93,7 @@ class _QrcodePageState extends State<QrcodePage> {
                     onPressed: () async {
                       // ignore: unnecessary_null_comparison
                       if (file != null) {
-                        await productProvider.uploadQrcodes(userId, file, todo);
+                        await productProvider.uploadQrcodes(productId, file, todo);
                         // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Successfully Saved!')),
@@ -249,7 +249,7 @@ class _QrcodePageState extends State<QrcodePage> {
             ElevatedButton(
                 onPressed: (){
                   final ProductProvider productProvider = Provider.of<ProductProvider>(context, listen: false);
-                  renderImage(FirebaseAuth.instance.currentUser!.uid, productProvider, widget.todo);
+                  renderImage(widget.todo.productId, productProvider, widget.todo);
                 },
                 child: Text('Download Qrcode', style: TextStyle(color: mainTextColor),)
             )

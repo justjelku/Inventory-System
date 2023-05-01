@@ -137,7 +137,7 @@ class _EditProfileState extends State<EditProfile> {
                               backgroundColor: Colors.grey,
                               child: ClipOval(
                                 child: FutureBuilder<String?>(
-                                  future: Provider.of<UserProvider>(context).getProfilePicture(userdata.uid),
+                                  future: Provider.of<UserProvider>(context).getProfilePicture(FirebaseAuth.instance.currentUser!.uid),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState == ConnectionState.waiting) {
                                       return const Center(child: CircularProgressIndicator());

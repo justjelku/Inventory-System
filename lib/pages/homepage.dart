@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_login_auth/inventory/addproduct.dart';
 import 'package:firebase_login_auth/pages/profilepage.dart';
 import 'package:firebase_login_auth/inventory/productdashboard.dart';
 import 'package:firebase_login_auth/inventory/productlist.dart';
@@ -19,8 +20,8 @@ class _HomePageState extends State<HomePage> {
   static const List<Widget> _widgetOptions = <Widget>[
     // TodoList(),
     ProductDashboard(),
+    AddProduct(),
     ProfilePage(),
-    Settings(),
   ];
 
   static const List<String> _appBarTitles = <String>[
@@ -41,7 +42,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       // appBar: AppBar(
       //   automaticallyImplyLeading: false,
-      //   title: Text(_appBarTitles[_selectedIndex]),
+      //   // title: Text(_appBarTitles[_selectedIndex]),
+      //   elevation: 0,
       // ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -50,23 +52,32 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home, size: 30,),
             label: '',
           ),
           BottomNavigationBarItem(
+            icon: Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.all(10),
+              child: const Icon(Icons.add, size: 40 , color: Colors.white),
+            ),
+            label: '',
+          ),
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person, size: 30,),
             label: '',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.person, size: 35,),
+          // const BottomNavigationBarItem(
+          //   icon: Icon(Icons.settings_outlined, size: 30,),
           //   label: '',
           // ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined, size: 30,),
-            label: '',
-          ),
         ],
       ),
     );

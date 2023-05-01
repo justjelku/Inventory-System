@@ -255,6 +255,9 @@ class _ManageUserState extends State<ManageUser> {
                               onTap: () {
                                 showModalBottomSheet(
                                   context: context,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+                                  ),
                                   builder: (BuildContext context) => _showUserList(),
                                 );
                               },
@@ -313,6 +316,16 @@ class _ManageUserState extends State<ManageUser> {
       ],
       child: Column(
         children: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              height: 50,
+              alignment: Alignment.center,
+              child: const Icon(Icons.arrow_drop_down),
+            ),
+          ),
           Expanded(
             child: Consumer<List<UserModel>>(
               builder: (context, list, child) {
@@ -796,35 +809,9 @@ class _ManageUserState extends State<ManageUser> {
             ),
             actions: [
               ElevatedButton(
-                onPressed: () async {
-                  try {
-                    // Call your authentication provider's sign-up function here...
-                    final UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                    );
-
-                    // Create a new user object from the form data
-                    final newUser = UserModel(
-                      uid: userCredential.user!.uid,
-                      firstName: _firstNameController.text.trim(),
-                      lastName: _lastNameController.text.trim(),
-                      email: _emailController.text.trim(),
-                      username: _userNameController.text.trim(),
-                      role: _roleController.text.trim(), // Set the role to 'user' for new users
-                      status: true, // Set the status to true for new users
-                    );
-
-                    // Add the new user to the basic_users subcollection
-                    await UserProvider().addBasicUser(newUser);
-                    // ignore: use_build_context_synchronously
-                    Navigator.pop(context);
-
-                    // // Update the user in the provider
-                    // await UserProvider().updateUser(newUser);
-                  } on FirebaseAuthException catch (e) {
-                    // Handle sign-up errors here...
-                  }
+                onPressed: () {
+                  newSignUp();
+                  Navigator.pop(context);
                 },
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all<EdgeInsets>(
@@ -871,6 +858,111 @@ class _ManageUserState extends State<ManageUser> {
           );
         }
     );
+  }
+
+  Future newAddUserDetails(String firstName, String lastName, String userName, String email, String role, bool status) async{
+    final userRef = FirebaseFirestore.instance.collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu');
+    final userDetailsRef = userRef.collection('basic_users')
+        .doc();
+    final userDetails = {
+      'first name': firstName,
+      'last name': lastName,
+      'username': userName,
+      'email': email,
+      'role': role,
+      'enabled': status,
+    };
+    await userDetailsRef.set(userDetails);
+  }
+
+  bool passwordConfirmed() {
+    if(_passwordController.text.trim() == _passwordController.text.trim()){
+      return true;
+    } else{
+      return false;
+    }
+  }
+
+  Future<void> newSignUp() async {
+    try {
+      showDialog(
+        context: context,
+        builder: (context){
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+      if (passwordConfirmed()) {
+        //create user
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        //add user details
+        newAddUserDetails(
+          _firstNameController.text.trim(),
+          _lastNameController.text.trim(),
+          _userNameController.text.trim(),
+          _emailController.text.trim(),
+          'basic',
+          true,
+        );
+        Navigator.of(context).pop();
+
+        //show dialog to ask user to log in as new user or keep current user profile
+        bool loginNewUser = false;
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Log in as new user?"),
+              content: const Text("Do you want to log in as the newly created user or keep the current user profile?"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Keep current user profile"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    loginNewUser = true;
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Log in as new user"),
+                ),
+              ],
+            );
+          },
+        );
+
+        //log in as new user or stay logged in as current user
+        if (loginNewUser) {
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+        }
+        _showMsg('Account created!', true);
+      } else {
+        _showMsg('The password confirmation does not match.', false);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        _showMsg('The account already exists for that email.', false);
+      } else if (e.code == 'invalid-email') {
+        _showMsg('The email address is not valid.', false);
+      } else if (e.code == 'weak-password') {
+        _showMsg('The password is too weak.', false);
+      } else {
+        _showMsg('Error: ${e.message}', false);
+      }
+    } catch (e) {
+      _showMsg('Error: ${e.toString()}', false);
+    }
   }
 }
 

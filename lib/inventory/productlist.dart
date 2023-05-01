@@ -33,13 +33,7 @@ class _ProductListState extends State<ProductList> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-              widget.action == 'edit'
-                  ? 'Edit Products'
-                  : widget.action == 'delete'
-                  ? 'Delete Products'
-                  : 'Products'
-          ),
+          title: const Text('Products'),
         ),
         body: Consumer<List<Product>>(
           builder: (context, prod, child) {
@@ -52,94 +46,143 @@ class _ProductListState extends State<ProductList> {
               itemCount: prod.length,
               itemBuilder: (context, index) {
                 final item = prod[index];
-                return Column(
-                  children: [
-                    // const SizedBox(
-                    //   height: 20,
-                    // ),
-                    // BarcodeWidget(
-                    //   barcode: Barcode.code128(),
-                    //   data: item.barcodeId,
-                    //   width: 200,
-                    //   height: 100,
-                    //   drawText: true,
-                    // ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                        title: Text(item.productTitle),
-                        subtitle: Text('\$${item.productPrice}.00', style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold, fontSize: 20,
-                        ),),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (widget.action == 'view') Checkbox(
-                              value: item.completed,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  item.completed = newValue!;
-                                });
-                                ProductProvider().updateProduct(item);
-                              },
-                            ),
-                            if (widget.action == 'edit') IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditProduct(
-                                      todo: item,
-                                    ),
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // add your code here for when the image is tapped
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: FutureBuilder<String?>(
+                            future: Provider.of<ProductProvider>(context).getProductImage(item.productId),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                              if (snapshot.hasError) {
+                                return const Center(child: Text('Error retrieving profile picture'));
+                              }
+                              if (snapshot.data == null) {
+                                return const Icon(Icons.image, size: 50,);
+                              }
+                              return GestureDetector(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                );
-                              },
-                            ),
-                            if (widget.action == 'delete') IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                ProductProvider().deleteProduct(item.productId);
-                              },
-                            ),
-                          ],
+                                  child: Image.network(
+                                    snapshot.data!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                      return const Text('Image not found');
+                                    },
+                                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: loadingProgress.expectedTotalBytes != null
+                                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        onTap: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BarcodePage(
-                                  todo: item,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(item.productTitle),
+                          subtitle: Text('\$${item.productPrice}.00',
+                              style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold, fontSize: 20,
+                            ),
+                          ),
+                          trailing: PopupMenuButton(
+                            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                              const PopupMenuItem(
+                                value: 'edit',
+                                child: ListTile(
+                                  leading: Icon(Icons.edit),
+                                  title: Text('Edit'),
                                 ),
                               ),
-                          );
-                        },
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: ListTile(
+                                  leading: Icon(Icons.delete),
+                                  title: Text('Delete'),
+                                ),
+                              ),
+                            ],
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'edit':
+                                  Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => EditProduct(
+                                                  todo: item,
+                                                ),
+                                              ),
+                                            );
+                                  break;
+                                case 'delete':
+                                  ProductProvider().deleteProduct(item.productId);
+                                  break;
+                                default:
+                                  break;
+                              }
+                            },
+                          ),
+                          onTap: (){
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BarcodePage(
+                                    todo: item,
+                                  ),
+                                ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    const Divider(
-                      height: 5,
-                      thickness: 5,
-                    )
-                  ],
+                      const Divider(
+                        height: 5,
+                        thickness: 5,
+                      )
+                    ],
+                  ),
                 );
               },
             );
           },
         ),
-        floatingActionButton: widget.action == 'view'
-            ? FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddProduct(),
-              ),
-            );
-          },
-        )
-            : null,
       ),
     );
   }
