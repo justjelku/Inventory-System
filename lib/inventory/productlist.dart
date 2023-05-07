@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/inventory/addproduct.dart';
 import 'package:firebase_login_auth/inventory/editproduct.dart';
+import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:firebase_login_auth/model/productprovider.dart';
 import 'package:firebase_login_auth/pages/barcode.dart';
@@ -53,71 +54,31 @@ class _ProductListState extends State<ProductList> {
                       const SizedBox(
                         height: 10,
                       ),
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     // add your code here for when the image is tapped
-                      //   },
-                      //   child: Container(
-                      //     width: double.infinity,
-                      //     height: 200,
-                      //     margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      //     decoration: BoxDecoration(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //       boxShadow: [
-                      //         BoxShadow(
-                      //           color: Colors.grey.withOpacity(0.5),
-                      //           spreadRadius: 5,
-                      //           blurRadius: 7,
-                      //           offset: const Offset(0, 3),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //     child: FutureBuilder<String?>(
-                      //       future: Provider.of<ProductProvider>(context).getProductImage(item.productId),
-                      //       builder: (context, snapshot) {
-                      //         if (snapshot.connectionState == ConnectionState.waiting) {
-                      //           return const Center(child: CircularProgressIndicator());
-                      //         }
-                      //         if (snapshot.hasError) {
-                      //           return const Center(child: Text('Error retrieving profile picture'));
-                      //         }
-                      //         if (snapshot.data == null) {
-                      //           return const Icon(Icons.image, size: 50,);
-                      //         }
-                      //         return GestureDetector(
-                      //           child: Container(
-                      //             decoration: BoxDecoration(
-                      //               borderRadius: BorderRadius.circular(10),
-                      //             ),
-                      //             child: Image.network(
-                      //               snapshot.data!,
-                      //               fit: BoxFit.cover,
-                      //               width: double.infinity,
-                      //               height: double.infinity,
-                      //               errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                      //                 return const Text('Image not found');
-                      //               },
-                      //               loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                      //                 if (loadingProgress == null) return child;
-                      //                 return Center(
-                      //                   child: CircularProgressIndicator(
-                      //                     value: loadingProgress.expectedTotalBytes != null
-                      //                         ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                      //                         : null,
-                      //                   ),
-                      //                 );
-                      //               },
-                      //             ),
-                      //           ),
-                      //         );
-                      //       },
-                      //     ),
-                      //   ),
-                      // ),
+                      GestureDetector(
+                        onTap: () {
+                          // add your code here for when the image is tapped
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: mainTextColor,
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Image.network(item.productImage)
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ListTile(
-                          leading: Image.network(item.productImage),
                           title: Text(item.productTitle),
                           subtitle: Text('\$${item.productPrice}.00',
                               style: const TextStyle(

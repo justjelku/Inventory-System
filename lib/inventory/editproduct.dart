@@ -97,7 +97,7 @@ class _EditProductState extends State<EditProduct> {
                 onTap: _pickImage,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: mainTextColor,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   width: double.infinity,
@@ -105,37 +105,39 @@ class _EditProductState extends State<EditProduct> {
                   child: _imageFile == null // if no image is selected
                       ? GestureDetector(
                           onTap: _pickImage,
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
+                          child: Center(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Image.network(_imageF
+                                      // loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                      //   if (loadingProgress == null) return child;
+                                      //   return Center(
+                                      //     child: Positioned(
+                                      //       bottom: 5,
+                                      //       right: 5,
+                                      //       child: IconButton(
+                                      //         icon: const Icon(Icons.edit),
+                                      //         onPressed: _pickImage,
+                                      //       ),
+                                      //     ),
+                                      //   );
+                                      // },
+                                      ),
                                 ),
-                                child: Image.network(_imageF
-                                    // loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                    //   if (loadingProgress == null) return child;
-                                    //   return Center(
-                                    //     child: Positioned(
-                                    //       bottom: 5,
-                                    //       right: 5,
-                                    //       child: IconButton(
-                                    //         icon: const Icon(Icons.edit),
-                                    //         onPressed: _pickImage,
-                                    //       ),
-                                    //     ),
-                                    //   );
-                                    // },
-                                    ),
-                              ),
-                              Positioned(
-                                bottom: 5,
-                                right: 5,
-                                child: IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: _pickImage,
+                                Positioned(
+                                  bottom: 5,
+                                  right: 5,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    onPressed: _pickImage,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         )
                       : Image.file(
