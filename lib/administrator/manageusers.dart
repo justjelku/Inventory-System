@@ -947,6 +947,7 @@ class _ManageUserState extends State<ManageUser> {
           );
         }
         _showMsg('Account created!', true);
+        Navigator.pushNamed(context, '/user');
       } else {
         _showMsg('The password confirmation does not match.', false);
       }

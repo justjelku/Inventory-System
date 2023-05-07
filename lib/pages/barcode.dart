@@ -57,6 +57,7 @@ class _BarcodePageState extends State<BarcodePage> {
       MaterialPageRoute(
         builder: (BuildContext context) {
           return Scaffold(
+            backgroundColor: darkBlue,
             appBar: AppBar(
               title: const Text('Download Barcode'),
             ),

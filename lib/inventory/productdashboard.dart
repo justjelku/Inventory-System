@@ -139,39 +139,39 @@ class ProductDashboard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // const SizedBox(height: 10),
-                // StreamBuilder<Map<String, int>>(
-                //   stream: getBranchCount(FirebaseAuth.instance.currentUser!.uid),
-                //   builder: (context, snapshot) {
-                //     if (snapshot.hasData) {
-                //       final branchProductCountMap = snapshot.data!;
-                //       return ListView.builder(
-                //         shrinkWrap : true,
-                //         physics: const NeverScrollableScrollPhysics(),
-                //         itemCount: branchProductCountMap.length,
-                //         itemBuilder: (context, index) {
-                //           final branchName = branchProductCountMap.keys.toList()[index];
-                //           final productCount = branchProductCountMap[branchName]!;
-                //           return Padding(
-                //             padding: const EdgeInsets.all(10),
-                //             child: ListTile(
-                //               shape: RoundedRectangleBorder(
-                //                   borderRadius: BorderRadius.circular(20)
-                //               ),
-                //               tileColor: const Color(0xFF3a506b),
-                //               iconColor: Colors.white,
-                //               textColor: Colors.white,
-                //               title: Text(branchName),
-                //               trailing: Text('$productCount Products'),
-                //             ),
-                //           );
-                //         },
-                //       );
-                //     } else {
-                //       return const SizedBox.shrink();
-                //     }
-                //   },
-                // ),
+                const SizedBox(height: 10),
+                StreamBuilder<Map<String, int>>(
+                  stream: getBranchCount(FirebaseAuth.instance.currentUser!.uid),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final branchProductCountMap = snapshot.data!;
+                      return ListView.builder(
+                        shrinkWrap : true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: branchProductCountMap.length,
+                        itemBuilder: (context, index) {
+                          final branchName = branchProductCountMap.keys.toList()[index];
+                          final productCount = branchProductCountMap[branchName]!;
+                          return Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: ListTile(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)
+                              ),
+                              tileColor: const Color(0xFF3a506b),
+                              iconColor: Colors.white,
+                              textColor: Colors.white,
+                              title: Text(branchName),
+                              trailing: Text('$productCount Products'),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
                 // const SizedBox(height: 10),
                 // Row(
                 //   children: [

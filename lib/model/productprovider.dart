@@ -96,7 +96,15 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(Product todo) async {
+  Future<void> addProduct(Product todo, File file) async {
+
+    final fileName = basename(file.path);
+    final ref = FirebaseStorage.instance.ref().child(
+        'products/productImage/$fileName');
+    final uploadTask = ref.putFile(file);
+    final snapshot = await uploadTask.whenComplete(() {});
+    final downloadUrl = await snapshot.ref.getDownloadURL();
+
     final user = FirebaseAuth.instance.currentUser;
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
@@ -116,7 +124,7 @@ class ProductProvider with ChangeNotifier {
       'barcodeId': todo.barcodeId,
       'barcodeUrl': todo.barcodeUrl,
       'qrcodeUrl': todo.qrcodeUrl,
-      'productImage': todo.productImage,
+      'productImage': downloadUrl,
       'branch': todo.branch,
       'createdTime': FieldValue.serverTimestamp(), // add this field
       'updatedTime': FieldValue.serverTimestamp(), // add this field
@@ -151,7 +159,7 @@ class ProductProvider with ChangeNotifier {
       'updatedTime': FieldValue.serverTimestamp(), // add this field
     };
 
-    await todoCollection.update(todoData);
+    await todoCollection.set(todoData, SetOptions(merge: true));
   }
 
   Stream<List<Product>> getProduct(String userId) {
@@ -348,15 +356,25 @@ class ProductProvider with ChangeNotifier {
         .collection('basic_users')
         .doc(user!.uid);
 
-    final todoCollection = userRef
-        .collection('products')
-        .doc(productId) // creates a new document with a unique ID
-        .collection('productImages'); // creates a new subcollection with name 'qrcodes'
-    final newDocRef = await todoCollection.add({'prodImgUrl': downloadUrl});
+    final todoCollection = userRef.collection('products').doc(todo.productId);
+
+    final todoData = {
+      'productImage': downloadUrl,
+      'createdTime': FieldValue.serverTimestamp(), // add this field
+      'updatedTime': FieldValue.serverTimestamp(), // add this field
+    };
+
+    await todoCollection.set(todoData, SetOptions(merge: true));
+
+    // final todoCollection = userRef
+    //     .collection('products');
+        // .doc(productId) // creates a new document with a unique ID
+        // .collection('productImages'); // creates a new subcollection with name 'qrcodes'
+    // final newDocRef = await todoCollection.add({productImage: downloadUrl});
 
     // Update the product image URL of the current user in the app state
-    final updatedProd = todo.copyWith(productImage: downloadUrl);
-    _todo = updatedProd;
+    // final updatedProd = todo.copyWith(productImage: downloadUrl);
+    // _todo = updatedProd;
     notifyListeners();
   }
 

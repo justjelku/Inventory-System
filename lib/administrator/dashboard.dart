@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/administrator/adminsetting.dart';
 import 'package:firebase_login_auth/administrator/manageusers.dart';
+import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_login_auth/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
@@ -87,6 +88,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: mainTextColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(_appBarTitles[_selectedIndex]),
@@ -96,19 +98,33 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
+        backgroundColor: Colors.white,
+        elevation: 0,
         onTap: _onItemTapped,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Dashboard',
+        type: BottomNavigationBarType.fixed,
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home, size: 30),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Manage Users',
+            icon: Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.all(10),
+              child: const Icon(Icons.person, size: 40 , color: Colors.white),
+            ),
+            label: '',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+          // const BottomNavigationBarItem(
+          //   icon: Icon(Icons.person),
+          //   label: 'Manage Users',
+          // ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.settings, size: 30),
+            label: '',
           ),
         ],
       ),

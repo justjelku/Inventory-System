@@ -309,6 +309,7 @@ class _AddProductState extends State<AddProduct> {
                               final quantity = _quantityController.text.trim();
                               final branch = _branchController.text.trim();
                               final productSize = int.parse(_shoeSize!.split('.')[0]);
+
                               final todo = Product(
                                 productId: productId!,
                                 productSize: int.parse(_shoeSize!.split('.')[0]),
@@ -324,10 +325,10 @@ class _AddProductState extends State<AddProduct> {
                                 productImage: '',
                                 branch: branch,
                               );
-                              await ProductProvider().addProduct(todo);
-                              if (_imageFile != null) {
-                                ProductProvider().uploadImage(productId!, _imageFile!);
-                              }
+                              await ProductProvider().addProduct(todo, _imageFile!);
+                              // if (_imageFile != null) {
+                              //   ProductProvider().uploadImage(productId!, _imageFile!);
+                              // }
                               _showMsg('You have added a new product!', true);
                               // Navigator.of(context).pop();
                               // ignore: use_build_context_synchronously

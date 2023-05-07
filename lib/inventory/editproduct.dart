@@ -22,6 +22,7 @@ class EditProduct extends StatefulWidget {
 class _EditProductState extends State<EditProduct> {
   late String _title;
   late int _price;
+  late String _imageF;
   late String _details;
   int? _shoeSize;
   late String _branch;
@@ -40,11 +41,12 @@ class _EditProductState extends State<EditProduct> {
     _details = widget.todo.productDetails;
     _quantity = widget.todo.productQuantity;
     _branch = widget.todo.branch;
+    _imageF = widget.todo.productImage;
   }
 
-
   void _pickImage() async {
-    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().getImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path); // set selected image path
@@ -101,70 +103,51 @@ class _EditProductState extends State<EditProduct> {
                   width: double.infinity,
                   height: 200,
                   child: _imageFile == null // if no image is selected
-                      ? FutureBuilder<String?>(
-                    future: Provider.of<ProductProvider>(context).getProductImage(userdata.productId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        return const Center(child: Text('Error retrieving profile picture'));
-                      }
-                      if (snapshot.data == null) {
-                        return const Icon(Icons.image, size: 50);
-                      }
-                      return GestureDetector(
-                        onTap: _pickImage,
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
+                      ? GestureDetector(
+                          onTap: _pickImage,
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Image.network(_imageF
+                                    // loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                    //   if (loadingProgress == null) return child;
+                                    //   return Center(
+                                    //     child: Positioned(
+                                    //       bottom: 5,
+                                    //       right: 5,
+                                    //       child: IconButton(
+                                    //         icon: const Icon(Icons.edit),
+                                    //         onPressed: _pickImage,
+                                    //       ),
+                                    //     ),
+                                    //   );
+                                    // },
+                                    ),
                               ),
-                              child: Image.network(
-                                snapshot.data!,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                  return const Text('Image not found');
-                                },
-                                // loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                //   if (loadingProgress == null) return child;
-                                //   return Center(
-                                //     child: Positioned(
-                                //       bottom: 5,
-                                //       right: 5,
-                                //       child: IconButton(
-                                //         icon: const Icon(Icons.edit),
-                                //         onPressed: _pickImage,
-                                //       ),
-                                //     ),
-                                //   );
-                                // },
+                              Positioned(
+                                bottom: 5,
+                                right: 5,
+                                child: IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: _pickImage,
+                                ),
                               ),
-                            ),
-                            Positioned(
-                              bottom: 5,
-                              right: 5,
-                              child: IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: _pickImage,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  )
-                      : Image.file(File(_imageFile!.path),
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                    errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                      return const Text('Image not found');
-                    },
-                  ), // if an image is selected
+                            ],
+                          ),
+                        )
+                      : Image.file(
+                          File(_imageFile!.path),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                          errorBuilder: (BuildContext context, Object exception,
+                              StackTrace? stackTrace) {
+                            return const Text('Image not found');
+                          },
+                        ), // if an image is selected
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -187,12 +170,23 @@ class _EditProductState extends State<EditProduct> {
                 value: _shoeSize.toString(),
                 onChanged: (String? value) {
                   setState(() {
-                    _shoeSize = int.parse(value!); // parse the selected value to an integer
-                    _selectedSize = int.tryParse(value.replaceAll('.', '')); // parse the value to an int, removing any decimal point if present
+                    _shoeSize = int.parse(
+                        value!); // parse the selected value to an integer
+                    _selectedSize = int.tryParse(value.replaceAll('.',
+                        '')); // parse the value to an int, removing any decimal point if present
                   });
                 },
-                items: <String>['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9']
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: <String>[
+                  '5',
+                  '5.5',
+                  '6',
+                  '6.5',
+                  '7',
+                  '7.5',
+                  '8',
+                  '8.5',
+                  '9'
+                ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -203,9 +197,7 @@ class _EditProductState extends State<EditProduct> {
                 initialValue: _branch,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
-                    hintText: 'Branch',
-                    labelText: 'Branch'
-                ),
+                    hintText: 'Branch', labelText: 'Branch'),
                 onChanged: (value) {
                   setState(() {
                     _branch = value;
@@ -215,10 +207,8 @@ class _EditProductState extends State<EditProduct> {
               TextFormField(
                 initialValue: _price.toString(),
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    hintText: "0.00",
-                    labelText: 'Price'
-                ),
+                decoration:
+                    const InputDecoration(hintText: "0.00", labelText: 'Price'),
                 onChanged: (value) {
                   setState(() {
                     _price = int.parse(value);
@@ -250,11 +240,9 @@ class _EditProductState extends State<EditProduct> {
                   });
                 },
                 decoration: const InputDecoration(
-                    hintText: 'Details',
-                    labelText: 'Details'
-                ),
-                validator: (value){
-                  return (value == '')? "Details" : null;
+                    hintText: 'Details', labelText: 'Details'),
+                validator: (value) {
+                  return (value == '') ? "Details" : null;
                 },
               ),
               const SizedBox(
@@ -268,10 +256,8 @@ class _EditProductState extends State<EditProduct> {
                   });
                 },
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    hintText: "0",
-                    labelText: 'Quantity'
-                ),
+                decoration:
+                    const InputDecoration(hintText: "0", labelText: 'Quantity'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a quantity';
@@ -298,7 +284,8 @@ class _EditProductState extends State<EditProduct> {
                     );
                     ProductProvider().updateProduct(updatedTodo);
                     if (_imageFile != null) {
-                      ProductProvider().uploadImage(widget.todo.productId, _imageFile!);
+                      ProductProvider()
+                          .uploadImage(widget.todo.productId, _imageFile!);
                     }
                     _showMsg('You have updated the product!', true);
                     Navigator.pop(context);
@@ -320,13 +307,8 @@ class _EditProductState extends State<EditProduct> {
                     ),
                     child: const Center(
                       child: Text("Update Product",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17
-                          )
-                      ),
-                    )
-                ),
+                          style: TextStyle(color: Colors.white, fontSize: 17)),
+                    )),
               ),
             ],
           ),

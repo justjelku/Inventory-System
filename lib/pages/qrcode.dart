@@ -1,5 +1,6 @@
 import 'package:firebase_login_auth/model/productprovider.dart';
 import 'package:firebase_login_auth/pages/qrscan.dart';
+import 'package:firebase_login_auth/pages/scannerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_login_auth/model/productmodel.dart';
 import 'package:firebase_login_auth/model/constant.dart';
@@ -193,11 +194,10 @@ class _QrcodePageState extends State<QrcodePage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.black,
+      backgroundColor: darkBlue,
       appBar: AppBar(
         title: const Text('Qrcode Page'),
       ),
@@ -261,7 +261,7 @@ class _QrcodePageState extends State<QrcodePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => QRCodeScanner(),
+              builder: (context) => const ScannerPage(),
             ),
           );
         },

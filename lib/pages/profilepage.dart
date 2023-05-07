@@ -282,7 +282,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
             onTap: (){
               _showBottomSheet(context);
             },
-          )
+          ),
         ],
       ),
     );
@@ -397,6 +397,7 @@ void _showBottomSheet(BuildContext context) {
                     child: const Icon(Icons.logout),
                   ),
                 ),
+                const SizedBox(height: 10,),
               ],
             ),
           );

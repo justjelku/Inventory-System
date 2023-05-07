@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_login_auth/inventory/addproduct.dart';
+import 'package:firebase_login_auth/model/constant.dart';
 import 'package:firebase_login_auth/pages/profilepage.dart';
 import 'package:firebase_login_auth/inventory/productdashboard.dart';
 import 'package:firebase_login_auth/inventory/productlist.dart';
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: mainTextColor,
       // appBar: AppBar(
       //   automaticallyImplyLeading: false,
       //   // title: Text(_appBarTitles[_selectedIndex]),

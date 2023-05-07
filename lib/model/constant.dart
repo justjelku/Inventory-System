@@ -6,3 +6,4 @@ Color secondaryBtnColor = const Color(0xFFFF000B);
 Color mainTextColor = const Color(0xFFFFFFFF);
 Color secondaryTextColor =  const Color(0xFF000000);
 Color gradientEndColor = const Color(0xFFEAA626);
+Color darkBlue = const Color.fromARGB(255, 18, 32, 47);

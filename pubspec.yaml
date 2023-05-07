@@ -65,6 +65,7 @@ dependencies:
   gallery_saver: ^2.3.2
   barcode_scanner: ^3.2.4
   qr_code_scanner: ^1.0.1
+  mobile_scanner: ^3.2.0
 
 
 dev_dependencies:
