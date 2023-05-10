@@ -64,9 +64,43 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
     }
   }
 
-  void signInWithFacebook() {
-    // TODO: Implement sign in with Facebook
+  Future<void> signInWithFacebook() async {
+    // Trigger the sign-in flow
+    final LoginResult result = await FacebookAuth.instance.login();
+
+    // Check if the user successfully signed in
+    if (result.status == LoginStatus.success) {
+      // Retrieve the access token
+      final AccessToken accessToken = result.accessToken!;
+
+      // Retrieve the user data
+      final userData = await FacebookAuth.instance.getUserData(
+        fields: "first_name,last_name,email,name",
+      );
+
+      // Extract the relevant user data
+      final firstName = userData['first_name'];
+      final lastName = userData['last_name'];
+      final email = userData['email'];
+      final userName = userData['name'];
+
+      // Sign in with Firebase using the Facebook access token
+      final OAuthCredential credential =
+      FacebookAuthProvider.credential(accessToken.token);
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Add user details to the database
+      addUserDetails(firstName, lastName, userName, email, 'basic', true);
+
+      // Navigate to the home page
+      Navigator.pushNamed(context, '/home');
+    } else {
+      // Handle the error
+      _showMsg(result.message!, false);
+    }
   }
+
 
   Future<void> signIn() async {
     try {

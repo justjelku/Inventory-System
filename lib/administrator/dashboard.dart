@@ -5,6 +5,7 @@ import 'package:shoes_inventory_ms/administrator/manageusers.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/model/usermodel.dart';
 import 'package:flutter/material.dart';
+import 'package:shoes_inventory_ms/administrator/admindashboard.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({Key? key}) : super(key: key);
@@ -49,7 +50,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const Text("This is dashboard"),
+    const AdminDashboard(),
     Builder(
       builder: (BuildContext context) {
         final user = FirebaseAuth.instance.currentUser;
