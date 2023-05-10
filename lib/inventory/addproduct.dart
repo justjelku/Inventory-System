@@ -1,11 +1,11 @@
 import 'dart:math';
-import 'package:firebase_login_auth/model/productprovider.dart';
+import 'package:shoes_inventory_ms/model/productprovider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/model/productmodel.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
+import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -317,7 +317,6 @@ class _AddProductState extends State<AddProduct> {
                                 productPrice: int.parse(price),
                                 productDetails: description,
                                 productQuantity: int.parse(quantity),
-                                completed: false,
                                 userId: FirebaseAuth.instance.currentUser!.uid,
                                 barcodeId: barcodeData!,
                                 barcodeUrl: '',

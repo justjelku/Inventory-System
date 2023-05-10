@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/inventory/addproduct.dart';
-import 'package:firebase_login_auth/inventory/productlist.dart';
-import 'package:firebase_login_auth/model/productprovider.dart';
-import 'package:firebase_login_auth/pages/qrscan.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
+import 'package:shoes_inventory_ms/inventory/addproduct.dart';
+import 'package:shoes_inventory_ms/inventory/productlist.dart';
+import 'package:shoes_inventory_ms/model/productprovider.dart';
+import 'package:shoes_inventory_ms/pages/qrscan.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

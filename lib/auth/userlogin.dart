@@ -1,11 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:firebase_login_auth/model/usermodel.dart';
-import 'package:firebase_login_auth/model/userprovider.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_login_auth/model/constant.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:themed/themed.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -28,6 +28,45 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
   final TextEditingController _emailController = TextEditingController();
 
   var formKey = GlobalKey<FormState>();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      if (googleSignInAccount == null) return null;
+
+      final GoogleSignInAuthentication googleSignInAuthentication =
+      await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final userDetails = {
+        'first name': userCredential.user!.displayName!.split(' ')[0],
+        'last name': userCredential.user!.displayName!.split(' ')[1],
+        'username': userCredential.user!.email!.split('@')[0],
+        'email': userCredential.user!.email!,
+        'role': 'basic',
+        'enabled': true,
+      };
+
+      final userRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu');
+      await userRef.collection('basic_users').doc(userCredential.user!.uid).set(userDetails);
+
+      return userCredential;
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
+  void signInWithFacebook() {
+    // TODO: Implement sign in with Facebook
+  }
 
   Future<void> signIn() async {
     try {
@@ -281,6 +320,55 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
                           color: Colors.black,
                         ),
                       )
+                  ),
+                  const Text("or",
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                          fontStyle: FontStyle.italic),
+                      textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () async {
+                            final userCredential = await signInWithGoogle();
+                            if (userCredential != null) {
+                              _showMsg('Logged In Successful!', true);
+                              Navigator.pushNamed(context, '/user');
+                            } else {
+                              _showMsg('Error: Unable to sign in with Google.', false);
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icons8-google-48.png', // Replace with your Google icon asset
+                                height: 45,
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextButton(
+                          onPressed: signInWithFacebook,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icons8-facebook-48.png', // Replace with your Facebook icon asset
+                                height: 50,
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 ]
             )

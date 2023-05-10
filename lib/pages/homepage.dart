@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/inventory/addproduct.dart';
-import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/pages/profilepage.dart';
-import 'package:firebase_login_auth/inventory/productdashboard.dart';
-import 'package:firebase_login_auth/inventory/productlist.dart';
+import 'package:shoes_inventory_ms/inventory/addproduct.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
+import 'package:shoes_inventory_ms/pages/profilepage.dart';
+import 'package:shoes_inventory_ms/inventory/productdashboard.dart';
+import 'package:shoes_inventory_ms/inventory/productlist.dart';
 import 'package:flutter/material.dart';
 import 'settings.dart';
 

@@ -1,11 +1,11 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/inventory/addproduct.dart';
-import 'package:firebase_login_auth/inventory/editproduct.dart';
-import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/model/productmodel.dart';
-import 'package:firebase_login_auth/model/productprovider.dart';
-import 'package:firebase_login_auth/pages/barcode.dart';
+import 'package:shoes_inventory_ms/inventory/addproduct.dart';
+import 'package:shoes_inventory_ms/inventory/editproduct.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
+import 'package:shoes_inventory_ms/model/productmodel.dart';
+import 'package:shoes_inventory_ms/model/productprovider.dart';
+import 'package:shoes_inventory_ms/pages/barcode.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

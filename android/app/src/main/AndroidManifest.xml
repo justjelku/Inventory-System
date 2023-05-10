@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
    <application
-        android:label="firebase_login_auth"
+        android:label="shoes_inventory_ms"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

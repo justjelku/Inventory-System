@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/model/productmodel.dart';
-import 'package:firebase_login_auth/model/usermodel.dart';
+import 'package:shoes_inventory_ms/model/productmodel.dart';
+import 'package:shoes_inventory_ms/model/usermodel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -81,7 +81,6 @@ class ProductProvider with ChangeNotifier {
         productSize: snapshot.data()!['productSize'] ?? 0,
         productTitle: snapshot.data()!['productTitle'],
         productPrice: snapshot.data()!['productPrice'] ?? 0,
-        completed: snapshot.data()!['completed'],
         productDetails: snapshot.data()!['productDetails'],
         productQuantity: snapshot.data()!['productQuantity'] ?? 0,
         userId: snapshot.data()!['userId'],
@@ -119,7 +118,6 @@ class ProductProvider with ChangeNotifier {
       'productPrice': todo.productPrice,
       'productDetails': todo.productDetails,
       'productQuantity': todo.productQuantity,
-      'completed': todo.completed,
       'userId': todo.userId,
       'barcodeId': todo.barcodeId,
       'barcodeUrl': todo.barcodeUrl,
@@ -148,7 +146,6 @@ class ProductProvider with ChangeNotifier {
       'productPrice': todo.productPrice,
       'productDetails': todo.productDetails,
       'productQuantity': todo.productQuantity,
-      'completed': todo.completed,
       'userId': todo.userId,
       'barcodeId': todo.barcodeId,
       'barcodeUrl': todo.barcodeUrl,
@@ -190,7 +187,6 @@ class ProductProvider with ChangeNotifier {
             productPrice: productPrice ?? 0,
             productDetails: data['productDetails'],
             productQuantity: productQuantity ?? 0,
-            completed: data['completed'],
             userId: data['userId'],
             barcodeId: data['barcodeId'],
             barcodeUrl: data['barcodeUrl'] ?? '',

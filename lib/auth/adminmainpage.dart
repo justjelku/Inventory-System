@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/administrator/dashboard.dart';
-import 'package:firebase_login_auth/auth/adminlogin.dart';
+import 'package:shoes_inventory_ms/administrator/dashboard.dart';
+import 'package:shoes_inventory_ms/auth/adminlogin.dart';
 import 'package:flutter/material.dart';
 
 class AdminMainPage extends StatefulWidget {

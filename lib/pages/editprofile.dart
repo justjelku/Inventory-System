@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'package:firebase_login_auth/database/firebaseservice.dart';
-import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/model/usermodel.dart';
-import 'package:firebase_login_auth/model/userprovider.dart';
+import 'package:shoes_inventory_ms/database/firebaseservice.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
+import 'package:shoes_inventory_ms/model/usermodel.dart';
+import 'package:shoes_inventory_ms/model/userprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

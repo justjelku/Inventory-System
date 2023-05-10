@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_login_auth/model/usermodel.dart';
-import 'package:firebase_login_auth/model/userprovider.dart';
+import 'package:shoes_inventory_ms/model/usermodel.dart';
+import 'package:shoes_inventory_ms/model/userprovider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';

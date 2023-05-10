@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/auth/userlogin.dart';
-import 'package:firebase_login_auth/pages/homepage.dart';
-import 'package:firebase_login_auth/auth/userroleselection.dart';
+import 'package:shoes_inventory_ms/auth/userlogin.dart';
+import 'package:shoes_inventory_ms/pages/homepage.dart';
+import 'package:shoes_inventory_ms/auth/userroleselection.dart';
 import 'package:flutter/material.dart';
 
 class UserMainPage extends StatefulWidget {

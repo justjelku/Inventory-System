@@ -8,7 +8,6 @@ class Product {
   final String productDetails;
   final int productQuantity;
   late String barcodeId;
-  late bool completed;
   final String userId;
   final String barcodeUrl;
   final String qrcodeUrl;
@@ -23,7 +22,6 @@ class Product {
     required this.productDetails,
     required this.productQuantity,
     required this.barcodeId,
-    required this.completed,
     required this.userId,
     required this.barcodeUrl,
     required this.qrcodeUrl,
@@ -39,7 +37,6 @@ class Product {
     String? productDetails,
     int? productQuantity,
     String? barcodeId,
-    bool? completed,
     String? userId,
     String? barcodeUrl,
     String? qrcodeUrl,
@@ -53,7 +50,6 @@ class Product {
       productPrice: productPrice ?? this.productPrice,
       productDetails: productDetails ?? this.productDetails,
       productQuantity: productQuantity ?? this.productQuantity,
-      completed: completed ?? this.completed,
       userId: userId ?? this.userId,
       barcodeId: barcodeId ?? this.barcodeId,
       barcodeUrl: barcodeUrl ?? this.barcodeUrl,
@@ -69,7 +65,6 @@ class Product {
         'productTitle': productTitle,
         'productPrice': productPrice,
         'productDetails': productDetails,
-        'completed': completed,
         'userId': userId,
         'barcodeId': barcodeId,
         'barcodeUrl': barcodeUrl,
@@ -86,7 +81,6 @@ class Product {
       productPrice: map['productPrice'],
       productDetails: map['productDetails'],
       productQuantity: map['productQuantity'],
-      completed: map['completed'],
       userId: map['userId'],
       barcodeId: map['barcodeId'],
       barcodeUrl: map['barcodeUrl'],

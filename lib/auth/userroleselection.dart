@@ -1,4 +1,4 @@
-import 'package:firebase_login_auth/model/constant.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:themed/themed.dart';
 

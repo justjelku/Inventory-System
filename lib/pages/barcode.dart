@@ -1,11 +1,11 @@
-import 'package:firebase_login_auth/model/productprovider.dart';
-import 'package:firebase_login_auth/pages/barcodescan.dart';
-import 'package:firebase_login_auth/pages/qrcode.dart';
-import 'package:firebase_login_auth/pages/qrscan.dart';
+import 'package:shoes_inventory_ms/model/productprovider.dart';
+import 'package:shoes_inventory_ms/pages/barcodescan.dart';
+import 'package:shoes_inventory_ms/pages/qrcode.dart';
+import 'package:shoes_inventory_ms/pages/qrscan.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_widget/barcode_widget.dart';
-import 'package:firebase_login_auth/model/productmodel.dart';
-import 'package:firebase_login_auth/model/constant.dart';
+import 'package:shoes_inventory_ms/model/productmodel.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;

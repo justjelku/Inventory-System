@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_login_auth/administrator/adminsetting.dart';
-import 'package:firebase_login_auth/administrator/manageusers.dart';
-import 'package:firebase_login_auth/model/constant.dart';
-import 'package:firebase_login_auth/model/usermodel.dart';
+import 'package:shoes_inventory_ms/administrator/adminsetting.dart';
+import 'package:shoes_inventory_ms/administrator/manageusers.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
+import 'package:shoes_inventory_ms/model/usermodel.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatefulWidget {
