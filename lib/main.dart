@@ -15,7 +15,7 @@ import 'model/constant.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FacebookAuth.instance.login();
+  // await FacebookAuth.instance.login();
   await Firebase.initializeApp();
 
   runApp(const MyApp());

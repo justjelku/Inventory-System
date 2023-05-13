@@ -3,7 +3,7 @@ import 'package:shoes_inventory_ms/inventory/addproduct.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/pages/profilepage.dart';
 import 'package:shoes_inventory_ms/inventory/productdashboard.dart';
-import 'package:shoes_inventory_ms/inventory/productlist.dart';
+import 'package:shoes_inventory_ms/inventory/productin.dart';
 import 'package:flutter/material.dart';
 import 'settings.dart';
 

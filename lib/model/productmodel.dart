@@ -4,6 +4,7 @@ class Product {
   final String productId;
   final int productSize;
   final String productTitle;
+  final String productBrand;
   final int productPrice;
   final String productDetails;
   final int productQuantity;
@@ -18,6 +19,7 @@ class Product {
     required this.productId,
     required this.productSize,
     required this.productTitle,
+    required this.productBrand,
     required this.productPrice,
     required this.productDetails,
     required this.productQuantity,
@@ -33,6 +35,7 @@ class Product {
     String? productId,
     int? productSize,
     String? productTitle,
+    String? productBrand,
     int? productPrice,
     String? productDetails,
     int? productQuantity,
@@ -47,6 +50,7 @@ class Product {
       productId: productId ?? this.productId,
       productSize: productSize ?? this.productSize,
       productTitle: productTitle ?? this.productTitle,
+      productBrand: productBrand ?? this.productBrand,
       productPrice: productPrice ?? this.productPrice,
       productDetails: productDetails ?? this.productDetails,
       productQuantity: productQuantity ?? this.productQuantity,
@@ -63,6 +67,7 @@ class Product {
         'productId': productId,
         'productSize': productSize,
         'productTitle': productTitle,
+        'productBrand': productBrand,
         'productPrice': productPrice,
         'productDetails': productDetails,
         'userId': userId,
@@ -78,6 +83,7 @@ class Product {
       productId: map['productId'],
       productSize: map['productSize'],
       productTitle: map['productTitle'],
+      productBrand: map['productBrand'],
       productPrice: map['productPrice'],
       productDetails: map['productDetails'],
       productQuantity: map['productQuantity'],

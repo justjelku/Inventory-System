@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shoes_inventory_ms/inventory/addproduct.dart';
 import 'package:shoes_inventory_ms/inventory/editproduct.dart';
+import 'package:shoes_inventory_ms/inventory/productdetails.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:shoes_inventory_ms/model/productprovider.dart';
@@ -10,16 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // ignore: duplicate_ignore
-class ProductList extends StatefulWidget {
-  final String action;
+class ProductIn extends StatefulWidget {
 
-  const ProductList({required this.action, Key? key}) : super(key: key);
+  const ProductIn({Key? key}) : super(key: key);
 
   @override
-  _ProductListState createState() => _ProductListState();
+  _ProductInState createState() => _ProductInState();
 }
 
-class _ProductListState extends State<ProductList> {
+class _ProductInState extends State<ProductIn> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -29,7 +29,7 @@ class _ProductListState extends State<ProductList> {
         ),
         StreamProvider<List<Product>>.value(
           value: ProductProvider()
-              .getProduct(FirebaseAuth.instance.currentUser!.uid),
+              .getProduct(FirebaseAuth.instance.currentUser!.uid, includeOutOfStock: false),
           initialData: const [], // Use an empty list as the initial data
         ),
       ],
@@ -54,31 +54,10 @@ class _ProductListState extends State<ProductList> {
                       const SizedBox(
                         height: 10,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          // add your code here for when the image is tapped
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          height: 200,
-                          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: mainTextColor,
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Image.network(item.productImage)
-                        ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ListTile(
+                          leading: Image.network(item.productImage),
                           title: Text(item.productTitle),
                           subtitle: Text('\$${item.productPrice}.00',
                               style: const TextStyle(
@@ -88,6 +67,13 @@ class _ProductListState extends State<ProductList> {
                           ),
                           trailing: PopupMenuButton(
                             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                              const PopupMenuItem(
+                                value: 'view',
+                                child: ListTile(
+                                  leading: Icon(Icons.info),
+                                  title: Text('Info'),
+                                ),
+                              ),
                               const PopupMenuItem(
                                 value: 'edit',
                                 child: ListTile(
@@ -105,6 +91,16 @@ class _ProductListState extends State<ProductList> {
                             ],
                             onSelected: (value) {
                               switch (value) {
+                                case 'view':
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProductDetailsPage(
+                                        product: item,
+                                      ),
+                                    ),
+                                  );
+                                  break;
                                 case 'edit':
                                   Navigator.push(
                                               context,

@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shoes_inventory_ms/inventory/productout.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/inventory/addproduct.dart';
-import 'package:shoes_inventory_ms/inventory/productlist.dart';
+import 'package:shoes_inventory_ms/inventory/productin.dart';
 import 'package:shoes_inventory_ms/model/productprovider.dart';
 import 'package:shoes_inventory_ms/pages/qrscan.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shoes_inventory_ms/pages/scannerpage.dart';
+import 'package:shoes_inventory_ms/pages/searchpage.dart';
 
 class ProductDashboard extends StatelessWidget {
   const ProductDashboard({Key? key}) : super(key: key);
@@ -37,56 +40,48 @@ class ProductDashboard extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             elevation: 0,
-            // leading: const Icon(Icons.menu, color: Colors.black,),
             backgroundColor: mainTextColor,
             title: Padding(
               padding: const EdgeInsets.all(10),
-              child: Text('Dashboard',
+              child: Text(
+                'Dashboard',
                 style: TextStyle(
-                    color: secondaryTextColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
+                  color: secondaryTextColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
                 ),
               ),
             ),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.qr_code, color: darkBlue),
+                onPressed: () {
+                  // Handle scan button press here
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ScannerPage()),
+                  );
+                },
+              ),
+              Container(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: IconButton(
+                  icon: Icon(Icons.search, color: darkBlue),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SearchPage()),
+                    );
+                  },
+                ),
+              ),
+            ],
             automaticallyImplyLeading: false,
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.qr_code),
-                          onPressed: () {
-                            // Handle scan button press here
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => QRCodeScanner(),
-                              ),
-                            );
-                          },
-                        ),
-                        const Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Product ID',
-                              suffixIcon: Icon(Icons.search),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
                 Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -95,21 +90,21 @@ class ProductDashboard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           StreamBuilder<int>(
-                            stream: getProductCount(FirebaseAuth.instance.currentUser!.uid),
+                            stream: getProductInCount(FirebaseAuth.instance.currentUser!.uid),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 final productCount = snapshot.data!;
                                 return _buildButton(
                                   context,
                                   icon: Icons.stacked_line_chart,
-                                  text: 'Product In ($productCount)',
+                                  text: 'Product In $productCount',
                                   color: Colors.blue,
                                   onPressed: () {
                                     // Navigate to the View Products screen
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const ProductList(action: 'view'),
+                                        builder: (context) => const ProductIn(),
                                       ),
                                     );
                                   },
@@ -119,19 +114,92 @@ class ProductDashboard extends StatelessWidget {
                               }
                             },
                           ),
-                          _buildButton(
-                            context,
-                            icon: Icons.delete_outline,
-                            text: 'Product Out',
-                            color: Colors.red,
-                            onPressed: () {
-                              // Navigate to the Delete Products screen
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ProductList(action: 'delete'),
-                                ),
-                              );
+                          StreamBuilder<int>(
+                            stream: getProductOutCount(FirebaseAuth.instance.currentUser!.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final productCount = snapshot.data!;
+                                return _buildButton(
+                                  context,
+                                  icon: Icons.delete_outline,
+                                  text: 'Product Out $productCount',
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    // Navigate to the View Products screen
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const ProductOut(),
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          StreamBuilder<int>(
+                            stream: getProductSales(FirebaseAuth.instance.currentUser!.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final productCount = snapshot.data!;
+                                return _buildButton(
+                                  context,
+                                  icon: Icons.attach_money,
+                                  text: 'Sales \₱$productCount',
+                                  color: Colors.cyan,
+                                  onPressed: () {
+                                    // Navigate to the View Products screen
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => const ProductIn(),
+                                    //   ),
+                                    // );
+                                  },
+                                );
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            },
+                          ),
+                          StreamBuilder<int>(
+                            stream: getProductCount(FirebaseAuth.instance.currentUser!.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final productCount = snapshot.data!;
+                                return _buildButton(
+                                  context,
+                                  icon: Icons.inventory,
+                                  text: 'Total Products $productCount',
+                                  color: Colors.green,
+                                  onPressed: () {
+                                    // Navigate to the View Products screen
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => const ProductOut(),
+                                    //   ),
+                                    // );
+                                  },
+                                );
+                              } else {
+                                return const SizedBox.shrink();
+                              }
                             },
                           ),
                         ],
@@ -158,7 +226,7 @@ class ProductDashboard extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20)
                               ),
-                              tileColor: const Color(0xFF3a506b),
+                              tileColor: const Color(0xffff000b),
                               iconColor: Colors.white,
                               textColor: Colors.white,
                               title: Text(branchName),
@@ -172,119 +240,6 @@ class ProductDashboard extends StatelessWidget {
                     }
                   },
                 ),
-                // const SizedBox(height: 10),
-                // Row(
-                //   children: [
-                //     FutureBuilder<List<Map<String, dynamic>>>(
-                //       future: ProductProvider().getProductList(FirebaseAuth.instance.currentUser!.uid),
-                //       builder: (context, snapshot) {
-                //         if (snapshot.connectionState == ConnectionState.waiting) {
-                //           return const Center(child: CircularProgressIndicator());
-                //         } else if (snapshot.hasError) {
-                //           return Center(child: Text('Error: ${snapshot.error}'));
-                //         } else {
-                //           final productList = snapshot.data!;
-                //           return ListView.builder(
-                //             shrinkWrap : true,
-                //             physics: const NeverScrollableScrollPhysics(),
-                //             itemCount: productList.length,
-                //             itemBuilder: (context, index) {
-                //               final product = productList[index];
-                //               return ListTile(
-                //                 title: Text(product['productTitle']),
-                //                 subtitle: Text('\$${product['productPrice']}'),
-                //               );
-                //             },
-                //           );
-                //         }
-                //       },
-                //     ),
-                //   ],
-                // ),
-                // // Wrap the FutureBuilder in a SizedBox with fixed height
-                // // SizedBox(
-                // //   height: 300,
-                // //   child: FutureBuilder<Map<String, int>>(
-                // //     future: getAllProductQuantities(FirebaseAuth.instance.currentUser!.uid),
-                // //     builder: (context, snapshot) {
-                // //       if (snapshot.hasData) {
-                // //         final productQuantityMap = snapshot.data!;
-                // //         final productList = productQuantityMap.keys.toList();
-                // //         return ListView.builder(
-                // //           itemCount: productList.length,
-                // //           itemBuilder: (context, index) {
-                // //             final productName = productList[index];
-                // //             final productQuantity = productQuantityMap[productName]!;
-                // //             print('Prod: ${productName}');
-                // //             return ListTile(
-                // //               title: Text(productName),
-                // //               trailing: Text(productQuantity.toString()),
-                // //             );
-                // //           },
-                // //         );
-                // //       } else if (snapshot.hasError) {
-                // //         return Text('Error: ${snapshot.error}');
-                // //       } else {
-                // //         return Center(child: CircularProgressIndicator());
-                // //       }
-                // //     },
-                // //   ),
-                // // ),
-                // // // StreamBuilder<Map<String, Map<String, int>>>(
-                // // //   stream: getBranchProductQuantities(FirebaseAuth.instance.currentUser!.uid),
-                // // //   builder: (context, snapshot) {
-                // // //     if (snapshot.hasData) {
-                // // //       final branchProductQuantityMap = snapshot.data!;
-                // // //       // final branchList = branchProductQuantityMap.keys.toList();
-                // // //       if (branchProductQuantityMap.isNotEmpty) {
-                // // //         print(branchProductQuantityMap);
-                // // //       }
-                // // //       return ListView.builder(
-                // // //         shrinkWrap: true,
-                // // //         physics: const NeverScrollableScrollPhysics(),
-                // // //         itemCount: branchProductQuantityMap.length,
-                // // //         itemBuilder: (context, index) {
-                // // //           final branchName = branchProductQuantityMap.keys.toList()[index];
-                // // //           final productQuantityMap = branchProductQuantityMap[branchName]!;
-                // // //           final productQuantityList = productQuantityMap.entries.toList();
-                // // //           return Column(
-                // // //             crossAxisAlignment: CrossAxisAlignment.start,
-                // // //             children: [
-                // // //               const SizedBox(height: 10),
-                // // //               Text(
-                // // //                 branchName,
-                // // //                 style: Theme.of(context).textTheme.subtitle1,
-                // // //               ),
-                // // //               const SizedBox(height: 5),
-                // // //               ListView.builder(
-                // // //                 shrinkWrap: true,
-                // // //                 physics: const NeverScrollableScrollPhysics(),
-                // // //                 itemCount: productQuantityList.length,
-                // // //                 itemBuilder: (context, index) {
-                // // //                   final productQuantityEntry = productQuantityList[index];
-                // // //                   final productName = productQuantityEntry.key;
-                // // //                   final productQuantity = productQuantityEntry.value;
-                // // //                   return ListTile(
-                // // //                     shape: RoundedRectangleBorder(
-                // // //                         borderRadius: BorderRadius.circular(20)
-                // // //                     ),
-                // // //                     tileColor: const Color(0xFF3a506b),
-                // // //                     iconColor: Colors.white,
-                // // //                     textColor: Colors.white,
-                // // //                     title: Text('Product: ${productName}'),
-                // // //                     trailing: Text('Quantity: ${productQuantity.toString()}'),
-                // // //                   );
-                // // //                 },
-                // // //               ),
-                // // //             ],
-                // // //           );
-                // // //         },
-                // // //       );
-                // // //     } else {
-                // // //       return const SizedBox.shrink();
-                // // //     }
-                // // //   },
-                // // // ),
               ],
             ),
           ),
@@ -292,35 +247,6 @@ class ProductDashboard extends StatelessWidget {
       }
     );
   }
-
-  Future<Map<String, int>> getAllProductQuantities(String userId) async {
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users')
-        .doc(userId);
-
-    final todoCollection = userRef.collection('products');
-
-    final querySnapshot = await todoCollection.get();
-
-    final productQuantityMap = <String, int>{};
-    querySnapshot.docs.forEach((doc) {
-      final data = doc.data();
-      final productName = data['name'] as String?;
-      final productQuantity = data['quantity'] as int?;
-
-      if (productName != null && productQuantity != null) {
-        if (productQuantityMap.containsKey(productName)) {
-          productQuantityMap[productName] = productQuantityMap[productName]! + productQuantity;
-        } else {
-          productQuantityMap[productName] = productQuantity;
-        }
-      }
-    });
-    return productQuantityMap;
-  }
-
 
   Widget _buildButton(
       BuildContext context, {
@@ -371,13 +297,88 @@ class ProductDashboard extends StatelessWidget {
     final todoCollection = userRef.collection('products');
 
     return todoCollection.snapshots().map((querySnapshot) {
-      final productIds = Set<String>();
-      querySnapshot.docs.forEach((doc) {
+      final productIds = <String>{};
+      for (var doc in querySnapshot.docs) {
         productIds.add(doc.id);
-      });
+      }
       return productIds.length;
     });
   }
+
+  Stream<int> getProductInCount(String userId) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final todoCollection = userRef.collection('products');
+
+    return todoCollection.snapshots().map((querySnapshot) {
+      int count = 0;
+      for (var doc in querySnapshot.docs) {
+        var data = doc.data();
+        var productQuantity = data['productQuantity'];
+
+        if (productQuantity is String) {
+          productQuantity = int.tryParse(productQuantity) ?? 0;
+        }
+
+        if (productQuantity > 0) {
+          count++;
+        }
+      }
+      return count;
+    });
+  }
+
+  Stream<int> getProductOutCount(String userId) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final todoCollection = userRef.collection('products');
+
+    return todoCollection.snapshots().map((querySnapshot) {
+      int outOfStockCount = 0;
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        var productQuantity = data['productQuantity'];
+        if (productQuantity == 0) {
+          outOfStockCount++;
+        }
+      }
+      return outOfStockCount;
+    });
+  }
+
+  Stream<int> getProductSales(String userId) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final todoCollection = userRef.collection('products');
+
+    return todoCollection.snapshots().map((querySnapshot) {
+      double totalSales = 0.0;
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        var productQuantity = data['productQuantity'];
+        var productPrice = data['productPrice'];
+        if (productQuantity == 0) {
+          totalSales += productPrice;
+        }
+      }
+      return totalSales.toInt();
+    });
+  }
+
+
+
   Stream<Map<String, int>> getBranchCount(String userId) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
@@ -389,20 +390,22 @@ class ProductDashboard extends StatelessWidget {
 
     return todoCollection.snapshots().map((querySnapshot) {
       final branchProductCountMap = <String, int>{};
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         final data = doc.data();
         final branch = data['branch'] as String?;
-        if (branch != null && branch.isNotEmpty) {
+        final productQuantity = data['productQuantity'] as int?;
+        if (branch != null && branch.isNotEmpty && productQuantity != null && productQuantity > 0) {
           if (branchProductCountMap.containsKey(branch)) {
             branchProductCountMap[branch] = branchProductCountMap[branch]! + 1;
           } else {
             branchProductCountMap[branch] = 1;
           }
         }
-      });
+      }
       return branchProductCountMap;
     });
   }
+
   Stream<List<Map<String, dynamic>>> getProductsGroupedByBranch(String userId) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
@@ -414,7 +417,7 @@ class ProductDashboard extends StatelessWidget {
 
     return todoCollection.snapshots().map((querySnapshot) {
       final branchProductCountMap = <String, Map<String, int>>{};
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         final data = doc.data();
         final branch = data['branch'] as String?;
         final product = data['product'] as String?;
@@ -431,7 +434,7 @@ class ProductDashboard extends StatelessWidget {
             branchProductCountMap[branch]![product] = quantity;
           }
         }
-      });
+      }
 
       final branchProductCountList = <Map<String, dynamic>>[];
       branchProductCountMap.forEach((branch, productQuantityMap) {
@@ -456,12 +459,12 @@ class ProductDashboard extends StatelessWidget {
 
     return userRef.collection('products').snapshots().map((querySnapshot) {
       final branchProductQuantityMap = <String, Map<String, int>>{};
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         final data = doc.data();
         final branch = data['branch'] as String?;
         final productId = doc.id;
 
-        if (branch != null && productId != null) {
+        if (branch != null) {
           FirebaseFirestore.instance
               .collection('products')
               .doc(productId)
@@ -486,7 +489,7 @@ class ProductDashboard extends StatelessWidget {
             }
           });
         }
-      });
+      }
 
       return branchProductQuantityMap;
     });
@@ -502,14 +505,14 @@ class ProductDashboard extends StatelessWidget {
 
     return todoCollection.snapshots().map((querySnapshot) {
       final branchProductQuantityMap = <String, Map<String, int>>{};
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         final data = doc.data();
         final branch = data['branch'] as String?;
         final productId = doc.id;
         final productName = data['name'] as String?;
         final productQuantity = data['quantity'] as int?;
 
-        if (branch != null && branch.isNotEmpty && productId != null && productName != null && productQuantity != null) {
+        if (branch != null && branch.isNotEmpty && productName != null && productQuantity != null) {
           if (branchProductQuantityMap.containsKey(branch)) {
             final productQuantityMap = branchProductQuantityMap[branch]!;
             if (productQuantityMap.containsKey(productName)) {
@@ -521,7 +524,7 @@ class ProductDashboard extends StatelessWidget {
             branchProductQuantityMap[branch] = {productName: productQuantity};
           }
         }
-      });
+      }
       return branchProductQuantityMap;
     }).map((branchProductQuantityMap) {
       final newBranchProductQuantityMap = <String, Map<String, int>>{};

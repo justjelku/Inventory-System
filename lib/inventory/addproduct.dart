@@ -9,10 +9,7 @@ import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'dart:ui' as ui;
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({Key? key}) : super(key: key);
@@ -26,6 +23,7 @@ class _AddProductState extends State<AddProduct> {
   final _titleController = TextEditingController();
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
+  final _brandController = TextEditingController();
   late TextEditingController _branchController;
   File? _imageFile;
   String? _shoeSize;
@@ -218,6 +216,16 @@ class _AddProductState extends State<AddProduct> {
                       },
                     ),
                     TextFormField(
+                      controller: _brandController,
+                      decoration: const InputDecoration(
+                          hintText: 'Brand',
+                          labelText: 'Brand'
+                      ),
+                      validator: (value){
+                        return (value == '')? "Brand" : null;
+                      },
+                    ),
+                    TextFormField(
                       controller: _priceController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
@@ -304,6 +312,7 @@ class _AddProductState extends State<AddProduct> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               final title = _titleController.text.trim();
+                              final brand = _brandController.text.trim();
                               final price = _priceController.text.trim();
                               final description = _detailsController.text.trim();
                               final quantity = _quantityController.text.trim();
@@ -314,6 +323,7 @@ class _AddProductState extends State<AddProduct> {
                                 productId: productId!,
                                 productSize: int.parse(_shoeSize!.split('.')[0]),
                                 productTitle: title,
+                                productBrand: brand,
                                 productPrice: int.parse(price),
                                 productDetails: description,
                                 productQuantity: int.parse(quantity),

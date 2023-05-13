@@ -16,7 +16,7 @@ class ProductProvider with ChangeNotifier {
   Stream<List<Product>> get productStream {
     final user = FirebaseAuth.instance.currentUser;
     final userId = user!.uid;
-    return getProduct(userId);
+    return getProductIn(userId);
   }
 
   late Product _todo;
@@ -80,6 +80,7 @@ class ProductProvider with ChangeNotifier {
         productId: snapshot.data()!['productId'],
         productSize: snapshot.data()!['productSize'] ?? 0,
         productTitle: snapshot.data()!['productTitle'],
+        productBrand: snapshot.data()!['productBrand'],
         productPrice: snapshot.data()!['productPrice'] ?? 0,
         productDetails: snapshot.data()!['productDetails'],
         productQuantity: snapshot.data()!['productQuantity'] ?? 0,
@@ -115,6 +116,7 @@ class ProductProvider with ChangeNotifier {
       'productId': todo.productId,
       'productSize': todo.productSize,
       'productTitle': todo.productTitle,
+      'productBrand' : todo.productBrand,
       'productPrice': todo.productPrice,
       'productDetails': todo.productDetails,
       'productQuantity': todo.productQuantity,
@@ -143,6 +145,7 @@ class ProductProvider with ChangeNotifier {
       'productId': todo.productId,
       'productSize': todo.productSize,
       'productTitle': todo.productTitle,
+      'productBrand': todo.productBrand,
       'productPrice': todo.productPrice,
       'productDetails': todo.productDetails,
       'productQuantity': todo.productQuantity,
@@ -159,7 +162,50 @@ class ProductProvider with ChangeNotifier {
     await todoCollection.set(todoData, SetOptions(merge: true));
   }
 
-  Stream<List<Product>> getProduct(String userId) {
+  Stream<List<Product>> getProduct(String userId, {bool includeOutOfStock = false}) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final todoCollection = userRef.collection('products');
+
+    return todoCollection.snapshots().map((querySnapshot) => querySnapshot.docs
+        .where((doc) => includeOutOfStock || doc['productQuantity'] > 0)
+        .map((doc) {
+      final data = doc.data();
+      var productPrice = data['productPrice'];
+      var productSize = data['productSize'];
+      var productQuantity = data['productQuantity'];
+
+      // Check if productPrice is a String and convert to int if necessary
+      if (productPrice is String || productSize is String) {
+        productPrice = int.parse(productPrice);
+        productSize = int.parse(productSize);
+        productQuantity = int.parse(productQuantity);
+      }
+
+      return Product(
+        productId: doc.id,
+        productSize: data['productSize'] ?? 0,
+        productTitle: data['productTitle'],
+        productBrand: data['productBrand'],
+        productPrice: productPrice ?? 0,
+        productDetails: data['productDetails'],
+        productQuantity: productQuantity ?? 0,
+        userId: data['userId'],
+        barcodeId: data['barcodeId'],
+        barcodeUrl: data['barcodeUrl'] ?? '',
+        qrcodeUrl: data['qrcodeUrl'] ?? '',
+        productImage: data['productImage'] ?? '',
+        branch: data['branch'],
+      );
+    }).toList());
+  }
+
+
+  Stream<List<Product>> getProductIn(String userId) {
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users').doc(userId);
@@ -184,6 +230,7 @@ class ProductProvider with ChangeNotifier {
             productId: doc.id,
             productSize: data['productSize'] ?? 0,
             productTitle: data['productTitle'],
+            productBrand: data['productBrand'],
             productPrice: productPrice ?? 0,
             productDetails: data['productDetails'],
             productQuantity: productQuantity ?? 0,
@@ -196,6 +243,48 @@ class ProductProvider with ChangeNotifier {
           );
         }).toList());
   }
+
+  Stream<List<Product>> getProductOut(String userId) {
+    final userRef = FirebaseFirestore.instance.collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users').doc(userId);
+
+    final todoCollection = userRef.collection('products');
+
+    return todoCollection.where('productQuantity', isGreaterThan: 0)
+        .snapshots()
+        .map((querySnapshot) =>
+        querySnapshot.docs.map((doc) {
+          final data = doc.data();
+          var productPrice = data['productPrice'];
+          var productSize = data['productSize'];
+          var productQuantity = data['productQuantity'];
+
+          // Check if productPrice is a String and convert to int if necessary
+          if (productPrice is String || productSize is String) {
+            productPrice = int.parse(productPrice);
+            productSize = int.parse(productSize);
+            productQuantity = int.parse(productQuantity);
+          }
+
+          return Product(
+            productId: doc.id,
+            productSize: data['productSize'] ?? 0,
+            productTitle: data['productTitle'],
+            productBrand: data['productBrand'],
+            productPrice: productPrice ?? 0,
+            productDetails: data['productDetails'],
+            productQuantity: productQuantity ?? 0,
+            userId: data['userId'],
+            barcodeId: data['barcodeId'],
+            barcodeUrl: data['barcodeUrl'] ?? '',
+            qrcodeUrl: data['qrcodeUrl'] ?? '',
+            productImage: data['productImage'] ?? '',
+            branch: data['branch'],
+          );
+        }).toList());
+  }
+
 
   // Method to add a new sub-collection under the todos collection of the current user
   Future<void> addBranch(String branchName) async {

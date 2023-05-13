@@ -18,6 +18,7 @@ class EditProduct extends StatefulWidget {
 class _EditProductState extends State<EditProduct> {
   late String _title;
   late int _price;
+  late String _brand;
   late String _imageF;
   late String _details;
   int? _shoeSize;
@@ -32,6 +33,7 @@ class _EditProductState extends State<EditProduct> {
   void initState() {
     super.initState();
     _title = widget.todo.productTitle;
+    _brand = widget.todo.productBrand;
     _price = widget.todo.productPrice;
     _shoeSize = widget.todo.productSize;
     _details = widget.todo.productDetails;
@@ -109,19 +111,6 @@ class _EditProductState extends State<EditProduct> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Image.network(_imageF
-                                      // loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                      //   if (loadingProgress == null) return child;
-                                      //   return Center(
-                                      //     child: Positioned(
-                                      //       bottom: 5,
-                                      //       right: 5,
-                                      //       child: IconButton(
-                                      //         icon: const Icon(Icons.edit),
-                                      //         onPressed: _pickImage,
-                                      //       ),
-                                      //     ),
-                                      //   );
-                                      // },
                                       ),
                                 ),
                                 Positioned(
@@ -158,6 +147,18 @@ class _EditProductState extends State<EditProduct> {
                 },
                 decoration: const InputDecoration(
                   hintText: 'Enter title',
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                initialValue: _brand,
+                onChanged: (value) {
+                  setState(() {
+                    _brand = value;
+                  });
+                },
+                decoration: const InputDecoration(
+                  hintText: 'Enter brand',
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -216,19 +217,6 @@ class _EditProductState extends State<EditProduct> {
               const SizedBox(
                 height: 20,
               ),
-              // const Text('Price'),
-              // const SizedBox(height: 8.0),
-              // TextFormField(
-              //   initialValue: _price.toString(),
-              //   onChanged: (value) {
-              //     setState(() {
-              //       _price = int.parse(value);
-              //     });
-              //   },
-              //   decoration: const InputDecoration(
-              //     hintText: 'Enter Price',
-              //   ),
-              // ),
               const SizedBox(height: 16.0),
               TextFormField(
                 initialValue: _details,
@@ -271,6 +259,7 @@ class _EditProductState extends State<EditProduct> {
                   if (_formKey.currentState!.validate()) {
                     final updatedTodo = widget.todo.copyWith(
                       productTitle: _title,
+                      productBrand: _brand,
                       productPrice: _price,
                       productSize: _shoeSize,
                       productDetails: _details,

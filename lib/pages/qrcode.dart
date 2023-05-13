@@ -1,10 +1,8 @@
 import 'package:shoes_inventory_ms/model/productprovider.dart';
-import 'package:shoes_inventory_ms/pages/qrscan.dart';
 import 'package:shoes_inventory_ms/pages/scannerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 import 'dart:io';
@@ -14,7 +12,7 @@ import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 
 class QrcodePage extends StatefulWidget {
@@ -69,6 +67,9 @@ class _QrcodePageState extends State<QrcodePage> {
     imageCache.clear();
     File file = File('$path/$imageName');
     file.writeAsBytesSync(bytes);
+
+    // Save the image to the gallery
+    await GallerySaver.saveImage(file.path);
 
     // ignore: use_build_context_synchronously
     await Navigator.of(context).push(

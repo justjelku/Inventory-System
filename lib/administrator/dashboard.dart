@@ -50,7 +50,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const AdminDashboard(),
+    const Text("This is dashboard"),
     Builder(
       builder: (BuildContext context) {
         final user = FirebaseAuth.instance.currentUser;
