@@ -327,7 +327,7 @@ class _AddProductState extends State<AddProduct> {
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: const Center(
-                            child: Text("Generate Barcode",
+                            child: Text("Generate",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 17

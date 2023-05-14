@@ -11,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 class ProductProvider with ChangeNotifier {
   final CollectionReference todos =
-  FirebaseFirestore.instance.collection('products');
+      FirebaseFirestore.instance.collection('products');
 
   Stream<List<Product>> get productStream {
     final user = FirebaseAuth.instance.currentUser;
@@ -67,7 +67,8 @@ class ProductProvider with ChangeNotifier {
 
   Future<Product?> fetchProductFromFirestore(String productId) async {
     final user = FirebaseAuth.instance.currentUser;
-    final userRef = FirebaseFirestore.instance.collection('users')
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(user!.uid)
@@ -96,11 +97,12 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(Product todo, File imgFile, File barcodeQrFile, File qrFile) async {
-
+  Future<void> addProduct(
+      Product todo, File imgFile, File barcodeQrFile, File qrFile) async {
     final fileName2 = basename(qrFile.path);
-    final ref2 = FirebaseStorage.instance.ref().child(
-        'products/qrcodeImages/$fileName2');
+    final ref2 = FirebaseStorage.instance
+        .ref()
+        .child('products/qrcodeImages/$fileName2');
     final uploadTask2 = ref2.putFile(qrFile);
     final snapshot2 = await uploadTask2.whenComplete(() {});
     String downloadQrUrl;
@@ -114,8 +116,9 @@ class ProductProvider with ChangeNotifier {
     }
 
     final fileName1 = basename(barcodeQrFile.path);
-    final ref1 = FirebaseStorage.instance.ref().child(
-        'products/barcodesImages/$fileName1');
+    final ref1 = FirebaseStorage.instance
+        .ref()
+        .child('products/barcodesImages/$fileName1');
     final uploadTask1 = ref1.putFile(barcodeQrFile);
     final snapshot1 = await uploadTask1.whenComplete(() {});
     String downloadBarcodeUrl;
@@ -129,16 +132,18 @@ class ProductProvider with ChangeNotifier {
     }
 
     final fileName = basename(imgFile.path);
-    final ref = FirebaseStorage.instance.ref().child(
-        'products/productImage/$fileName');
+    final ref =
+        FirebaseStorage.instance.ref().child('products/productImage/$fileName');
     final uploadTask = ref.putFile(imgFile);
     final snapshot = await uploadTask.whenComplete(() {});
     final downloadUrl = await snapshot.ref.getDownloadURL();
 
     final user = FirebaseAuth.instance.currentUser;
-    final userRef = FirebaseFirestore.instance.collection('users')
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users').doc(user!.uid);
+        .collection('basic_users')
+        .doc(user!.uid);
 
     final todoCollection = userRef.collection('products').doc(todo.productId);
 
@@ -146,7 +151,7 @@ class ProductProvider with ChangeNotifier {
       'productId': todo.productId,
       'productSize': todo.productSize,
       'productTitle': todo.productTitle,
-      'productBrand' : todo.productBrand,
+      'productBrand': todo.productBrand,
       'productPrice': todo.productPrice,
       'productDetails': todo.productDetails,
       'productQuantity': todo.productQuantity,
@@ -163,11 +168,52 @@ class ProductProvider with ChangeNotifier {
     await todoCollection.set(todoData);
   }
 
-  Future<void> updateProduct(Product todo) async {
+  Future<void> updateProduct(Product todo, File imgFile, File barcodeQrFile, File qrFile) async {
+    final fileName2 = basename(qrFile.path);
+    final ref2 = FirebaseStorage.instance
+        .ref()
+        .child('products/qrcodeImages/$fileName2');
+    final uploadTask2 = ref2.putFile(qrFile);
+    final snapshot2 = await uploadTask2.whenComplete(() {});
+    String downloadQrUrl;
+
+    // ignore: unnecessary_null_comparison
+    if (snapshot2 != null) {
+      downloadQrUrl = await snapshot2.ref.getDownloadURL();
+    } else {
+      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+      return;
+    }
+
+    final fileName1 = basename(barcodeQrFile.path);
+    final ref1 = FirebaseStorage.instance
+        .ref()
+        .child('products/barcodesImages/$fileName1');
+    final uploadTask1 = ref1.putFile(barcodeQrFile);
+    final snapshot1 = await uploadTask1.whenComplete(() {});
+    String downloadBarcodeUrl;
+
+    // ignore: unnecessary_null_comparison
+    if (snapshot1 != null) {
+      downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
+    } else {
+      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+      return;
+    }
+
+    final fileName = basename(imgFile.path);
+    final ref =
+        FirebaseStorage.instance.ref().child('products/productImage/$fileName');
+    final uploadTask = ref.putFile(imgFile);
+    final snapshot = await uploadTask.whenComplete(() {});
+    final downloadUrl = await snapshot.ref.getDownloadURL();
+
     final user = FirebaseAuth.instance.currentUser;
-    final userRef = FirebaseFirestore.instance.collection('users')
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users').doc(user!.uid);
+        .collection('basic_users')
+        .doc(user!.uid);
 
     final todoCollection = userRef.collection('products').doc(todo.productId);
 
@@ -181,18 +227,38 @@ class ProductProvider with ChangeNotifier {
       'productQuantity': todo.productQuantity,
       'userId': todo.userId,
       'barcodeId': todo.barcodeId,
-      'barcodeUrl': todo.barcodeUrl,
-      'qrcodeUrl': todo.qrcodeUrl,
-      'productImage': todo.productImage,
+      'barcodeUrl': downloadBarcodeUrl,
+      'qrcodeUrl': downloadQrUrl,
+      'productImage': downloadUrl,
       'branch': todo.branch,
       'createdTime': FieldValue.serverTimestamp(), // add this field
       'updatedTime': FieldValue.serverTimestamp(), // add this field
     };
 
     await todoCollection.set(todoData, SetOptions(merge: true));
+
+    // Create a Todo object using the download URL for the barcode and qrcode images
+    final updatedTodo = Product(
+      productId: todo.productId,
+      productSize: todo.productSize,
+      productTitle: todo.productTitle,
+      productBrand: todo.productBrand,
+      productPrice: todo.productPrice,
+      productDetails: todo.productDetails,
+      productQuantity: todo.productQuantity,
+      userId: todo.userId,
+      barcodeId: todo.barcodeId,
+      barcodeUrl: downloadBarcodeUrl,
+      qrcodeUrl: downloadQrUrl,
+      productImage: downloadUrl,
+      branch: todo.branch,
+    );
+    // Update the Todo object in the Firebase Firestore
+    await todoCollection.set(updatedTodo.toMap(), SetOptions(merge: true));
   }
 
-  Stream<List<Product>> getProduct(String userId, {bool includeOutOfStock = false}) {
+  Stream<List<Product>> getProduct(String userId,
+      {bool includeOutOfStock = false}) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
@@ -202,48 +268,8 @@ class ProductProvider with ChangeNotifier {
     final todoCollection = userRef.collection('products');
 
     return todoCollection.snapshots().map((querySnapshot) => querySnapshot.docs
-        .where((doc) => includeOutOfStock || doc['productQuantity'] > 0)
-        .map((doc) {
-      final data = doc.data();
-      var productPrice = data['productPrice'];
-      var productSize = data['productSize'];
-      var productQuantity = data['productQuantity'];
-
-      // Check if productPrice is a String and convert to int if necessary
-      if (productPrice is String || productSize is String) {
-        productPrice = int.parse(productPrice);
-        productSize = int.parse(productSize);
-        productQuantity = int.parse(productQuantity);
-      }
-
-      return Product(
-        productId: doc.id,
-        productSize: data['productSize'] ?? 0,
-        productTitle: data['productTitle'],
-        productBrand: data['productBrand'],
-        productPrice: productPrice ?? 0,
-        productDetails: data['productDetails'],
-        productQuantity: productQuantity ?? 0,
-        userId: data['userId'],
-        barcodeId: data['barcodeId'],
-        barcodeUrl: data['barcodeUrl'] ?? '',
-        qrcodeUrl: data['qrcodeUrl'] ?? '',
-        productImage: data['productImage'] ?? '',
-        branch: data['branch'],
-      );
-    }).toList());
-  }
-
-
-  Stream<List<Product>> getProductIn(String userId) {
-    final userRef = FirebaseFirestore.instance.collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users').doc(userId);
-
-    final todoCollection = userRef.collection('products');
-
-    return todoCollection.snapshots().map((querySnapshot) =>
-        querySnapshot.docs.map((doc) {
+            .where((doc) => includeOutOfStock || doc['productQuantity'] > 0)
+            .map((doc) {
           final data = doc.data();
           var productPrice = data['productPrice'];
           var productSize = data['productSize'];
@@ -274,15 +300,19 @@ class ProductProvider with ChangeNotifier {
         }).toList());
   }
 
-  Stream<List<Product>> getProductOut(String userId) {
-    final userRef = FirebaseFirestore.instance.collection('users')
+  Stream<List<Product>> getProducts(String userId,
+      {bool includeOutOfStock = true}) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users').doc(userId);
+        .collection('basic_users')
+        .doc(userId);
 
     final todoCollection = userRef.collection('sold_products');
 
-    return todoCollection.snapshots().map((querySnapshot) =>
-        querySnapshot.docs.map((doc) {
+    return todoCollection.snapshots().map((querySnapshot) => querySnapshot.docs
+            .where((doc) => includeOutOfStock || doc['productQuantity'] > 0)
+            .map((doc) {
           final data = doc.data();
           var productPrice = data['productPrice'];
           var productSize = data['productSize'];
@@ -310,8 +340,91 @@ class ProductProvider with ChangeNotifier {
             productImage: data['productImage'] ?? '',
             branch: data['branch'],
           );
-        }).toList()
-    );
+        }).toList());
+  }
+
+  Stream<List<Product>> getProductIn(String userId) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final todoCollection = userRef.collection('products');
+
+    return todoCollection
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs.map((doc) {
+              final data = doc.data();
+              var productPrice = data['productPrice'];
+              var productSize = data['productSize'];
+              var productQuantity = data['productQuantity'];
+
+              // Check if productPrice is a String and convert to int if necessary
+              if (productPrice is String || productSize is String) {
+                productPrice = int.parse(productPrice);
+                productSize = int.parse(productSize);
+                productQuantity = int.parse(productQuantity);
+              }
+
+              return Product(
+                productId: doc.id,
+                productSize: data['productSize'] ?? 0,
+                productTitle: data['productTitle'],
+                productBrand: data['productBrand'],
+                productPrice: productPrice ?? 0,
+                productDetails: data['productDetails'],
+                productQuantity: productQuantity ?? 0,
+                userId: data['userId'],
+                barcodeId: data['barcodeId'],
+                barcodeUrl: data['barcodeUrl'] ?? '',
+                qrcodeUrl: data['qrcodeUrl'] ?? '',
+                productImage: data['productImage'] ?? '',
+                branch: data['branch'],
+              );
+            }).toList());
+  }
+
+  Stream<List<Product>> getProductOut(String userId) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final todoCollection = userRef.collection('sold_products');
+
+    return todoCollection
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs.map((doc) {
+              final data = doc.data();
+              var productPrice = data['productPrice'];
+              var productSize = data['productSize'];
+              var productQuantity = data['productQuantity'];
+
+              // Check if productPrice is a String and convert to int if necessary
+              if (productPrice is String || productSize is String) {
+                productPrice = int.parse(productPrice);
+                productSize = int.parse(productSize);
+                productQuantity = int.parse(productQuantity);
+              }
+
+              return Product(
+                productId: doc.id,
+                productSize: data['productSize'] ?? 0,
+                productTitle: data['productTitle'],
+                productBrand: data['productBrand'],
+                productPrice: data['productPrice'] ?? 0,
+                productDetails: data['productDetails'],
+                productQuantity: data['productQuantity'] ?? 0,
+                userId: data['userId'],
+                barcodeId: data['barcodeId'],
+                barcodeUrl: data['barcodeUrl'] ?? '',
+                qrcodeUrl: data['qrcodeUrl'] ?? '',
+                productImage: data['productImage'] ?? '',
+                branch: data['branch'],
+              );
+            }).toList());
   }
 
   // Method to add a new sub-collection under the todos collection of the current user
@@ -357,7 +470,6 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-
   Stream<int> getProductCount(String userId) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
@@ -376,12 +488,13 @@ class ProductProvider with ChangeNotifier {
     });
   }
 
-
   Future<void> deleteProduct(String productId) async {
     final user = FirebaseAuth.instance.currentUser;
-    final userRef = FirebaseFirestore.instance.collection('users')
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users').doc(user!.uid);
+        .collection('basic_users')
+        .doc(user!.uid);
 
     final todoRef = userRef.collection('products').doc(productId);
     await todoRef.delete();
@@ -389,8 +502,9 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> uploadBarcodes(String productId, File file, Product todo) async {
     final fileName = basename(file.path);
-    final ref = FirebaseStorage.instance.ref().child(
-        'products/barcodesImages/$fileName');
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('products/barcodesImages/$fileName');
     final uploadTask = ref.putFile(file);
     final snapshot = await uploadTask.whenComplete(() {});
     String downloadUrl;
@@ -440,8 +554,8 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> uploadQrcodes(String productId, File file, Product todo) async {
     final fileName = basename(file.path);
-    final ref = FirebaseStorage.instance.ref().child(
-        'products/qrcodeImages/$fileName');
+    final ref =
+        FirebaseStorage.instance.ref().child('products/qrcodeImages/$fileName');
     final uploadTask = ref.putFile(file);
     final snapshot = await uploadTask.whenComplete(() {});
     String downloadUrl;
@@ -491,8 +605,8 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> uploadImage(String productId, File file) async {
     final fileName = basename(file.path);
-    final ref = FirebaseStorage.instance.ref().child(
-        'products/productImage/$fileName');
+    final ref =
+        FirebaseStorage.instance.ref().child('products/productImage/$fileName');
     final uploadTask = ref.putFile(file);
     final snapshot = await uploadTask.whenComplete(() {});
     final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -517,8 +631,8 @@ class ProductProvider with ChangeNotifier {
 
     // final todoCollection = userRef
     //     .collection('products');
-        // .doc(productId) // creates a new document with a unique ID
-        // .collection('productImages'); // creates a new subcollection with name 'qrcodes'
+    // .doc(productId) // creates a new document with a unique ID
+    // .collection('productImages'); // creates a new subcollection with name 'qrcodes'
     // final newDocRef = await todoCollection.add({productImage: downloadUrl});
 
     // Update the product image URL of the current user in the app state
@@ -529,24 +643,28 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> updateImage(String productId, File file) async {
     final fileName = basename(file.path);
-    final ref = FirebaseStorage.instance.ref().child('products/productImage/$fileName');
+    final ref =
+        FirebaseStorage.instance.ref().child('products/productImage/$fileName');
     final uploadTask = ref.putFile(file);
     final snapshot = await uploadTask.whenComplete(() {});
     final downloadUrl = await snapshot.ref.getDownloadURL();
 
     // Update the product image URL in Firestore database
-    final productRef = FirebaseFirestore.instance.collection('products').doc(productId);
+    final productRef =
+        FirebaseFirestore.instance.collection('products').doc(productId);
     final imagesCollectionRef = productRef.collection('productImages');
     final imageDocSnapshot = await imagesCollectionRef.get();
-    final imageDoc = imageDocSnapshot.docs.firstWhere((doc) => doc['prodImgUrl'] == _todo.productImage);
-    await imagesCollectionRef.doc(imageDoc.id).update({'prodImgUrl': downloadUrl});
+    final imageDoc = imageDocSnapshot.docs
+        .firstWhere((doc) => doc['prodImgUrl'] == _todo.productImage);
+    await imagesCollectionRef
+        .doc(imageDoc.id)
+        .update({'prodImgUrl': downloadUrl});
 
     // Update the product image URL in the app state
     final updatedProduct = _todo.copyWith(productImage: downloadUrl);
     _todo = updatedProduct;
     notifyListeners();
   }
-
 
   Future<String?> getProductImage(String productId) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -618,10 +736,3 @@ class ProductProvider with ChangeNotifier {
     return productList;
   }
 }
-
-
-
-
-
-
-

@@ -9,7 +9,7 @@ class ProductSearchService {
         .collection('basic_users')
         .doc(userId)
         .collection('products')
-        .where('productId', isEqualTo: searchId)
+        .where('barcodeId', isEqualTo: searchId)
         .get();
   }
 

@@ -71,7 +71,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Price: \$$_price',
+            'Price: \₱$_price',
             style: const TextStyle(fontSize: 18),
           ),
           const SizedBox(height: 8),

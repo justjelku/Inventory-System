@@ -5,6 +5,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:shoes_inventory_ms/database/productsearchservice.dart';
 import 'package:shoes_inventory_ms/inventory/productdetails.dart';
 import 'package:shoes_inventory_ms/inventory/scanproductdetails.dart';
+import 'package:shoes_inventory_ms/model/constant.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -30,7 +31,7 @@ class _SearchPageState extends State<SearchPage> {
         title: TextField(
           controller: _searchController,
           decoration: const InputDecoration(
-            hintText: 'Search...',
+            hintText: 'Search Barcode ID',
             border: InputBorder.none,
           ),
           style: const TextStyle(
@@ -72,6 +73,14 @@ class _SearchPageState extends State<SearchPage> {
           subtitle: Text(doc['productDetails']),
           onTap: () {
             // Navigate to the product details page using the product ID
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ScanProductDetailsPage(
+                  barcode: searchQuery,
+                ),
+              ),
+            );
           },
         );
       }).toList();

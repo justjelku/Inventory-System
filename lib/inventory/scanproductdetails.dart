@@ -69,7 +69,7 @@ class _ScanProductDetailsPageState extends State<ScanProductDetailsPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Price: \$${_product!.productPrice}',
+                'Price: \₱${_product!.productPrice}',
                 style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 8),

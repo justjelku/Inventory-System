@@ -9,6 +9,7 @@ import 'package:shoes_inventory_ms/pages/qrscan.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_inventory_ms/pages/scannerpage.dart';
+import 'package:shoes_inventory_ms/pages/searchfriend.dart';
 import 'package:shoes_inventory_ms/pages/searchpage.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -56,12 +57,12 @@ class ProductDashboard extends StatelessWidget {
             ),
             actions: [
               IconButton(
-                icon: Icon(Icons.qr_code, color: darkBlue),
+                icon: Icon(Icons.business_sharp, color: darkBlue),
                 onPressed: () {
                   // Handle scan button press here
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ScannerPage()),
+                    MaterialPageRoute(builder: (context) => const SearchFriendPage()),
                   );
                 },
               ),
@@ -228,7 +229,7 @@ class ProductDashboard extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20)
                               ),
-                              tileColor: const Color(0xffff000b),
+                              tileColor: const Color(0xff1c2541),
                               iconColor: Colors.white,
                               textColor: Colors.white,
                               title: Text(branchName),

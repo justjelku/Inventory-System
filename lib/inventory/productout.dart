@@ -29,13 +29,13 @@ class _ProductOutState extends State<ProductOut> {
         ),
         StreamProvider<List<Product>>.value(
           value: ProductProvider()
-              .getProductOut(FirebaseAuth.instance.currentUser!.uid),
+              .getProducts(FirebaseAuth.instance.currentUser!.uid, includeOutOfStock: false),
           initialData: const [], // Use an empty list as the initial data
         ),
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Products'),
+          title: const Text('Product Out'),
         ),
         body: Consumer<List<Product>>(
           builder: (context, prod, child) {
@@ -55,13 +55,18 @@ class _ProductOutState extends State<ProductOut> {
                         height: 10,
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(10),
                         child: ListTile(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)
+                          ),
+                          tileColor: secondaryBtnColor,
+                          textColor: mainTextColor,
                           leading: Image.network(item.productImage),
-                          title: Text(item.productTitle),
-                          subtitle: Text('\$${item.productPrice}.00',
-                            style: const TextStyle(
-                              color: Colors.black,
+                          title: Text('${item.productTitle} SOLD'),
+                          subtitle: Text('\₱${item.productPrice}.00',
+                            style: TextStyle(
+                              color: mainTextColor,
                               fontWeight: FontWeight.bold, fontSize: 20,
                             ),
                           ),

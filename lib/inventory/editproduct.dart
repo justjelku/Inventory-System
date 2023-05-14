@@ -1,9 +1,17 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:flutter/foundation.dart';
+import 'package:barcode_widget/barcode_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/rendering.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:shoes_inventory_ms/model/productprovider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:ui' as ui;
+import 'package:path_provider/path_provider.dart';
 
 class EditProduct extends StatefulWidget {
   final Product todo;
@@ -29,9 +37,18 @@ class _EditProductState extends State<EditProduct> {
   late int _quantity;
   final _formKey = GlobalKey<FormState>();
 
+  late String barcodeData;
+  GlobalKey brGlobalKey = GlobalKey();
+  GlobalKey qrGlobalKey = GlobalKey();
+  late GlobalKey _barcodeKey;
+  BarcodeWidget? _barcodeImage;
+  String? productId;
+
   @override
   void initState() {
     super.initState();
+    _barcodeKey = GlobalKey();
+    barcodeData = widget.todo.barcodeId;
     _title = widget.todo.productTitle;
     _brand = widget.todo.productBrand;
     _price = widget.todo.productPrice;
@@ -50,6 +67,41 @@ class _EditProductState extends State<EditProduct> {
         _imageFile = File(pickedFile.path); // set selected image path
       });
     }
+  }
+
+  Future<void> _generateBarcode() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user!.uid;
+
+    // Get the last product ID for this user
+    final lastProductId = await getLastProductId();
+
+    // Create the barcode data using the first four characters of the user ID
+    // and the last three characters of the last product ID
+    barcodeData =
+    '2023${userId.substring(0, 4)}${lastProductId.substring(lastProductId.length - 3)}';
+
+    productId =
+    '2023${userId.substring(0, 5)}${lastProductId.substring(lastProductId.length - 8)}';
+
+    setState(() {
+      _barcodeImage = BarcodeWidget(
+        barcode: Barcode.code128(),
+        data: barcodeData!,
+        width: 200,
+        height: 150,
+        drawText: true,
+      );
+    });
+  }
+
+  Future<String> getLastProductId() async {
+    final random = Random();
+    final number = random.nextInt(99999);
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user!.uid;
+    final userPrefix = userId.substring(0, 3);
+    return '$userPrefix${number.toString().padLeft(5, '0')}';
   }
 
   void _showMsg(String message, bool isSuccess) {
@@ -254,30 +306,38 @@ class _EditProductState extends State<EditProduct> {
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final updatedTodo = widget.todo.copyWith(
-                      productTitle: _title,
-                      productBrand: _brand,
-                      productPrice: _price,
-                      productSize: _shoeSize,
-                      productDetails: _details,
-                      productQuantity: _quantity,
-                      branch: _branch,
-                      // barcodeUrl: '',
-                      // qrcodeUrl: '',
-                      // productImage: '',
-                    );
-                    ProductProvider().updateProduct(updatedTodo);
-                    if (_imageFile != null) {
-                      ProductProvider()
-                          .uploadImage(widget.todo.productId, _imageFile!);
-                    }
-                    _showMsg('You have updated the product!', true);
-                    Navigator.pop(context);
-                  }
-                },
+              RepaintBoundary(
+                key: brGlobalKey,
+                child: BarcodeWidget(
+                  color: secondaryTextColor,
+                  barcode: Barcode.code128(),
+                  data: barcodeData,
+                  width: 350,
+                  height: 200,
+                  drawText: false,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              RepaintBoundary(
+                key: qrGlobalKey,
+                child: PrettyQr(
+                  image: const AssetImage('assets/logo.png'),
+                  size: 300,
+                  data: barcodeData,
+                  errorCorrectLevel: QrErrorCorrectLevel.M,
+                  typeNumber: null,
+                  roundEdges: true,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const SizedBox(height: 20),
+              barcodeData == ''
+                  ? ElevatedButton(
+                onPressed: _generateBarcode,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryBtnColor,
                   // padding: const EdgeInsets.all(20),
@@ -293,10 +353,88 @@ class _EditProductState extends State<EditProduct> {
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: const Center(
-                      child: Text("Update Product",
-                          style: TextStyle(color: Colors.white, fontSize: 17)),
-                    )),
-              ),
+                      child: Text("Generate",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17
+                          )
+                      ),
+                    )
+                ),
+              ) : Column(
+                children: [
+                  Text(barcodeData),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+                        final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+                        dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+                        bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+
+                        final Directory documentDirectory = await getApplicationDocumentsDirectory();
+                        final String path = documentDirectory.path;
+                        String imageName = '$_title$barcodeData.png';
+                        imageCache.clear();
+                        File barcodeFile = File('$path/$imageName');
+                        barcodeFile.writeAsBytesSync(bytes);
+
+                        final RenderRepaintBoundary boundary1 = qrGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+                        final ui.Image image1 = await boundary1.toImage(pixelRatio: 3.0);
+                        dynamic bytes1 = await image1.toByteData(format: ui.ImageByteFormat.png);
+                        bytes = bytes.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
+
+                        final Directory documentDirectory1 = await getApplicationDocumentsDirectory();
+                        final String path1 = documentDirectory1.path;
+                        String imageName1 = '$_title$barcodeData.png';
+                        imageCache.clear();
+                        File qrFile = File('$path1/$imageName1');
+                        qrFile.writeAsBytesSync(bytes1);
+
+                        final updatedTodo = widget.todo.copyWith(
+                          productTitle: _title,
+                          productBrand: _brand,
+                          productPrice: _price,
+                          productSize: _shoeSize,
+                          productDetails: _details,
+                          productQuantity: _quantity,
+                          branch: _branch,
+                          barcodeId: barcodeData,
+                          // barcodeUrl: '',
+                          // qrcodeUrl: '',
+                          // productImage: '',
+                        );
+                        if (_imageFile != null) {
+                          await ProductProvider().updateProduct(updatedTodo, _imageFile!, barcodeFile, qrFile);
+                        }
+                        _showMsg('You have updated the product!', true);
+                        Navigator.pop(context);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryBtnColor,
+                      // padding: const EdgeInsets.all(20),
+                      shadowColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: primaryBtnColor,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: const Center(
+                          child: Text("Update Product",
+                              style: TextStyle(color: Colors.white, fontSize: 17)),
+                        )),
+                  ),
+                ],
+              )
             ],
           ),
         ),

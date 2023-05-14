@@ -34,6 +34,7 @@ class _SellProductPageState extends State<SellProductPage> {
       'productBrand': widget.product.productBrand,
       'productPrice': widget.product.productPrice,
       'productQuantity': _quantity,
+      'userId': widget.product.userId,
       'soldAt': DateTime.now(),
     };
     await FirebaseFirestore.instance
@@ -42,7 +43,8 @@ class _SellProductPageState extends State<SellProductPage> {
         .collection('basic_users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('sold_products')
-        .add(soldProduct);
+        .doc(widget.product.productId)
+        .set(soldProduct);
 
     final newQuantity = widget.product.productQuantity - _quantity;
     await productUpdateService.updateProductQuantity(widget.product.productId, newQuantity);
@@ -98,7 +100,7 @@ class _SellProductPageState extends State<SellProductPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Price: \$${widget.product.productPrice}',
+              'Price: \₱${widget.product.productPrice}',
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 8),
