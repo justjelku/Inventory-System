@@ -1,5 +1,4 @@
 import 'package:shoes_inventory_ms/model/productprovider.dart';
-import 'package:shoes_inventory_ms/pages/scannerpage.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
@@ -13,7 +12,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:gallery_saver/gallery_saver.dart';
-
+import 'package:shoes_inventory_ms/pages/qrscan.dart';
 
 class QrcodePage extends StatefulWidget {
   final Product todo;
@@ -262,7 +261,7 @@ class _QrcodePageState extends State<QrcodePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ScannerPage(),
+              builder: (context) => QRCodeScanner(),
             ),
           );
         },

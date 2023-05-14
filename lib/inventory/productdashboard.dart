@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_inventory_ms/pages/scannerpage.dart';
 import 'package:shoes_inventory_ms/pages/searchpage.dart';
+import 'package:rxdart/rxdart.dart';
+
 
 class ProductDashboard extends StatelessWidget {
   const ProductDashboard({Key? key}) : super(key: key);
@@ -121,7 +123,7 @@ class ProductDashboard extends StatelessWidget {
                                 final productCount = snapshot.data!;
                                 return _buildButton(
                                   context,
-                                  icon: Icons.delete_outline,
+                                  icon: Icons.stacked_bar_chart,
                                   text: 'Product Out $productCount',
                                   color: Colors.red,
                                   onPressed: () {
@@ -159,7 +161,7 @@ class ProductDashboard extends StatelessWidget {
                                 final productCount = snapshot.data!;
                                 return _buildButton(
                                   context,
-                                  icon: Icons.attach_money,
+                                  icon: Icons.php,
                                   text: 'Sales \₱$productCount',
                                   color: Colors.cyan,
                                   onPressed: () {
@@ -287,24 +289,6 @@ class ProductDashboard extends StatelessWidget {
     );
   }
 
-  Stream<int> getProductCount(String userId) {
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users')
-        .doc(userId);
-
-    final todoCollection = userRef.collection('products');
-
-    return todoCollection.snapshots().map((querySnapshot) {
-      final productIds = <String>{};
-      for (var doc in querySnapshot.docs) {
-        productIds.add(doc.id);
-      }
-      return productIds.length;
-    });
-  }
-
   Stream<int> getProductInCount(String userId) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
@@ -315,22 +299,53 @@ class ProductDashboard extends StatelessWidget {
     final todoCollection = userRef.collection('products');
 
     return todoCollection.snapshots().map((querySnapshot) {
-      int count = 0;
+      int totalQuantity = 0;
       for (var doc in querySnapshot.docs) {
-        var data = doc.data();
-        var productQuantity = data['productQuantity'];
-
-        if (productQuantity is String) {
-          productQuantity = int.tryParse(productQuantity) ?? 0;
-        }
-
-        if (productQuantity > 0) {
-          count++;
-        }
+        final data = doc.data();
+        int productQuantity = data['productQuantity'];
+        totalQuantity += productQuantity;
       }
-      return count;
+      return totalQuantity;
     });
   }
+
+  Stream<int> getProductCount(String userId) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final todoCollection = userRef.collection('products');
+    final soldProductsCollection = userRef.collection('sold_products');
+
+    final todoCountStream = todoCollection.snapshots().map((querySnapshot) {
+      int totalQuantity = 0;
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        int productQuantity = data['productQuantity'];
+        totalQuantity += productQuantity;
+      }
+      return totalQuantity;
+    });
+
+    final soldCountStream = soldProductsCollection.snapshots().map((querySnapshot) {
+      int totalQuantity = 0;
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        int productQuantity = data['productQuantity'];
+        totalQuantity += productQuantity;
+      }
+      return totalQuantity;
+    });
+
+    return Rx.combineLatest<int, int>([todoCountStream, soldCountStream], (values) {
+      return values.fold(0, (previousValue, element) => previousValue + element);
+    });
+  }
+
+
+
 
   Stream<int> getProductOutCount(String userId) {
     final userRef = FirebaseFirestore.instance
@@ -339,20 +354,20 @@ class ProductDashboard extends StatelessWidget {
         .collection('basic_users')
         .doc(userId);
 
-    final todoCollection = userRef.collection('products');
+    final soldProductsCollection = userRef.collection('sold_products');
 
-    return todoCollection.snapshots().map((querySnapshot) {
-      int outOfStockCount = 0;
+    return soldProductsCollection.snapshots().map((querySnapshot) {
+      int totalQuantity = 0;
       for (var doc in querySnapshot.docs) {
         final data = doc.data();
-        var productQuantity = data['productQuantity'];
-        if (productQuantity == 0) {
-          outOfStockCount++;
-        }
+        int productQuantity = data['productQuantity'];
+        totalQuantity += productQuantity;
       }
-      return outOfStockCount;
+      return totalQuantity;
     });
   }
+
+
 
   Stream<int> getProductSales(String userId) {
     final userRef = FirebaseFirestore.instance
@@ -361,23 +376,19 @@ class ProductDashboard extends StatelessWidget {
         .collection('basic_users')
         .doc(userId);
 
-    final todoCollection = userRef.collection('products');
+    final soldProductsCollection = userRef.collection('sold_products');
 
-    return todoCollection.snapshots().map((querySnapshot) {
+    return soldProductsCollection.snapshots().map((querySnapshot) {
       double totalSales = 0.0;
       for (var doc in querySnapshot.docs) {
         final data = doc.data();
         var productQuantity = data['productQuantity'];
         var productPrice = data['productPrice'];
-        if (productQuantity == 0) {
-          totalSales += productPrice;
-        }
+        totalSales += productPrice * productQuantity;
       }
       return totalSales.toInt();
     });
   }
-
-
 
   Stream<Map<String, int>> getBranchCount(String userId) {
     final userRef = FirebaseFirestore.instance

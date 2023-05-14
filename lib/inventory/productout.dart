@@ -29,7 +29,7 @@ class _ProductOutState extends State<ProductOut> {
         ),
         StreamProvider<List<Product>>.value(
           value: ProductProvider()
-              .getProduct(FirebaseAuth.instance.currentUser!.uid, includeOutOfStock: true),
+              .getProductOut(FirebaseAuth.instance.currentUser!.uid),
           initialData: const [], // Use an empty list as the initial data
         ),
       ],
