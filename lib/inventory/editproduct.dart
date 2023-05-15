@@ -407,9 +407,7 @@ class _EditProductState extends State<EditProduct> {
                           // qrcodeUrl: '',
                           // productImage: '',
                         );
-                        if (_imageFile != null) {
-                          await ProductProvider().updateProduct(updatedTodo, _imageFile!, barcodeFile, qrFile);
-                        }
+                        await ProductProvider().updateProduct(updatedTodo, _imageFile!, barcodeFile, qrFile);
                         _showMsg('You have updated the product!', true);
                         Navigator.pop(context);
                       }
