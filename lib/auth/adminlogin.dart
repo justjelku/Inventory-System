@@ -39,8 +39,8 @@ class _AdminLoginState extends State<AdminLogin> {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc('qIglLalZbFgIOnO0r3Zu')
-          .collection('admin_users')
-          .doc(userCredential.user!.uid)
+          // .collection('admin_users')
+          // .doc(userCredential.user!.uid)
           .get();
 
       if (userDoc.exists && userDoc.get('enabled') == true) {
@@ -87,7 +87,7 @@ class _AdminLoginState extends State<AdminLogin> {
           _userNameController.text.trim(),
           _emailController.text.trim(),
           true,
-          'admin',
+          'superAdmin',
         );
         // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
@@ -110,11 +110,23 @@ class _AdminLoginState extends State<AdminLogin> {
     }
   }
 
-  Future addUserDetails(String firstName, String lastName, String userName, String email, bool status, String role) async{
-    final userRef = FirebaseFirestore.instance.collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu');
-    final userDetailsRef = userRef.collection('admin_users')
-        .doc(FirebaseAuth.instance.currentUser!.uid);
+  // Future addUserDetails(String firstName, String lastName, String userName, String email, bool status, String role) async{
+  //   final userRef = FirebaseFirestore.instance.collection('users')
+  //       .doc('qIglLalZbFgIOnO0r3Zu');
+  //   final userDetailsRef = userRef.collection('admin_users')
+  //       .doc(FirebaseAuth.instance.currentUser!.uid);
+  //   final userDetails = {
+  //     'first name': firstName,
+  //     'last name': lastName,
+  //     'username': userName,
+  //     'email': email,
+  //     'enabled': status,
+  //     'role': role,
+  //   };
+  //   await userDetailsRef.set(userDetails);
+  // }
+  Future<void> addUserDetails(String firstName, String lastName, String userName, String email, bool status, String role) async {
+    final userRef = FirebaseFirestore.instance.collection('users').doc('qIglLalZbFgIOnO0r3Zu');
     final userDetails = {
       'first name': firstName,
       'last name': lastName,
@@ -123,8 +135,9 @@ class _AdminLoginState extends State<AdminLogin> {
       'enabled': status,
       'role': role,
     };
-    await userDetailsRef.set(userDetails);
+    await userRef.set(userDetails, SetOptions(merge: true));
   }
+
 
   bool passwordConfirmed() {
     if(_passwordController.text.trim() == _confirmPasswordController.text.trim()){
@@ -265,26 +278,26 @@ class _AdminLoginState extends State<AdminLogin> {
                       ),
                     ),
                   ),
-                  TextButton(
-                      onPressed: (){
-                        showMyDialogue();
-                      },
-                      style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                        ),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ),
-                      ),
-                      child: const Text("Create Account",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      )
-                  )
+                  // TextButton(
+                  //     onPressed: (){
+                  //       showMyDialogue();
+                  //     },
+                  //     style: ButtonStyle(
+                  //       padding: MaterialStateProperty.all<EdgeInsets>(
+                  //         const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                  //       ),
+                  //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  //         RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(50),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     child: const Text("Create Account",
+                  //       style: TextStyle(
+                  //         color: Colors.black,
+                  //       ),
+                  //     )
+                  // )
                 ]
             )
         )

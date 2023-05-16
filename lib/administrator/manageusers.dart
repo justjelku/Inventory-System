@@ -112,8 +112,8 @@ class _ManageUserState extends State<ManageUser> {
       final userSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc('qIglLalZbFgIOnO0r3Zu')
-          .collection('admin_users')
-          .doc(currentUser.uid)
+          // .collection('admin_users')
+          // .doc(currentUser.uid)
           .get();
       if (userSnapshot.exists) {
         final userData = userSnapshot.data()!;
@@ -175,9 +175,9 @@ class _ManageUserState extends State<ManageUser> {
   Widget build(BuildContext context) {
     // final user = FirebaseAuth.instance.currentUser!;
     final userRef = FirebaseFirestore.instance.collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('admin_users')
-        .doc(FirebaseAuth.instance.currentUser!.uid);
+        .doc('qIglLalZbFgIOnO0r3Zu');
+        // .collection('admin_users')
+        // .doc(FirebaseAuth.instance.currentUser!.uid);
 
     return FutureBuilder<DocumentSnapshot>(
         future: userRef.get(),
@@ -205,6 +205,23 @@ class _ManageUserState extends State<ManageUser> {
           }
           final data = snapshot.data?.data() as Map<String, dynamic>;
           return Scaffold(
+            // appBar: AppBar(
+            //   elevation: 0,
+            //   // leading: const Icon(Icons.menu, color: Colors.black,),
+            //   backgroundColor: mainTextColor,
+            //   title: Padding(
+            //     padding: const EdgeInsets.all(10),
+            //     child: Text(
+            //       'Manage Users',
+            //       style: TextStyle(
+            //         color: secondaryTextColor,
+            //         fontWeight: FontWeight.bold,
+            //         fontSize: 25,
+            //       ),
+            //     ),
+            //   ),
+            //   automaticallyImplyLeading: false,
+            // ),
             body: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(
@@ -864,7 +881,7 @@ class _ManageUserState extends State<ManageUser> {
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu');
     final userDetailsRef = userRef.collection('basic_users')
-        .doc();
+        .doc(FirebaseAuth.instance.currentUser!.uid);
     final userDetails = {
       'first name': firstName,
       'last name': lastName,

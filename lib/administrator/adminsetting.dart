@@ -17,21 +17,21 @@ class _AdminSettingsState extends State<AdminSettings> {
   @override
   void initState() {
     super.initState();
-    checkAdminUser();
+    // checkAdminUser();
   }
 
-  Future<void> checkAdminUser() async {
-    final QuerySnapshot result = await FirebaseFirestore.instance
-        .collection('admin_users')
-        .where('email', isEqualTo: user.email)
-        .get();
-    final List<DocumentSnapshot> documents = result.docs;
-    if (documents.isNotEmpty) {
-      setState(() {
-        _isAdmin = true;
-      });
-    }
-  }
+  // Future<void> checkAdminUser() async {
+  //   final QuerySnapshot result = await FirebaseFirestore.instance
+  //       .collection('admin_users')
+  //       .where('email', isEqualTo: user.email)
+  //       .get();
+  //   final List<DocumentSnapshot> documents = result.docs;
+  //   if (documents.isNotEmpty) {
+  //     setState(() {
+  //       _isAdmin = true;
+  //     });
+  //   }
+  // }
 
   void _showMsg(String message, bool isSuccess) {
     Color color = isSuccess ? Colors.green : Colors.red;

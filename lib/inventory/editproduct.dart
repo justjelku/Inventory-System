@@ -367,6 +367,14 @@ class _EditProductState extends State<EditProduct> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
+                      final title = _title;
+                      final brand = _brand;
+                      final int price = _price;
+                      final description = _details;
+                      final int quantity = _quantity;
+                      final branch = _branch;
+                      final productSize = _shoeSize;
+
                       if (_formKey.currentState!.validate()) {
                         final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
 
@@ -394,19 +402,35 @@ class _EditProductState extends State<EditProduct> {
                         File qrFile = File('$path1/$imageName1');
                         qrFile.writeAsBytesSync(bytes1);
 
-                        final updatedTodo = widget.todo.copyWith(
-                          productTitle: _title,
-                          productBrand: _brand,
-                          productPrice: _price,
-                          productSize: _shoeSize,
-                          productDetails: _details,
-                          productQuantity: _quantity,
-                          branch: _branch,
-                          barcodeId: barcodeData,
-                          // barcodeUrl: '',
-                          // qrcodeUrl: '',
-                          // productImage: '',
+                        final updatedTodo = Product(
+                          productId: productId!,
+                          productSize: productSize!,
+                          productTitle: title,
+                          productBrand: brand,
+                          productPrice: price,
+                          productDetails: description,
+                          productQuantity: quantity,
+                          userId: FirebaseAuth.instance.currentUser!.uid,
+                          barcodeId: barcodeData!,
+                          barcodeUrl: '',
+                          qrcodeUrl: '',
+                          productImage: '',
+                          branch: branch,
                         );
+
+                        // final updatedTodo = widget.todo.copyWith(
+                        //   productTitle: _title,
+                        //   productBrand: _brand,
+                        //   productPrice: _price,
+                        //   productSize: _shoeSize,
+                        //   productDetails: _details,
+                        //   productQuantity: _quantity,
+                        //   branch: _branch,
+                        //   barcodeId: barcodeData,
+                        //   // barcodeUrl: '',
+                        //   // qrcodeUrl: '',
+                        //   // productImage: '',
+                        // );
                         await ProductProvider().updateProduct(updatedTodo, _imageFile!, barcodeFile, qrFile);
                         _showMsg('You have updated the product!', true);
                         Navigator.pop(context);

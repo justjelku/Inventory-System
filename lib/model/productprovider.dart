@@ -202,8 +202,7 @@ class ProductProvider with ChangeNotifier {
     }
 
     final fileName = basename(imgFile.path);
-    final ref =
-        FirebaseStorage.instance.ref().child('products/productImage/$fileName');
+    final ref = FirebaseStorage.instance.ref().child('products/productImage/$fileName');
     final uploadTask = ref.putFile(imgFile);
     final snapshot = await uploadTask.whenComplete(() {});
     final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -237,24 +236,24 @@ class ProductProvider with ChangeNotifier {
 
     await todoCollection.set(todoData, SetOptions(merge: true));
 
-    // Create a Todo object using the download URL for the barcode and qrcode images
-    final updatedTodo = Product(
-      productId: todo.productId,
-      productSize: todo.productSize,
-      productTitle: todo.productTitle,
-      productBrand: todo.productBrand,
-      productPrice: todo.productPrice,
-      productDetails: todo.productDetails,
-      productQuantity: todo.productQuantity,
-      userId: todo.userId,
-      barcodeId: todo.barcodeId,
-      barcodeUrl: downloadBarcodeUrl,
-      qrcodeUrl: downloadQrUrl,
-      productImage: downloadUrl,
-      branch: todo.branch,
-    );
-    // Update the Todo object in the Firebase Firestore
-    await todoCollection.set(updatedTodo.toMap(), SetOptions(merge: true));
+    // // Create a Todo object using the download URL for the barcode and qrcode images
+    // final updatedTodo = Product(
+    //   productId: todo.productId,
+    //   productSize: todo.productSize,
+    //   productTitle: todo.productTitle,
+    //   productBrand: todo.productBrand,
+    //   productPrice: todo.productPrice,
+    //   productDetails: todo.productDetails,
+    //   productQuantity: todo.productQuantity,
+    //   userId: todo.userId,
+    //   barcodeId: todo.barcodeId,
+    //   barcodeUrl: downloadBarcodeUrl,
+    //   qrcodeUrl: downloadQrUrl,
+    //   productImage: downloadUrl,
+    //   branch: todo.branch,
+    // );
+    // // Update the Todo object in the Firebase Firestore
+    // await todoCollection.set(updatedTodo.toMap(), SetOptions(merge: true));
   }
 
   Stream<List<Product>> getProduct(String userId,
