@@ -79,8 +79,9 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
       );
 
       // Extract the relevant user data
-      final firstName = userData['first_name'];
-      final lastName = userData['last_name'];
+      final userId = userData['userId'];
+      final firstName = userData['first name'];
+      final lastName = userData['last name'];
       final email = userData['email'];
       final userName = userData['name'];
 
@@ -91,7 +92,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
       await FirebaseAuth.instance.signInWithCredential(credential);
 
       // Add user details to the database
-      addUserDetails(firstName, lastName, userName, email, 'basic', true);
+      addUserDetails(userId, firstName, lastName, userName, email, 'basic', true);
 
       // Navigate to the home page
       Navigator.pushNamed(context, '/home');
@@ -135,12 +136,13 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
     }
   }
 
-  Future addUserDetails(String firstName, String lastName, String userName, String email, String role, bool status) async{
+  Future addUserDetails(String userId, String firstName, String lastName, String userName, String email, String role, bool status) async{
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu');
     final userDetailsRef = userRef.collection('basic_users')
         .doc(FirebaseAuth.instance.currentUser!.uid);
     final userDetails = {
+      'userId' : userId,
       'first name': firstName,
       'last name': lastName,
       'username': userName,
@@ -178,12 +180,13 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
 
         //add user details
         addUserDetails(
+            FirebaseAuth.instance.currentUser!.uid,
           _firstNameController.text.trim(),
           _lastNameController.text.trim(),
           _userNameController.text.trim(),
           _emailController.text.trim(),
           'basic',
-          true,
+          true
         );
         Navigator.of(context).pop();
         _showMsg('Account created!', true);
