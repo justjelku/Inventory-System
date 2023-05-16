@@ -226,7 +226,7 @@ class _ProfilePageState extends State<ProfilePage> {
           floatingActionButton: FloatingActionButton(
                   onPressed: () async {
                     final userData = UserModel(
-                        uid: FirebaseAuth.instance.currentUser!.uid,
+                      userId: FirebaseAuth.instance.currentUser!.uid,
                         firstName: _firstNameController.text,
                         lastName: _lastNameController.text,
                         username: _userNameController.text,

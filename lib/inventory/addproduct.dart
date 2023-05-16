@@ -350,31 +350,31 @@ class _AddProductState extends State<AddProduct> {
                               final branch = _branchController.text.trim();
                               final productSize = int.parse(_shoeSize!.split('.')[0]);
 
-                              final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-
-                              final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-                              dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-                              bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
-
-                              final Directory documentDirectory = await getApplicationDocumentsDirectory();
-                              final String path = documentDirectory.path;
-                              String imageName = '$title$barcodeData.png';
-                              imageCache.clear();
-                              File barcodeFile = File('$path/$imageName');
-                              barcodeFile.writeAsBytesSync(bytes);
-
-                              final RenderRepaintBoundary boundary1 = qrGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-
-                              final ui.Image image1 = await boundary1.toImage(pixelRatio: 3.0);
-                              dynamic bytes1 = await image1.toByteData(format: ui.ImageByteFormat.png);
-                              bytes = bytes.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
-
-                              final Directory documentDirectory1 = await getApplicationDocumentsDirectory();
-                              final String path1 = documentDirectory1.path;
-                              String imageName1 = '$title$barcodeData.png';
-                              imageCache.clear();
-                              File qrFile = File('$path1/$imageName1');
-                              qrFile.writeAsBytesSync(bytes1);
+                              // final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+                              //
+                              // final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+                              // dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+                              // bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+                              //
+                              // final Directory documentDirectory = await getApplicationDocumentsDirectory();
+                              // final String path = documentDirectory.path;
+                              // String imageName = '$title$barcodeData.png';
+                              // imageCache.clear();
+                              // File barcodeFile = File('$path/$imageName');
+                              // barcodeFile.writeAsBytesSync(bytes);
+                              //
+                              // final RenderRepaintBoundary boundary1 = qrGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+                              //
+                              // final ui.Image image1 = await boundary1.toImage(pixelRatio: 3.0);
+                              // dynamic bytes1 = await image1.toByteData(format: ui.ImageByteFormat.png);
+                              // bytes = bytes.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
+                              //
+                              // final Directory documentDirectory1 = await getApplicationDocumentsDirectory();
+                              // final String path1 = documentDirectory1.path;
+                              // String imageName1 = '$title$barcodeData.png';
+                              // imageCache.clear();
+                              // File qrFile = File('$path1/$imageName1');
+                              // qrFile.writeAsBytesSync(bytes1);
 
 
                               final todo = Product(
@@ -392,7 +392,7 @@ class _AddProductState extends State<AddProduct> {
                                 productImage: '',
                                 branch: branch,
                               );
-                              await ProductProvider().addProduct(todo, _imageFile!, barcodeFile, qrFile);
+                              await ProductProvider().addProduct(todo, _imageFile!);
                               // if (_imageFile != null) {
                               //   ProductProvider().uploadImage(productId!, _imageFile!);
                               // }

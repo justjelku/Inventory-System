@@ -1,5 +1,5 @@
 class UserModel {
-  final String uid;
+  final String userId;
   final String firstName;
   final String lastName;
   final String username;
@@ -7,7 +7,7 @@ class UserModel {
   final String role;
   late bool status;
   UserModel({
-    required this.uid,
+    required this.userId,
     required this.firstName,
     required this.lastName,
     required this.username,
@@ -17,7 +17,7 @@ class UserModel {
   });
 
   UserModel copyWith({
-    String? uid,
+    String? userId,
     String? firstName,
     String? lastName,
     String? username,
@@ -27,7 +27,7 @@ class UserModel {
     String? profilePictureUrl,
   }) {
     return UserModel(
-      uid: uid ?? this.uid,
+      userId: userId ?? this.userId,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       username: username ?? this.username,
@@ -38,9 +38,9 @@ class UserModel {
   }
   Map<String, dynamic> toMap() {
     return {
-      'uid': uid,
-      'firstName': firstName,
-      'lastName': lastName,
+      'userId': userId,
+      'first name': firstName,
+      'last name': lastName,
       'username': username,
       'email': email,
       'role': role,

@@ -98,38 +98,38 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(
-      Product todo, File imgFile, File barcodeQrFile, File qrFile) async {
-    final fileName2 = basename(qrFile.path);
-    final ref2 = FirebaseStorage.instance
-        .ref()
-        .child('products/qrcodeImages/$fileName2');
-    final uploadTask2 = ref2.putFile(qrFile);
-    final snapshot2 = await uploadTask2.whenComplete(() {});
-    String downloadQrUrl;
+      Product todo, File imgFile) async {
+    // final fileName2 = basename(qrFile.path);
+    // final ref2 = FirebaseStorage.instance
+    //     .ref()
+    //     .child('products/qrcodeImages/$fileName2');
+    // final uploadTask2 = ref2.putFile(qrFile);
+    // final snapshot2 = await uploadTask2.whenComplete(() {});
+    // String downloadQrUrl;
+    //
+    // // ignore: unnecessary_null_comparison
+    // if (snapshot2 != null) {
+    //   downloadQrUrl = await snapshot2.ref.getDownloadURL();
+    // } else {
+    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+    //   return;
+    // }
 
-    // ignore: unnecessary_null_comparison
-    if (snapshot2 != null) {
-      downloadQrUrl = await snapshot2.ref.getDownloadURL();
-    } else {
-      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-      return;
-    }
-
-    final fileName1 = basename(barcodeQrFile.path);
-    final ref1 = FirebaseStorage.instance
-        .ref()
-        .child('products/barcodesImages/$fileName1');
-    final uploadTask1 = ref1.putFile(barcodeQrFile);
-    final snapshot1 = await uploadTask1.whenComplete(() {});
-    String downloadBarcodeUrl;
-
-    // ignore: unnecessary_null_comparison
-    if (snapshot1 != null) {
-      downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
-    } else {
-      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-      return;
-    }
+    // final fileName1 = basename(barcodeQrFile.path);
+    // final ref1 = FirebaseStorage.instance
+    //     .ref()
+    //     .child('products/barcodesImages/$fileName1');
+    // final uploadTask1 = ref1.putFile(barcodeQrFile);
+    // final snapshot1 = await uploadTask1.whenComplete(() {});
+    // String downloadBarcodeUrl;
+    //
+    // // ignore: unnecessary_null_comparison
+    // if (snapshot1 != null) {
+    //   downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
+    // } else {
+    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+    //   return;
+    // }
 
     final fileName = basename(imgFile.path);
     final ref =
@@ -157,8 +157,8 @@ class ProductProvider with ChangeNotifier {
       'productQuantity': todo.productQuantity,
       'userId': todo.userId,
       'barcodeId': todo.barcodeId,
-      'barcodeUrl': downloadBarcodeUrl,
-      'qrcodeUrl': downloadQrUrl,
+      'barcodeUrl': todo.barcodeUrl,
+      'qrcodeUrl': todo.qrcodeUrl,
       'productImage': downloadUrl,
       'branch': todo.branch,
       'createdTime': FieldValue.serverTimestamp(), // add this field
@@ -168,38 +168,38 @@ class ProductProvider with ChangeNotifier {
     await todoCollection.set(todoData);
   }
 
-  Future<void> updateProduct(Product todo, File imgFile, File barcodeQrFile, File qrFile) async {
-    final fileName2 = basename(qrFile.path);
-    final ref2 = FirebaseStorage.instance
-        .ref()
-        .child('products/qrcodeImages/$fileName2');
-    final uploadTask2 = ref2.putFile(qrFile);
-    final snapshot2 = await uploadTask2.whenComplete(() {});
-    String downloadQrUrl;
+  Future<void> updateProduct(Product todo, File imgFile) async {
+    // final fileName2 = basename(qrFile.path);
+    // final ref2 = FirebaseStorage.instance
+    //     .ref()
+    //     .child('products/qrcodeImages/$fileName2');
+    // final uploadTask2 = ref2.putFile(qrFile);
+    // final snapshot2 = await uploadTask2.whenComplete(() {});
+    // String downloadQrUrl;
+    //
+    // // ignore: unnecessary_null_comparison
+    // if (snapshot2 != null) {
+    //   downloadQrUrl = await snapshot2.ref.getDownloadURL();
+    // } else {
+    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+    //   return;
+    // }
 
-    // ignore: unnecessary_null_comparison
-    if (snapshot2 != null) {
-      downloadQrUrl = await snapshot2.ref.getDownloadURL();
-    } else {
-      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-      return;
-    }
-
-    final fileName1 = basename(barcodeQrFile.path);
-    final ref1 = FirebaseStorage.instance
-        .ref()
-        .child('products/barcodesImages/$fileName1');
-    final uploadTask1 = ref1.putFile(barcodeQrFile);
-    final snapshot1 = await uploadTask1.whenComplete(() {});
-    String downloadBarcodeUrl;
-
-    // ignore: unnecessary_null_comparison
-    if (snapshot1 != null) {
-      downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
-    } else {
-      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-      return;
-    }
+    // final fileName1 = basename(barcodeQrFile.path);
+    // final ref1 = FirebaseStorage.instance
+    //     .ref()
+    //     .child('products/barcodesImages/$fileName1');
+    // final uploadTask1 = ref1.putFile(barcodeQrFile);
+    // final snapshot1 = await uploadTask1.whenComplete(() {});
+    // String downloadBarcodeUrl;
+    //
+    // // ignore: unnecessary_null_comparison
+    // if (snapshot1 != null) {
+    //   downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
+    // } else {
+    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+    //   return;
+    // }
 
     final fileName = basename(imgFile.path);
     final ref = FirebaseStorage.instance.ref().child('products/productImage/$fileName');
@@ -226,8 +226,8 @@ class ProductProvider with ChangeNotifier {
       'productQuantity': todo.productQuantity,
       'userId': todo.userId,
       'barcodeId': todo.barcodeId,
-      'barcodeUrl': downloadBarcodeUrl,
-      'qrcodeUrl': downloadQrUrl,
+      'barcodeUrl': todo.barcodeUrl,
+      'qrcodeUrl': todo.qrcodeUrl,
       'productImage': downloadUrl,
       'branch': todo.branch,
       'createdTime': FieldValue.serverTimestamp(), // add this field

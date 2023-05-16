@@ -32,7 +32,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
       final users = snapshot.docs
           .map((doc) => UserModel(
-        uid: doc.id,
+        userId: doc.id,
         firstName: doc.data()['first name'],
         lastName: doc.data()['last name'],
         username: doc.data()['username'],

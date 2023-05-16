@@ -86,7 +86,7 @@ class UserProvider with ChangeNotifier {
     final snapshot = await userRef.get();
     if (snapshot.exists) {
       return UserModel(
-        uid: snapshot.id,
+        userId: snapshot.id,
         firstName: snapshot.data()!['first name'],
         lastName: snapshot.data()!['last name'],
         username: snapshot.data()!['username'],
@@ -130,7 +130,7 @@ class UserProvider with ChangeNotifier {
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs
         .map((doc) => UserModel(
-      uid: doc.id,
+      userId: doc.id,
       firstName: doc.data()['first name'],
       lastName: doc.data()['last name'],
       username: doc.data()['username'],
@@ -151,7 +151,7 @@ class UserProvider with ChangeNotifier {
 
     return userRef.snapshots().map((snapshot) {
       final userModel = UserModel(
-        uid: snapshot.id,
+        userId: snapshot.data()!['userId'],
         firstName: snapshot.data()!['first name'],
         lastName: snapshot.data()!['last name'],
         username: snapshot.data()!['username'],
@@ -171,6 +171,7 @@ class UserProvider with ChangeNotifier {
         .collection('basic_users');
 
     final userData = {
+      'userId': user.userId,
       'first name': user.firstName,
       'last name': user.lastName,
       'username': user.username,
@@ -210,7 +211,7 @@ class UserProvider with ChangeNotifier {
         .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
-        .doc(_user.uid);
+        .doc(_user.userId);
     final todoCollection = userRef.collection('profilePhoto');
     final newDocRef = await todoCollection.add({'profileUrl': downloadUrl});
 

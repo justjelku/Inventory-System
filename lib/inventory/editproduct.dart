@@ -376,31 +376,31 @@ class _EditProductState extends State<EditProduct> {
                       final productSize = _shoeSize;
 
                       if (_formKey.currentState!.validate()) {
-                        final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-
-                        final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-                        dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-                        bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
-
-                        final Directory documentDirectory = await getApplicationDocumentsDirectory();
-                        final String path = documentDirectory.path;
-                        String imageName = '$_title$barcodeData.png';
-                        imageCache.clear();
-                        File barcodeFile = File('$path/$imageName');
-                        barcodeFile.writeAsBytesSync(bytes);
-
-                        final RenderRepaintBoundary boundary1 = qrGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-
-                        final ui.Image image1 = await boundary1.toImage(pixelRatio: 3.0);
-                        dynamic bytes1 = await image1.toByteData(format: ui.ImageByteFormat.png);
-                        bytes = bytes.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
-
-                        final Directory documentDirectory1 = await getApplicationDocumentsDirectory();
-                        final String path1 = documentDirectory1.path;
-                        String imageName1 = '$_title$barcodeData.png';
-                        imageCache.clear();
-                        File qrFile = File('$path1/$imageName1');
-                        qrFile.writeAsBytesSync(bytes1);
+                        // final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+                        //
+                        // final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+                        // dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+                        // bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+                        //
+                        // final Directory documentDirectory = await getApplicationDocumentsDirectory();
+                        // final String path = documentDirectory.path;
+                        // String imageName = '$_title$barcodeData.png';
+                        // imageCache.clear();
+                        // File barcodeFile = File('$path/$imageName');
+                        // barcodeFile.writeAsBytesSync(bytes);
+                        //
+                        // final RenderRepaintBoundary boundary1 = qrGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+                        //
+                        // final ui.Image image1 = await boundary1.toImage(pixelRatio: 3.0);
+                        // dynamic bytes1 = await image1.toByteData(format: ui.ImageByteFormat.png);
+                        // bytes = bytes.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
+                        //
+                        // final Directory documentDirectory1 = await getApplicationDocumentsDirectory();
+                        // final String path1 = documentDirectory1.path;
+                        // String imageName1 = '$_title$barcodeData.png';
+                        // imageCache.clear();
+                        // File qrFile = File('$path1/$imageName1');
+                        // qrFile.writeAsBytesSync(bytes1);
 
                         final updatedTodo = Product(
                           productId: productId!,
@@ -431,7 +431,7 @@ class _EditProductState extends State<EditProduct> {
                         //   // qrcodeUrl: '',
                         //   // productImage: '',
                         // );
-                        await ProductProvider().updateProduct(updatedTodo, _imageFile!, barcodeFile, qrFile);
+                        await ProductProvider().updateProduct(updatedTodo, _imageFile!);
                         _showMsg('You have updated the product!', true);
                         Navigator.pop(context);
                       }

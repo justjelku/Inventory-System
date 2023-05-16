@@ -44,7 +44,7 @@ class _ManageUserState extends State<ManageUser> {
     _listAuthorizedUsers();
     final user = FirebaseAuth.instance.currentUser!;
     _user = UserModel(
-      uid: user.uid,
+      userId: user.uid,
       email: user.email!,
       firstName: '',
       lastName: '',
@@ -90,7 +90,7 @@ class _ManageUserState extends State<ManageUser> {
       });
 
       // Check if the user is authorized to view the user list
-      bool isAuthorized = authorizedUsers.any((user) => user['uid'] == _user.uid);
+      bool isAuthorized = authorizedUsers.any((user) => user['uid'] == _user.userId);
       if (!isAuthorized) {
         // _showMsg('You are authorized to manage the user list.', true);
         setState(() {
@@ -120,7 +120,7 @@ class _ManageUserState extends State<ManageUser> {
         if (userData['enabled'] == true) {
           setState(() {
             _user = UserModel(
-              uid: currentUser.uid,
+              userId: currentUser.uid,
               firstName: currentUser.displayName?.split(' ')[0] ?? '',
               lastName: currentUser.displayName?.split(' ')[1] ?? '',
               email: currentUser.email ?? '',
@@ -128,9 +128,9 @@ class _ManageUserState extends State<ManageUser> {
               role: '',
               status: true,
             ).copyWith(
-              uid: userData['uid'],
-              firstName: userData['firstName'],
-              lastName: userData['lastName'],
+              userId: userData['userId'],
+              firstName: userData['first name'],
+              lastName: userData['last name'],
               username: userData['username'],
               role: userData['role'],
               status: userData['enabled'],
@@ -394,16 +394,16 @@ class _ManageUserState extends State<ManageUser> {
                           onSelected: (value) {
                             switch (value) {
                               case 'disable':
-                                _disableUser(item.uid);
+                                _disableUser(item.userId);
                                 break;
                               case 'enable':
-                                _enableUser(item.uid);
+                                _enableUser(item.userId);
                                 break;
                               case 'edit':
-                                _editUser(item.uid);
+                                _editUser(item.userId);
                                 break;
                               case 'delete':
-                                _deleteUser(item.uid);
+                                _deleteUser(item.userId);
                                 // _deleteUser(item.uid);
                                 break;
                               default:

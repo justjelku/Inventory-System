@@ -75,7 +75,7 @@ class _EditProfileState extends State<EditProfile> {
 
       // Upload the image to Firebase Storage and Firestore
       // ignore: use_build_context_synchronously
-      await Provider.of<UserProvider>(context, listen: false).uploadProfilePicture(widget.userData.uid, _image!);
+      await Provider.of<UserProvider>(context, listen: false).uploadProfilePicture(widget.userData.userId, _image!);
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
     }
