@@ -40,10 +40,13 @@ class _AddProductState extends State<AddProduct> {
   GlobalKey qrGlobalKey = GlobalKey();
   late GlobalKey _barcodeKey;
   BarcodeWidget? _barcodeImage;
+  PrettyQr? _qrImage;
   String? productTitle;
 
   List<String> branchList = [];
   String? _selectedBranch;
+  File? barcodeImageUrl;
+  File? qrCodeImageUrl;
 
   Future<void> getBranches() async {
     // fetch branches from Firebase using product provider
@@ -65,16 +68,21 @@ class _AddProductState extends State<AddProduct> {
     _branchController = TextEditingController(text: _selectedBranch);
     getBranches();
     _barcodeKey = GlobalKey();
-    // _barcodeImage = RepaintBoundary(
-    //   key: _barcodeKey,
-    //   child: BarcodeWidget(
-    //     barcode: Barcode.code128(),
-    //     data: '',
-    //     width: 200,
-    //     height: 150,
-    //     drawText: true,
-    //   ),
-    // ) as BarcodeWidget?;
+    _barcodeImage = BarcodeWidget(
+      barcode: Barcode.code128(),
+      data: '',
+      width: 200,
+      height: 150,
+      drawText: false,
+    );
+    _qrImage = PrettyQr(
+      image: const AssetImage('assets/logo.png'),
+      size: 300,
+      data: '',
+      errorCorrectLevel: QrErrorCorrectLevel.M,
+      typeNumber: null,
+      roundEdges: true,
+    );
   }
 
   void _pickImage() async {
@@ -105,9 +113,52 @@ class _AddProductState extends State<AddProduct> {
         data: barcodeData!,
         width: 200,
         height: 150,
-        drawText: true,
+        drawText: false,
+      );
+      _qrImage = PrettyQr(
+        image: const AssetImage('assets/logo.png'),
+        size: 300,
+        data: barcodeData!,
+        errorCorrectLevel: QrErrorCorrectLevel.M,
+        typeNumber: null,
+        roundEdges: true,
       );
     });
+
+    await generateBarcodeImage();
+    await generateQRCodeImage();
+  }
+
+  Future<void> generateBarcodeImage() async {
+    final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+
+    final Directory documentDirectory = await getApplicationDocumentsDirectory();
+    final String path = documentDirectory.path;
+    String imageName = '$barcodeData.png';
+    imageCache.clear();
+    File barcodeFile = File('$path/$imageName');
+    barcodeFile.writeAsBytesSync(bytes);
+
+    barcodeImageUrl = barcodeFile; // Save the barcode image URL
+  }
+
+  Future<void> generateQRCodeImage() async {
+    final RenderRepaintBoundary boundary = qrGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+
+    final Directory documentDirectory = await getApplicationDocumentsDirectory();
+    final String path = documentDirectory.path;
+    String imageName = '$barcodeData.png';
+    imageCache.clear();
+    File qrFile = File('$path/$imageName');
+    qrFile.writeAsBytesSync(bytes);
+
+    qrCodeImageUrl = qrFile; // Save the QR code image URL
   }
 
   Future<String> getLastProductId() async {
@@ -280,30 +331,19 @@ class _AddProductState extends State<AddProduct> {
                     const SizedBox(
                       height: 20,
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     RepaintBoundary(
                       key: brGlobalKey,
-                      child: BarcodeWidget(
-                        color: secondaryTextColor,
-                        barcode: Barcode.code128(),
-                        data: barcodeData ?? '',
-                        width: 350,
-                        height: 200,
-                        drawText: false,
-                      ),
+                      child: _barcodeImage ?? Container(), // Use _barcodeImage instead of BarcodeWidget
                     ),
                     const SizedBox(
                       height: 20,
                     ),
                     RepaintBoundary(
                       key: qrGlobalKey,
-                      child: PrettyQr(
-                        image: const AssetImage('assets/logo.png'),
-                        size: 300,
-                        data: barcodeData ?? '',
-                        errorCorrectLevel: QrErrorCorrectLevel.M,
-                        typeNumber: null,
-                        roundEdges: true,
-                      ),
+                      child: _qrImage ?? Container(), // Use _qrImage instead of PrettyQr
                     ),
                     const SizedBox(
                       height: 20,
@@ -335,7 +375,8 @@ class _AddProductState extends State<AddProduct> {
                             ),
                           )
                       ),
-                    ) : Column(
+                    )
+                        : Column(
                       children: [
                         Text('$barcodeData'),
                         const SizedBox(height: 20),
@@ -349,33 +390,6 @@ class _AddProductState extends State<AddProduct> {
                               final quantity = _quantityController.text.trim();
                               final branch = _branchController.text.trim();
                               final productSize = int.parse(_shoeSize!.split('.')[0]);
-
-                              // final RenderRepaintBoundary boundary = brGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-                              //
-                              // final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-                              // dynamic bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-                              // bytes = bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
-                              //
-                              // final Directory documentDirectory = await getApplicationDocumentsDirectory();
-                              // final String path = documentDirectory.path;
-                              // String imageName = '$title$barcodeData.png';
-                              // imageCache.clear();
-                              // File barcodeFile = File('$path/$imageName');
-                              // barcodeFile.writeAsBytesSync(bytes);
-                              //
-                              // final RenderRepaintBoundary boundary1 = qrGlobalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-                              //
-                              // final ui.Image image1 = await boundary1.toImage(pixelRatio: 3.0);
-                              // dynamic bytes1 = await image1.toByteData(format: ui.ImageByteFormat.png);
-                              // bytes = bytes.buffer.asUint8List(bytes1.offsetInBytes, bytes1.lengthInBytes);
-                              //
-                              // final Directory documentDirectory1 = await getApplicationDocumentsDirectory();
-                              // final String path1 = documentDirectory1.path;
-                              // String imageName1 = '$title$barcodeData.png';
-                              // imageCache.clear();
-                              // File qrFile = File('$path1/$imageName1');
-                              // qrFile.writeAsBytesSync(bytes1);
-
 
                               final todo = Product(
                                 productId: productId!,
@@ -392,7 +406,7 @@ class _AddProductState extends State<AddProduct> {
                                 productImage: '',
                                 branch: branch,
                               );
-                              await ProductProvider().addProduct(todo, _imageFile!);
+                              await ProductProvider().addProduct(todo, _imageFile!, barcodeImageUrl!, qrCodeImageUrl!);
                               // if (_imageFile != null) {
                               //   ProductProvider().uploadImage(productId!, _imageFile!);
                               // }

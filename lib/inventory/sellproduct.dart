@@ -34,7 +34,7 @@ class _SellProductPageState extends State<SellProductPage> {
       'productBrand': widget.product.productBrand,
       'productPrice': widget.product.productPrice,
       'productQuantity': _quantity,
-      'userId': widget.product.userId,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
       'soldAt': DateTime.now(),
     };
     await FirebaseFirestore.instance

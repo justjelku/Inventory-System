@@ -42,29 +42,6 @@ class ProductProvider with ChangeNotifier {
     super.dispose();
   }
 
-  // Future<UserModel?> fetchUserFromFirestore(String userId) async {
-  //   final userRef = FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc('qIglLalZbFgIOnO0r3Zu')
-  //       .collection('basic_users')
-  //       .doc(userId);
-  //
-  //   final snapshot = await userRef.get();
-  //   if (snapshot.exists) {
-  //     return UserModel(
-  //       uid: snapshot.id,
-  //       firstName: snapshot.data()!['first name'],
-  //       lastName: snapshot.data()!['last name'],
-  //       username: snapshot.data()!['username'],
-  //       email: snapshot.data()!['email'],
-  //       role: snapshot.data()!['role'],
-  //       status: snapshot.data()!['enabled'],
-  //     );
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
   Future<Product?> fetchProductFromFirestore(String productId) async {
     final user = FirebaseAuth.instance.currentUser;
     final userRef = FirebaseFirestore.instance
@@ -77,59 +54,60 @@ class ProductProvider with ChangeNotifier {
 
     final snapshot = await userRef.get();
     if (snapshot.exists) {
-      return Product(
-        productId: snapshot.data()!['productId'],
-        productSize: snapshot.data()!['productSize'] ?? 0,
-        productTitle: snapshot.data()!['productTitle'],
-        productBrand: snapshot.data()!['productBrand'],
-        productPrice: snapshot.data()!['productPrice'] ?? 0,
-        productDetails: snapshot.data()!['productDetails'],
-        productQuantity: snapshot.data()!['productQuantity'] ?? 0,
-        userId: snapshot.data()!['userId'],
-        barcodeId: snapshot.data()!['barcodeId'],
-        barcodeUrl: snapshot.data()!['barcodeUrl'] ?? '',
-        qrcodeUrl: snapshot.data()!['qrcodeUrl'] ?? '',
-        productImage: snapshot.data()!['productImage'] ?? '',
-        branch: snapshot.data()!['branch'],
-      );
-    } else {
-      return null;
+      final data = snapshot.data(); // Get the snapshot data
+      if (data != null) { // Add null check here
+        return Product(
+          userId: data['userId'],
+          productId: data['productId'],
+          productSize: data['productSize'] ?? 0,
+          productTitle: data['productTitle'],
+          productBrand: data['productBrand'],
+          productPrice: data['productPrice'] ?? 0,
+          productDetails: data['productDetails'],
+          productQuantity: data['productQuantity'] ?? 0,
+          barcodeId: data['barcodeId'] ?? '',
+          barcodeUrl: data['barcodeUrl'] ?? '',
+          qrcodeUrl: data['qrcodeUrl'] ?? '',
+          productImage: data['productImage'] ?? '',
+          branch: data['branch'],
+        );
+      }
     }
+    return null;
   }
 
-  Future<void> addProduct(
-      Product todo, File imgFile) async {
-    // final fileName2 = basename(qrFile.path);
-    // final ref2 = FirebaseStorage.instance
-    //     .ref()
-    //     .child('products/qrcodeImages/$fileName2');
-    // final uploadTask2 = ref2.putFile(qrFile);
-    // final snapshot2 = await uploadTask2.whenComplete(() {});
-    // String downloadQrUrl;
-    //
-    // // ignore: unnecessary_null_comparison
-    // if (snapshot2 != null) {
-    //   downloadQrUrl = await snapshot2.ref.getDownloadURL();
-    // } else {
-    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-    //   return;
-    // }
+  Future<void> addProduct(Product todo, File imgFile, File barcodeQrFile, File qrFile) async {
+    final fileName2 = basename(qrFile.path);
+    final ref2 = FirebaseStorage.instance
+        .ref()
+        .child('products/qrcodeImages/$fileName2');
+    final uploadTask2 = ref2.putFile(qrFile);
+    final snapshot2 = await uploadTask2.whenComplete(() {});
+    String downloadQrUrl;
 
-    // final fileName1 = basename(barcodeQrFile.path);
-    // final ref1 = FirebaseStorage.instance
-    //     .ref()
-    //     .child('products/barcodesImages/$fileName1');
-    // final uploadTask1 = ref1.putFile(barcodeQrFile);
-    // final snapshot1 = await uploadTask1.whenComplete(() {});
-    // String downloadBarcodeUrl;
-    //
-    // // ignore: unnecessary_null_comparison
-    // if (snapshot1 != null) {
-    //   downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
-    // } else {
-    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-    //   return;
-    // }
+    // ignore: unnecessary_null_comparison
+    if (snapshot2 != null) {
+      downloadQrUrl = await snapshot2.ref.getDownloadURL();
+    } else {
+      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+      return;
+    }
+
+    final fileName1 = basename(barcodeQrFile.path);
+    final ref1 = FirebaseStorage.instance
+        .ref()
+        .child('products/barcodesImages/$fileName1');
+    final uploadTask1 = ref1.putFile(barcodeQrFile);
+    final snapshot1 = await uploadTask1.whenComplete(() {});
+    String downloadBarcodeUrl;
+
+    // ignore: unnecessary_null_comparison
+    if (snapshot1 != null) {
+      downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
+    } else {
+      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+      return;
+    }
 
     final fileName = basename(imgFile.path);
     final ref =
@@ -157,8 +135,8 @@ class ProductProvider with ChangeNotifier {
       'productQuantity': todo.productQuantity,
       'userId': todo.userId,
       'barcodeId': todo.barcodeId,
-      'barcodeUrl': todo.barcodeUrl,
-      'qrcodeUrl': todo.qrcodeUrl,
+      'barcodeUrl': downloadBarcodeUrl,
+      'qrcodeUrl': downloadQrUrl,
       'productImage': downloadUrl,
       'branch': todo.branch,
       'createdTime': FieldValue.serverTimestamp(), // add this field
@@ -166,46 +144,39 @@ class ProductProvider with ChangeNotifier {
     };
 
     await todoCollection.set(todoData);
+    notifyListeners();
   }
 
-  Future<void> updateProduct(Product todo, File imgFile) async {
+  Future<void> updateProduct(Product todo) async {
     // final fileName2 = basename(qrFile.path);
-    // final ref2 = FirebaseStorage.instance
-    //     .ref()
-    //     .child('products/qrcodeImages/$fileName2');
+    // final ref2 = FirebaseStorage.instance.ref().child('products/qrcodeImages/$fileName2');
     // final uploadTask2 = ref2.putFile(qrFile);
     // final snapshot2 = await uploadTask2.whenComplete(() {});
     // String downloadQrUrl;
     //
-    // // ignore: unnecessary_null_comparison
     // if (snapshot2 != null) {
     //   downloadQrUrl = await snapshot2.ref.getDownloadURL();
     // } else {
-    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-    //   return;
+    //   throw Exception('Failed to upload QR code image');
     // }
-
+    //
     // final fileName1 = basename(barcodeQrFile.path);
-    // final ref1 = FirebaseStorage.instance
-    //     .ref()
-    //     .child('products/barcodesImages/$fileName1');
+    // final ref1 = FirebaseStorage.instance.ref().child('products/barcodesImages/$fileName1');
     // final uploadTask1 = ref1.putFile(barcodeQrFile);
     // final snapshot1 = await uploadTask1.whenComplete(() {});
     // String downloadBarcodeUrl;
     //
-    // // ignore: unnecessary_null_comparison
     // if (snapshot1 != null) {
     //   downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
     // } else {
-    //   // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-    //   return;
+    //   throw Exception('Failed to upload barcode image');
     // }
-
-    final fileName = basename(imgFile.path);
-    final ref = FirebaseStorage.instance.ref().child('products/productImage/$fileName');
-    final uploadTask = ref.putFile(imgFile);
-    final snapshot = await uploadTask.whenComplete(() {});
-    final downloadUrl = await snapshot.ref.getDownloadURL();
+    //
+    // final fileName = basename(imgFile.path);
+    // final ref = FirebaseStorage.instance.ref().child('products/productImage/$fileName');
+    // final uploadTask = ref.putFile(imgFile);
+    // final snapshot = await uploadTask.whenComplete(() {});
+    // final downloadUrl = await snapshot.ref.getDownloadURL();
 
     final user = FirebaseAuth.instance.currentUser;
     final userRef = FirebaseFirestore.instance
@@ -226,34 +197,16 @@ class ProductProvider with ChangeNotifier {
       'productQuantity': todo.productQuantity,
       'userId': todo.userId,
       'barcodeId': todo.barcodeId,
-      'barcodeUrl': todo.barcodeUrl,
-      'qrcodeUrl': todo.qrcodeUrl,
-      'productImage': downloadUrl,
+      'barcodeUrl': todo.barcodeUrl, // Use the download URL here
+      'qrcodeUrl': todo.qrcodeUrl, // Use the download URL here
+      'productImage': todo.productImage,
       'branch': todo.branch,
-      'createdTime': FieldValue.serverTimestamp(), // add this field
-      'updatedTime': FieldValue.serverTimestamp(), // add this field
+      'createdTime': FieldValue.serverTimestamp(),
+      'updatedTime': FieldValue.serverTimestamp(),
     };
 
-    await todoCollection.set(todoData, SetOptions(merge: true));
-
-    // // Create a Todo object using the download URL for the barcode and qrcode images
-    // final updatedTodo = Product(
-    //   productId: todo.productId,
-    //   productSize: todo.productSize,
-    //   productTitle: todo.productTitle,
-    //   productBrand: todo.productBrand,
-    //   productPrice: todo.productPrice,
-    //   productDetails: todo.productDetails,
-    //   productQuantity: todo.productQuantity,
-    //   userId: todo.userId,
-    //   barcodeId: todo.barcodeId,
-    //   barcodeUrl: downloadBarcodeUrl,
-    //   qrcodeUrl: downloadQrUrl,
-    //   productImage: downloadUrl,
-    //   branch: todo.branch,
-    // );
-    // // Update the Todo object in the Firebase Firestore
-    // await todoCollection.set(updatedTodo.toMap(), SetOptions(merge: true));
+    await todoCollection.update(todoData);
+    notifyListeners();
   }
 
   Stream<List<Product>> getProduct(String userId,
