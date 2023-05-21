@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shoes_inventory_ms/inventory/addproduct.dart';
 import 'package:shoes_inventory_ms/inventory/editproduct.dart';
 import 'package:shoes_inventory_ms/inventory/productdetails.dart';
+import 'package:shoes_inventory_ms/inventory/stockhistory.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:shoes_inventory_ms/model/productprovider.dart';
@@ -58,12 +59,13 @@ class _ProductInState extends State<ProductIn> {
                         padding: const EdgeInsets.all(8.0),
                         child: ListTile(
                           leading: Image.network(item.productImage),
-                          title: Text(item.productTitle),
-                          subtitle: Text('\$${item.productPrice}.00',
-                              style: const TextStyle(
+                          title: Text(item.productTitle,
+                            style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold, fontSize: 20,
                             ),
+                          ),
+                          subtitle: Text('Available stock: ${item.productQuantity}',
                           ),
                           trailing: PopupMenuButton(
                             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
@@ -123,8 +125,8 @@ class _ProductInState extends State<ProductIn> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => BarcodePage(
-                                    todo: item,
+                                  builder: (context) => StockHistoryPage(
+                                    productId: item.productId,
                                   ),
                                 ),
                             );

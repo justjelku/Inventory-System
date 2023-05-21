@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_inventory_ms/database/productsearchservice.dart';
-import 'package:shoes_inventory_ms/inventory/sellproduct.dart';
+import 'package:shoes_inventory_ms/inventory/stockout.dart';
+import 'package:shoes_inventory_ms/inventory/stockin.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 import 'package:shoes_inventory_ms/pages/barcode.dart';
@@ -100,7 +101,7 @@ class _ScanProductDetailsPageState extends State<ScanProductDetailsPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SellProductPage(
+                      builder: (context) => StockInPage(
                         product: _product!,
                       ),
                     ),
@@ -121,7 +122,38 @@ class _ScanProductDetailsPageState extends State<ScanProductDetailsPage> {
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: const Center(
-                      child: Text("Sell Product",
+                      child: Text("Stock In",
+                          style: TextStyle(color: Colors.white, fontSize: 17)),
+                    )),
+              ),
+              const SizedBox(height: 20,),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => StockOutPage(
+                        product: _product!,
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: secondaryBtnColor,
+                  // padding: const EdgeInsets.all(20),
+                  shadowColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: secondaryBtnColor,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: const Center(
+                      child: Text("Stock Out",
                           style: TextStyle(color: Colors.white, fontSize: 17)),
                     )),
               )

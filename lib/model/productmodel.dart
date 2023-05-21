@@ -2,7 +2,10 @@ import 'dart:io';
 
 class Product {
   final String productId;
+  final String category;
   final int productSize;
+  final String sizeSystem;
+  final String color;
   final String productTitle;
   final String productBrand;
   final int productPrice;
@@ -17,7 +20,10 @@ class Product {
 
   Product({
     required this.productId,
+    required this.category,
     required this.productSize,
+    required this.sizeSystem,
+    required this.color,
     required this.productTitle,
     required this.productBrand,
     required this.productPrice,
@@ -34,6 +40,9 @@ class Product {
   Product copyWith({
     String? productId,
     int? productSize,
+    String? sizeSystem,
+    String? color,
+    String? category,
     String? productTitle,
     String? productBrand,
     int? productPrice,
@@ -48,7 +57,10 @@ class Product {
   }) {
     return Product(
       productId: productId ?? this.productId,
+      category: category ?? this.category,
       productSize: productSize ?? this.productSize,
+      sizeSystem: sizeSystem ?? this.sizeSystem,
+      color: color ?? this.color,
       productTitle: productTitle ?? this.productTitle,
       productBrand: productBrand ?? this.productBrand,
       productPrice: productPrice ?? this.productPrice,
@@ -65,7 +77,10 @@ class Product {
     Map<String, dynamic> toMap() {
       return {
         'productId': productId,
+        'category' : category,
         'productSize': productSize,
+        'sizeSystem' : sizeSystem,
+        'color': color,
         'productTitle': productTitle,
         'productBrand': productBrand,
         'productPrice': productPrice,
@@ -81,7 +96,10 @@ class Product {
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
       productId: map['productId'],
+      category: map['category'],
       productSize: map['productSize'],
+      sizeSystem: map['sizeSystem'],
+      color: map['color'],
       productTitle: map['productTitle'],
       productBrand: map['productBrand'],
       productPrice: map['productPrice'],

@@ -28,10 +28,21 @@ class _AddProductState extends State<AddProduct> {
   final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
   final _brandController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _colorController = TextEditingController();
   late TextEditingController _branchController;
   File? _imageFile;
   String? _shoeSize;
-  int? _selectedSize;
+  String? _category;
+  String? _color;
+  String? _selectedColor;
+  String? _selectedSystem;
+  String? _selectedSize;
+
+  final List<String> usSizes = ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9'];
+  final List<String> ukSizes = ['4.5', '5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5'];
+  final List<String> euSizes = ['37', '37.5', '38', '38.5', '39', '40', '40.5', '41', '42'];
+  String? _selectedCategory;
   final _detailsController = TextEditingController();
 
   String? barcodeData;
@@ -47,6 +58,8 @@ class _AddProductState extends State<AddProduct> {
   String? _selectedBranch;
   File? barcodeImageUrl;
   File? qrCodeImageUrl;
+  bool _isOtherCategorySelected = false;
+
 
   Future<void> getBranches() async {
     // fetch branches from Firebase using product provider
@@ -235,23 +248,86 @@ class _AddProductState extends State<AddProduct> {
                     const SizedBox(height: 20),
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(
-                        labelText: 'Shoe Size',
+                        labelText: 'Men Size',
                       ),
-                      value: _shoeSize,
+                      value: _selectedSystem,
                       onChanged: (String? value) {
                         setState(() {
-                          _shoeSize = value!;
-                          _selectedSize = int.tryParse(value.replaceAll('.', '')); // parse the value to an int, removing any decimal point if present
+                          _selectedSystem = value;
+                          _selectedSize = null; // Reset selected size when changing the system
                         });
                       },
-                      items: <String>['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9']
-                          .map<DropdownMenuItem<String>>((String value) {
+                      items: <String>[
+                        'US',
+                        'UK',
+                        'EU',
+                      ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
                         );
                       }).toList(),
                     ),
+                    if (_selectedSystem != null)
+                      Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          Text('Selected System: $_selectedSystem'),
+                          const SizedBox(height: 16),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: (_selectedSystem == 'US')
+                                  ? usSizes.map((size) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedSize = size;
+                                      });
+                                    },
+                                    child: Text(size),
+                                  ),
+                                );
+                              }).toList()
+                                  : (_selectedSystem == 'UK')
+                                  ? ukSizes.map((size) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedSize = size;
+                                      });
+                                    },
+                                    child: Text(size),
+                                  ),
+                                );
+                              }).toList()
+                                  : euSizes.map((size) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedSize = size;
+                                      });
+                                    },
+                                    child: Text(size),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          if (_selectedSize != null)
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text('Selected Size: $_selectedSize'),
+                            ),
+                        ],
+                      ),
                     // const SizedBox(height: 20),
                     TextFormField(
                       controller: _branchController,
@@ -273,6 +349,84 @@ class _AddProductState extends State<AddProduct> {
                         return (value == '')? "Product" : null;
                       },
                     ),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Category',
+                      ),
+                      value: _category,
+                      onChanged: (String? value) {
+                        setState(() {
+                          if (value == 'Other') {
+                            _isOtherCategorySelected = true;
+                          } else {
+                            _category = value!;
+                            _isOtherCategorySelected = false;
+                          }
+                        });
+                      },
+                      items: const <DropdownMenuItem<String>>[
+                        DropdownMenuItem<String>(
+                          value: 'Basketball Shoes',
+                          child: Text('Basketball Shoes'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: 'Other',
+                          child: Text('Other'),
+                        ),
+                      ],
+                    ),
+                    if (_isOtherCategorySelected)
+                      TextFormField(
+                        controller: _categoryController,
+                        decoration: const InputDecoration(
+                            hintText: 'Category',
+                            labelText: 'Category'
+                        ),
+                        validator: (value){
+                          return (value == '')? "Category" : null;
+                        },
+                      ),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Color',
+                      ),
+                      value: _color,
+                      onChanged: (String? value) {
+                        setState(() {
+                          if (value == 'Other') {
+                            _isOtherCategorySelected = true;
+                          } else {
+                            _color = value!;
+                            _isOtherCategorySelected = false;
+                          }
+                        });
+                      },
+                      items: const <DropdownMenuItem<String>>[
+                        DropdownMenuItem<String>(
+                          value: 'Blue',
+                          child: Text('Blue'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: 'Black',
+                          child: Text('Black'),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: 'Other',
+                          child: Text('Other'),
+                        ),
+                      ],
+                    ),
+                    if (_isOtherCategorySelected)
+                      TextFormField(
+                        controller: _colorController,
+                        decoration: const InputDecoration(
+                            hintText: 'Color',
+                            labelText: 'Color'
+                        ),
+                        validator: (value){
+                          return (value == '')? "Color" : null;
+                        },
+                      ),
                     TextFormField(
                       controller: _brandController,
                       decoration: const InputDecoration(
@@ -318,12 +472,19 @@ class _AddProductState extends State<AddProduct> {
                       controller: _quantityController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
-                          hintText: "0",
-                          labelText: 'Quantity'
+                        hintText: "0",
+                        labelText: 'Quantity',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a quantity';
+                        }
+                        final quantity = int.tryParse(value);
+                        if (quantity == null) {
+                          return 'Please enter a valid number';
+                        }
+                        if (quantity > 100) {
+                          return 'Maximum quantity is 100';
                         }
                         return null;
                       },
@@ -384,18 +545,24 @@ class _AddProductState extends State<AddProduct> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               final title = _titleController.text.trim();
+                              final category = _category == 'Other' ? _categoryController.text.trim() : _category!;
                               final brand = _brandController.text.trim();
                               final price = _priceController.text.trim();
                               final description = _detailsController.text.trim();
                               final quantity = _quantityController.text.trim();
                               final branch = _branchController.text.trim();
-                              final productSize = int.parse(_shoeSize!.split('.')[0]);
+                              final productSize = _selectedSize!;
+                              final productSizeSystem = _selectedSystem!;
+                              final color = _color == 'Other' ? _colorController.text.trim() : _color!;
 
                               final todo = Product(
                                 productId: productId!,
-                                productSize: int.parse(_shoeSize!.split('.')[0]),
+                                category: category,
+                                productSize: int.parse(_selectedSize!),
+                                sizeSystem: productSizeSystem,
                                 productTitle: title,
                                 productBrand: brand,
+                                color: color,
                                 productPrice: int.parse(price),
                                 productDetails: description,
                                 productQuantity: int.parse(quantity),
@@ -421,7 +588,7 @@ class _AddProductState extends State<AddProduct> {
                               setState(() {
                                 barcodeData = null;
                                 _imageFile = null;
-                                _shoeSize = null;
+                                _selectedSize = null;
                               });
                             }
                             else{

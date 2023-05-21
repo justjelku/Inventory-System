@@ -58,8 +58,11 @@ class ProductProvider with ChangeNotifier {
       if (data != null) { // Add null check here
         return Product(
           userId: data['userId'],
+          category: data['category'] ?? '',
           productId: data['productId'],
           productSize: data['productSize'] ?? 0,
+          sizeSystem: data['sizeSystem'] ?? '',
+          color: data['color'] ?? '',
           productTitle: data['productTitle'],
           productBrand: data['productBrand'],
           productPrice: data['productPrice'] ?? 0,
@@ -127,7 +130,10 @@ class ProductProvider with ChangeNotifier {
 
     final todoData = {
       'productId': todo.productId,
+      'category': todo.category,
       'productSize': todo.productSize,
+      'sizeSystem' : todo.sizeSystem,
+      'color' : todo.color,
       'productTitle': todo.productTitle,
       'productBrand': todo.productBrand,
       'productPrice': todo.productPrice,
@@ -189,7 +195,10 @@ class ProductProvider with ChangeNotifier {
 
     final todoData = {
       'productId': todo.productId,
+      'category': todo.category,
       'productSize': todo.productSize,
+      'sizeSystem' : todo.sizeSystem,
+      'color' : todo.color,
       'productTitle': todo.productTitle,
       'productBrand': todo.productBrand,
       'productPrice': todo.productPrice,
@@ -236,7 +245,10 @@ class ProductProvider with ChangeNotifier {
 
           return Product(
             productId: doc.id,
+            category: data['category'] ?? '',
             productSize: data['productSize'] ?? 0,
+            sizeSystem: data['sizeSystem'] ?? '',
+            color: data['color'] ?? '',
             productTitle: data['productTitle'],
             productBrand: data['productBrand'],
             productPrice: productPrice ?? 0,
@@ -279,7 +291,10 @@ class ProductProvider with ChangeNotifier {
 
           return Product(
             productId: doc.id,
+            category: data['category'] ?? '',
             productSize: data['productSize'] ?? 0,
+            sizeSystem: data['sizeSystem'] ?? '',
+            color: data['color'] ?? '',
             productTitle: data['productTitle'],
             productBrand: data['productBrand'],
             productPrice: productPrice ?? 0,
@@ -321,7 +336,10 @@ class ProductProvider with ChangeNotifier {
 
               return Product(
                 productId: doc.id,
+                category: data['category'] ?? '',
                 productSize: data['productSize'] ?? 0,
+                sizeSystem: data['sizeSystem'] ?? '',
+                color: data['color'] ?? '',
                 productTitle: data['productTitle'],
                 productBrand: data['productBrand'],
                 productPrice: productPrice ?? 0,
@@ -336,6 +354,101 @@ class ProductProvider with ChangeNotifier {
               );
             }).toList());
   }
+
+  Stream<List<Product>> getStockOut(String productId) {
+    final user = FirebaseAuth.instance.currentUser;
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(user!.uid);
+
+    final todoCollection = userRef.collection('stock_out');
+
+    return todoCollection
+        .orderBy('soldAt', descending: true)
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      var productPrice = data['productPrice'];
+      var productSize = data['productSize'];
+      var productQuantity = data['productQuantity'];
+
+      // Check if productPrice is a String and convert to int if necessary
+      if (productPrice is String || productSize is String) {
+        productPrice = int.parse(productPrice);
+        productSize = int.parse(productSize);
+        productQuantity = int.parse(productQuantity);
+      }
+
+      return Product(
+        productId: doc.id,
+        category: data['category'] ?? '',
+        productSize: data['productSize'] ?? 0,
+        sizeSystem: data['sizeSystem'] ?? '',
+        color: data['color'] ?? '',
+        productTitle: data['productTitle'],
+        productBrand: data['productBrand'],
+        productPrice: data['productPrice'] ?? 0,
+        productDetails: data['productDetails'],
+        productQuantity: data['productQuantity'] ?? 0,
+        userId: data['userId'],
+        barcodeId: data['barcodeId'],
+        barcodeUrl: data['barcodeUrl'] ?? '',
+        qrcodeUrl: data['qrcodeUrl'] ?? '',
+        productImage: data['productImage'] ?? '',
+        branch: data['branch'],
+      );
+    }).toList());
+  }
+
+  Stream<List<Product>> getStockIn(String productId) {
+    final user = FirebaseAuth.instance.currentUser;
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(user!.uid);
+
+    final todoCollection = userRef.collection('stock_in');
+
+    return todoCollection
+        .orderBy('soldAt', descending: true)
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      var productPrice = data['productPrice'];
+      var productSize = data['productSize'];
+      var productQuantity = data['productQuantity'];
+
+      // Check if productPrice is a String and convert to int if necessary
+      if (productPrice is String || productSize is String) {
+        productPrice = int.parse(productPrice);
+        productSize = int.parse(productSize);
+        productQuantity = int.parse(productQuantity);
+      }
+
+      return Product(
+        productId: doc.id,
+        category: data['category'] ?? '',
+        productSize: data['productSize'] ?? 0,
+        sizeSystem: data['sizeSystem'] ?? '',
+        color: data['color'] ?? '',
+        productTitle: data['productTitle'],
+        productBrand: data['productBrand'],
+        productPrice: data['productPrice'] ?? 0,
+        productDetails: data['productDetails'],
+        productQuantity: data['productQuantity'] ?? 0,
+        userId: data['userId'],
+        barcodeId: data['barcodeId'],
+        barcodeUrl: data['barcodeUrl'] ?? '',
+        qrcodeUrl: data['qrcodeUrl'] ?? '',
+        productImage: data['productImage'] ?? '',
+        branch: data['branch'],
+      );
+    }).toList());
+  }
+
 
   Stream<List<Product>> getProductOut(String userId) {
     final userRef = FirebaseFirestore.instance
@@ -363,7 +476,10 @@ class ProductProvider with ChangeNotifier {
 
               return Product(
                 productId: doc.id,
+                category: data['category'] ?? '',
                 productSize: data['productSize'] ?? 0,
+                sizeSystem: data['sizeSystem'] ?? '',
+                color: data['color'] ?? '',
                 productTitle: data['productTitle'],
                 productBrand: data['productBrand'],
                 productPrice: data['productPrice'] ?? 0,

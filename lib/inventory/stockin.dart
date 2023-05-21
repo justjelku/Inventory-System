@@ -5,20 +5,38 @@ import 'package:shoes_inventory_ms/database/productupdateservice.dart';
 import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 
-class SellProductPage extends StatefulWidget {
+class StockInPage extends StatefulWidget {
   final Product product;
 
-  SellProductPage({required this.product});
+  StockInPage({required this.product});
 
   @override
-  _SellProductPageState createState() => _SellProductPageState();
+  _StockInPageState createState() => _StockInPageState();
 }
 
-class _SellProductPageState extends State<SellProductPage> {
+class _StockInPageState extends State<StockInPage> {
   int _quantity = 1;
 
   void _sellProduct() async {
     final productUpdateService = ProductUpdateService();
+
+    // Check if quantity is valid
+    if ( _quantity <= 0 || _quantity > 100) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Invalid Quantity'),
+          content: const Text('Please enter a valid quantity between 1 and 100.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
 
     // Create a new document in the "productout" collection
     final soldProduct = {
@@ -42,19 +60,19 @@ class _SellProductPageState extends State<SellProductPage> {
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('sold_products')
+        .collection('stock_in')
         .doc(widget.product.productId)
         .set(soldProduct);
 
-    final newQuantity = widget.product.productQuantity - _quantity;
+    final newQuantity = widget.product.productQuantity + _quantity;
     await productUpdateService.updateProductQuantity(widget.product.productId, newQuantity);
 
     // Show a confirmation dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Product sold!'),
-        content: Text('You have successfully sold $_quantity ${widget.product.productTitle} to the customer.'),
+        title: const Text('Done stock in!'),
+        content: Text('You have successfully stock $_quantity quantities for the product ${widget.product.productTitle}.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -69,7 +87,7 @@ class _SellProductPageState extends State<SellProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sell Product'),
+        title: const Text('Stock In'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -137,10 +155,13 @@ class _SellProductPageState extends State<SellProductPage> {
                   style: const TextStyle(fontSize: 20.0),
                 ),
                 IconButton(
-                  onPressed: () => setState(() {
+                  onPressed: _quantity < 100
+                      ? () => setState(() {
                     _quantity = _quantity + 1;
-                  }),
+                  })
+                      : null,
                   icon: const Icon(Icons.add),
+                  disabledColor: _quantity == 100 ? Colors.grey : null,
                 ),
               ],
             ),
@@ -162,7 +183,7 @@ class _SellProductPageState extends State<SellProductPage> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: const Center(
-                    child: Text("Sell Product",
+                    child: Text("Stock In",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 17

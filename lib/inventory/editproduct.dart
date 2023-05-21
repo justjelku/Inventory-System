@@ -21,17 +21,61 @@ class _EditProductState extends State<EditProduct> {
   late String _imageF;
   late String _details;
   int? _shoeSize;
+  String? _category;
+  String? _color;
+  String? _selectedColor;
+  String? _selectedCategory;
   late String _branch;
   File? _imageFile;
   File? _image;
-  int? _selectedSize;
+  String? _selectedSize;
   late int _quantity;
+  bool _isOtherCategorySelected = false;
+  bool _isOtherColorSelected = false;
+  String? _selectedSystem;
+  final _colorController = TextEditingController();
+  final List<String> usSizes = [
+    '5',
+    '5.5',
+    '6',
+    '6.5',
+    '7',
+    '7.5',
+    '8',
+    '8.5',
+    '9'
+  ];
+  final List<String> ukSizes = [
+    '4.5',
+    '5',
+    '5.5',
+    '6',
+    '6.5',
+    '7',
+    '7.5',
+    '8',
+    '8.5'
+  ];
+  final List<String> euSizes = [
+    '37',
+    '37.5',
+    '38',
+    '38.5',
+    '39',
+    '40',
+    '40.5',
+    '41',
+    '42'
+  ];
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _title = widget.todo.productTitle;
+    _category = widget.todo.category;
+    _color = widget.todo.color;
+    _selectedSystem = widget.todo.sizeSystem;
     _price = widget.todo.productPrice;
     _shoeSize = widget.todo.productSize;
     _details = widget.todo.productDetails;
@@ -162,30 +206,67 @@ class _EditProductState extends State<EditProduct> {
                           hintText: 'Enter title',
                         ),
                       ),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Category',
+                        ),
+                        value: _category,
+                        onChanged: (String? value) {
+                          setState(() {
+                            if (value == 'Other') {
+                              _isOtherCategorySelected = true;
+                            } else {
+                              _category = value!;
+                              _isOtherCategorySelected = false;
+                            }
+                          });
+                        },
+                        items: const <DropdownMenuItem<String>>[
+                          DropdownMenuItem<String>(
+                            value: '',
+                            child: Text(''),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: 'Basketball Shoes',
+                            child: Text('Basketball Shoes'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: 'Other',
+                            child: Text('Other'),
+                          ),
+                        ],
+                      ),
+                      if (_isOtherCategorySelected)
+                        TextFormField(
+                          initialValue: _category,
+                          onChanged: (value) {
+                            setState(() {
+                              _category = value;
+                            });
+                          },
+                          decoration: const InputDecoration(
+                              hintText: 'Category', labelText: 'Category'),
+                          validator: (value) {
+                            return (value == '') ? "Category" : null;
+                          },
+                        ),
                       const SizedBox(height: 16.0),
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
-                          labelText: 'Shoe Size',
+                          labelText: 'Men Size',
                         ),
-                        value: _shoeSize.toString(),
+                        value: _selectedSystem,
                         onChanged: (String? value) {
                           setState(() {
-                            _shoeSize = int.parse(
-                                value!); // parse the selected value to an integer
-                            _selectedSize = int.tryParse(value.replaceAll('.',
-                                '')); // parse the value to an int, removing any decimal point if present
+                            _selectedSystem = value;
+                            _selectedSize =
+                                null; // Reset selected size when changing the system
                           });
                         },
                         items: <String>[
-                          '5',
-                          '5.5',
-                          '6',
-                          '6.5',
-                          '7',
-                          '7.5',
-                          '8',
-                          '8.5',
-                          '9'
+                          'US',
+                          'UK',
+                          'EU',
                         ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -193,6 +274,135 @@ class _EditProductState extends State<EditProduct> {
                           );
                         }).toList(),
                       ),
+                      if (_selectedSystem != null)
+                        Column(
+                          children: [
+                            const SizedBox(height: 16),
+                            Text('Selected size: $_shoeSize'),
+                            const SizedBox(height: 16),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: (_selectedSystem == 'US')
+                                    ? usSizes.map((size) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _selectedSize = size;
+                                              });
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              primary:
+                                                  _selectedSize == _shoeSize &&
+                                                          _selectedSize == size
+                                                      ? Colors.green
+                                                      : null,
+                                            ),
+                                            child: Text(size),
+                                          ),
+                                        );
+                                      }).toList()
+                                    : (_selectedSystem == 'UK')
+                                        ? ukSizes.map((size) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _selectedSize = size;
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: _selectedSize ==
+                                                              _shoeSize &&
+                                                          _selectedSize == size
+                                                      ? Colors.green
+                                                      : null,
+                                                ),
+                                                child: Text(size),
+                                              ),
+                                            );
+                                          }).toList()
+                                        : euSizes.map((size) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _selectedSize = size;
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: _selectedSize ==
+                                                              _shoeSize &&
+                                                          _selectedSize == size
+                                                      ? Colors.green
+                                                      : null,
+                                                ),
+                                                child: Text(size),
+                                              ),
+                                            );
+                                          }).toList(),
+                              ),
+                            ),
+                            if (_selectedSize != null)
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text('Selected Size: $_selectedSize'),
+                              ),
+                          ],
+                        ),
+                      DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'Color',
+                        ),
+                        value: _color,
+                        onChanged: (String? value) {
+                          setState(() {
+                            if (value == 'Other') {
+                              _isOtherCategorySelected = true;
+                            } else {
+                              _color = value!;
+                              _isOtherCategorySelected = false;
+                            }
+                          });
+                        },
+                        items: const <DropdownMenuItem<String>>[
+                          DropdownMenuItem<String>(
+                            value: 'Blue',
+                            child: Text('Blue'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: 'Other',
+                            child: Text('Other'),
+                          ),
+                          DropdownMenuItem<String>(
+                            value: '',
+                            child: Text(''),
+                          ),
+                        ],
+                      ),
+                      if (_isOtherCategorySelected)
+                        TextFormField(
+                          controller: _colorController,
+                          decoration: const InputDecoration(
+                              hintText: 'Color',
+                              labelText: 'Color'
+                          ),
+                          validator: (value){
+                            return (value == '')? "Color" : null;
+                          },
+                        ),
+                      const SizedBox(height: 16.0),
                       TextFormField(
                         initialValue: _branch,
                         keyboardType: TextInputType.text,
@@ -215,9 +425,9 @@ class _EditProductState extends State<EditProduct> {
                           });
                         },
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
                       // const Text('Price'),
                       // const SizedBox(height: 8.0),
                       // TextFormField(
@@ -270,11 +480,16 @@ class _EditProductState extends State<EditProduct> {
                       ),
                       ElevatedButton(
                         onPressed: () {
+                          final color = _color == 'Other' ? _colorController.text.trim() : _color!;
+
                           if (_formKey.currentState!.validate()) {
                             final updatedTodo = widget.todo.copyWith(
                               productTitle: _title,
                               productPrice: _price,
-                              productSize: _shoeSize,
+                              category: _category,
+                              productSize: int.parse(_selectedSize!),
+                              sizeSystem: _selectedSystem,
+                              color: color,
                               productDetails: _details,
                               productQuantity: _quantity,
                               branch: _branch,
