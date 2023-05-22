@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shoes_inventory_ms/inventory/productdetails.dart';
+import 'package:shoes_inventory_ms/inventory/scanproductdetails.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
 
 class StockHistoryPage extends StatelessWidget {
@@ -53,7 +55,16 @@ class StockInHistoryTab extends StatelessWidget {
                 leading: Image.network(stockInItem.productImage),
                 title: Text(stockInItem.productTitle),
                 subtitle: Text('Quantity: ${stockInItem.productQuantity}'),
-                // Add more fields as needed
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailsPage(
+                        product: stockInItem,
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
@@ -91,7 +102,16 @@ class StockOutHistoryTab extends StatelessWidget {
                 leading: Image.network(stockOutItem.productImage),
                 title: Text(stockOutItem.productTitle),
                 subtitle: Text('Quantity: ${stockOutItem.productQuantity}'),
-                // Add more fields as needed
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailsPage(
+                        product: stockOutItem,
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
