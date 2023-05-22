@@ -44,6 +44,8 @@ class _StockInPageState extends State<StockInPage> {
       'productImage': widget.product.productImage,
       'barcodeId': widget.product.barcodeId,
       'barcodeUrl': widget.product.barcodeUrl,
+      'category': widget.product.category,
+      'color' : widget.product.color,
       'productSize': widget.product.productSize,
       'qrcodeUrl': widget.product.qrcodeUrl,
       'branch': widget.product.branch,

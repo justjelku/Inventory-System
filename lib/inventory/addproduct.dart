@@ -572,6 +572,7 @@ class _AddProductState extends State<AddProduct> {
                                 qrcodeUrl: '',
                                 productImage: '',
                                 branch: branch,
+                                type: '',
                               );
                               await ProductProvider().addProduct(todo, _imageFile!, barcodeImageUrl!, qrCodeImageUrl!);
                               // if (_imageFile != null) {

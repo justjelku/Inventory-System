@@ -73,6 +73,7 @@ class ProductProvider with ChangeNotifier {
           qrcodeUrl: data['qrcodeUrl'] ?? '',
           productImage: data['productImage'] ?? '',
           branch: data['branch'],
+            type: data['type'] ?? ''
         );
       }
     }
@@ -145,6 +146,7 @@ class ProductProvider with ChangeNotifier {
       'qrcodeUrl': downloadQrUrl,
       'productImage': downloadUrl,
       'branch': todo.branch,
+      'type' : todo.type,
       'createdTime': FieldValue.serverTimestamp(), // add this field
       'updatedTime': FieldValue.serverTimestamp(), // add this field
     };
@@ -210,6 +212,7 @@ class ProductProvider with ChangeNotifier {
       'qrcodeUrl': todo.qrcodeUrl, // Use the download URL here
       'productImage': todo.productImage,
       'branch': todo.branch,
+      'type' : todo.type,
       'createdTime': FieldValue.serverTimestamp(),
       'updatedTime': FieldValue.serverTimestamp(),
     };
@@ -260,6 +263,7 @@ class ProductProvider with ChangeNotifier {
             qrcodeUrl: data['qrcodeUrl'] ?? '',
             productImage: data['productImage'] ?? '',
             branch: data['branch'],
+            type: data['type'] ?? ''
           );
         }).toList());
   }
@@ -306,6 +310,7 @@ class ProductProvider with ChangeNotifier {
             qrcodeUrl: data['qrcodeUrl'] ?? '',
             productImage: data['productImage'] ?? '',
             branch: data['branch'],
+            type: data['type'] ?? ''
           );
         }).toList());
   }
@@ -351,6 +356,7 @@ class ProductProvider with ChangeNotifier {
                 qrcodeUrl: data['qrcodeUrl'] ?? '',
                 productImage: data['productImage'] ?? '',
                 branch: data['branch'],
+                type: data['type'] ?? ''
               );
             }).toList());
   }
@@ -398,6 +404,7 @@ class ProductProvider with ChangeNotifier {
         qrcodeUrl: data['qrcodeUrl'] ?? '',
         productImage: data['productImage'] ?? '',
         branch: data['branch'],
+        type: data['type'] ?? ''
       );
     }).toList());
   }
@@ -445,6 +452,7 @@ class ProductProvider with ChangeNotifier {
         qrcodeUrl: data['qrcodeUrl'] ?? '',
         productImage: data['productImage'] ?? '',
         branch: data['branch'],
+        type: data['type'] ?? ''
       );
     }).toList());
   }
@@ -491,6 +499,7 @@ class ProductProvider with ChangeNotifier {
                 qrcodeUrl: data['qrcodeUrl'] ?? '',
                 productImage: data['productImage'] ?? '',
                 branch: data['branch'],
+                type: data['type'] ?? ''
               );
             }).toList());
   }

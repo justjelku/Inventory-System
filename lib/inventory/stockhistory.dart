@@ -172,6 +172,7 @@ Stream<List<Product>> getStockOut(String productId) {
       qrcodeUrl: data['qrcodeUrl'] ?? '',
       productImage: data['productImage'] ?? '',
       branch: data['branch'],
+      type: data['type']
     );
   }).toList());
 }
@@ -219,6 +220,7 @@ Stream<List<Product>> getStockIn(String productId) {
       qrcodeUrl: data['qrcodeUrl'] ?? '',
       productImage: data['productImage'] ?? '',
       branch: data['branch'],
+      type: data['type']
     );
   }).toList());
 }

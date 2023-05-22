@@ -17,6 +17,7 @@ class Product {
   final String qrcodeUrl;
   final String productImage;
   final String branch;
+  final String type;
 
   Product({
     required this.productId,
@@ -35,6 +36,7 @@ class Product {
     required this.qrcodeUrl,
     required this.productImage,
     required this.branch,
+    required this.type,
   });
 
   Product copyWith({
@@ -54,6 +56,7 @@ class Product {
     String? qrcodeUrl,
     String? productImage,
     String? branch,
+    String? type,
   }) {
     return Product(
       productId: productId ?? this.productId,
@@ -72,6 +75,7 @@ class Product {
       qrcodeUrl: qrcodeUrl ?? this.qrcodeUrl,
       productImage: productImage ?? this.productImage,
       branch: branch ?? this.branch,
+      type: type ?? this.type,
     );
   }
     Map<String, dynamic> toMap() {
@@ -91,6 +95,7 @@ class Product {
         'qrcodeUrl': qrcodeUrl,
         'productImage': productImage,
         'branch': branch,
+        'type' : type,
       };
     }
   factory Product.fromMap(Map<String, dynamic> map) {
@@ -111,6 +116,7 @@ class Product {
       qrcodeUrl: map['qrcodeUrl'],
       branch: map['branch'],
       productImage: map['productImage'],
+      type: map['type']
     );
   }
 }
