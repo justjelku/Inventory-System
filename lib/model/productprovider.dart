@@ -81,22 +81,6 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product todo, File imgFile, File barcodeQrFile, File qrFile) async {
-    final fileName2 = basename(qrFile.path);
-    final ref2 = FirebaseStorage.instance
-        .ref()
-        .child('products/qrcodeImages/$fileName2');
-    final uploadTask2 = ref2.putFile(qrFile);
-    final snapshot2 = await uploadTask2.whenComplete(() {});
-    String downloadQrUrl;
-
-    // ignore: unnecessary_null_comparison
-    if (snapshot2 != null) {
-      downloadQrUrl = await snapshot2.ref.getDownloadURL();
-    } else {
-      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
-      return;
-    }
-
     final fileName1 = basename(barcodeQrFile.path);
     final ref1 = FirebaseStorage.instance
         .ref()
@@ -108,6 +92,22 @@ class ProductProvider with ChangeNotifier {
     // ignore: unnecessary_null_comparison
     if (snapshot1 != null) {
       downloadBarcodeUrl = await snapshot1.ref.getDownloadURL();
+    } else {
+      // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
+      return;
+    }
+
+    final fileName2 = basename(qrFile.path);
+    final ref2 = FirebaseStorage.instance
+        .ref()
+        .child('products/qrcodeImages/$fileName2');
+    final uploadTask2 = ref2.putFile(qrFile);
+    final snapshot2 = await uploadTask2.whenComplete(() {});
+    String downloadQrUrl;
+
+    // ignore: unnecessary_null_comparison
+    if (snapshot2 != null) {
+      downloadQrUrl = await snapshot2.ref.getDownloadURL();
     } else {
       // Handle the case where the snapshot is null, perhaps by throwing an exception or displaying an error message
       return;

@@ -60,7 +60,29 @@ class _StockOutPageState extends State<StockOutPage> {
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('stock_out')
+        .collection('stock')
+        .doc(widget.product.productId)
+        .set(soldProduct);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('products')
+        .doc(widget.product.productId)
+        .collection('stock_in')
+        .doc(widget.product.productId)
+        .set(soldProduct);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('products')
+        .doc(widget.product.productId)
+        .collection('stock_history')
         .doc(widget.product.productId)
         .set(soldProduct);
 

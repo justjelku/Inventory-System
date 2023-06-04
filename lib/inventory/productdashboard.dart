@@ -82,7 +82,7 @@ class ProductDashboard extends StatelessWidget {
             automaticallyImplyLeading: false,
           ),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
             child: Column(
               children: [
                 Center(
@@ -118,14 +118,14 @@ class ProductDashboard extends StatelessWidget {
                             },
                           ),
                           StreamBuilder<int>(
-                            stream: getProductOutCount(FirebaseAuth.instance.currentUser!.uid),
+                            stream: getStockOutCount(FirebaseAuth.instance.currentUser!.uid),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 final productCount = snapshot.data!;
                                 return _buildButton(
                                   context,
                                   icon: Icons.stacked_bar_chart,
-                                  text: 'Product Out $productCount',
+                                  text: 'Stock Out $productCount',
                                   color: Colors.red,
                                   onPressed: () {
                                     // Navigate to the View Products screen
@@ -156,14 +156,14 @@ class ProductDashboard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           StreamBuilder<int>(
-                            stream: getProductSales(FirebaseAuth.instance.currentUser!.uid),
+                            stream: getStockInCount(FirebaseAuth.instance.currentUser!.uid),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 final productCount = snapshot.data!;
                                 return _buildButton(
                                   context,
-                                  icon: Icons.php,
-                                  text: 'Sales \₱$productCount',
+                                  icon: Icons.add_shopping_cart,
+                                  text: 'Stock In $productCount',
                                   color: Colors.cyan,
                                   onPressed: () {
                                     // Navigate to the View Products screen
@@ -348,14 +348,34 @@ class ProductDashboard extends StatelessWidget {
 
 
 
-  Stream<int> getProductOutCount(String userId) {
+  Stream<int> getStockOutCount(String userId) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(userId);
 
-    final soldProductsCollection = userRef.collection('sold_products');
+    final soldProductsCollection = userRef.collection('stock_out');
+
+    return soldProductsCollection.snapshots().map((querySnapshot) {
+      int totalQuantity = 0;
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        int productQuantity = data['productQuantity'];
+        totalQuantity += productQuantity;
+      }
+      return totalQuantity;
+    });
+  }
+
+  Stream<int> getStockInCount(String userId) {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(userId);
+
+    final soldProductsCollection = userRef.collection('stock_in');
 
     return soldProductsCollection.snapshots().map((querySnapshot) {
       int totalQuantity = 0;

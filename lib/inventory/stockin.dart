@@ -41,6 +41,7 @@ class _StockInPageState extends State<StockInPage> {
     // Create a new document in the "productout" collection
     final soldProduct = {
       'productId': widget.product.productId,
+      'stockInId': widget.product.productId,
       'productImage': widget.product.productImage,
       'barcodeId': widget.product.barcodeId,
       'barcodeUrl': widget.product.barcodeUrl,
@@ -55,14 +56,36 @@ class _StockInPageState extends State<StockInPage> {
       'productPrice': widget.product.productPrice,
       'productQuantity': _quantity,
       'userId': FirebaseAuth.instance.currentUser!.uid,
-      'soldAt': DateTime.now(),
+      'updatedAt': DateTime.now(),
     };
     await FirebaseFirestore.instance
         .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('stock')
+        .doc(widget.product.productId)
+        .set(soldProduct);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('products')
+        .doc(widget.product.productId)
         .collection('stock_in')
+        .doc(widget.product.productId)
+        .set(soldProduct);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('products')
+        .doc(widget.product.productId)
+        .collection('stock_history')
         .doc(widget.product.productId)
         .set(soldProduct);
 
