@@ -47,6 +47,7 @@ class _StockInPageState extends State<StockInPage> {
       'barcodeUrl': widget.product.barcodeUrl,
       'category': widget.product.category,
       'color' : widget.product.color,
+      'stock': 'Stock In',
       'productSize': widget.product.productSize,
       'qrcodeUrl': widget.product.qrcodeUrl,
       'branch': widget.product.branch,
@@ -93,6 +94,7 @@ class _StockInPageState extends State<StockInPage> {
     await productUpdateService.updateProductQuantity(widget.product.productId, newQuantity);
 
     // Show a confirmation dialog
+    // ignore: use_build_context_synchronously
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

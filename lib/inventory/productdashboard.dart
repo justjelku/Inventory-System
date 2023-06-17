@@ -355,18 +355,22 @@ class ProductDashboard extends StatelessWidget {
         .collection('basic_users')
         .doc(userId);
 
-    final soldProductsCollection = userRef.collection('stock_out');
+    final soldProductsCollection = userRef.collection('stock');
 
     return soldProductsCollection.snapshots().map((querySnapshot) {
       int totalQuantity = 0;
       for (var doc in querySnapshot.docs) {
         final data = doc.data();
-        int productQuantity = data['productQuantity'];
-        totalQuantity += productQuantity;
+        String stockStatus = data['stock'];
+        if (stockStatus == 'Stock Out') {
+          int productQuantity = data['productQuantity'];
+          totalQuantity += productQuantity;
+        }
       }
       return totalQuantity;
     });
   }
+
 
   Stream<int> getStockInCount(String userId) {
     final userRef = FirebaseFirestore.instance
@@ -375,14 +379,17 @@ class ProductDashboard extends StatelessWidget {
         .collection('basic_users')
         .doc(userId);
 
-    final soldProductsCollection = userRef.collection('stock_in');
+    final soldProductsCollection = userRef.collection('stock');
 
     return soldProductsCollection.snapshots().map((querySnapshot) {
       int totalQuantity = 0;
       for (var doc in querySnapshot.docs) {
         final data = doc.data();
-        int productQuantity = data['productQuantity'];
-        totalQuantity += productQuantity;
+        String stockStatus = data['stock'];
+        if (stockStatus == 'Stock In') {
+          int productQuantity = data['productQuantity'];
+          totalQuantity += productQuantity;
+        }
       }
       return totalQuantity;
     });

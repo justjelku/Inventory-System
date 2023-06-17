@@ -221,7 +221,7 @@ class _AddProductState extends State<AddProduct> {
         builder:(context, child){
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Add Product'),
+              title: const Text('Add Stock'),
               automaticallyImplyLeading: false,
             ),
             body: Form(
@@ -578,7 +578,7 @@ class _AddProductState extends State<AddProduct> {
                               // if (_imageFile != null) {
                               //   ProductProvider().uploadImage(productId!, _imageFile!);
                               // }
-                              _showMsg('You have added a new product!', true);
+                              _showMsg('You have added a new stock!', true);
                               // Navigator.of(context).pop();
                               // ignore: use_build_context_synchronously
                               // Clear form fields and reset barcodeData
@@ -593,7 +593,7 @@ class _AddProductState extends State<AddProduct> {
                               });
                             }
                             else{
-                              _showMsg('No product was added!', false);
+                              _showMsg('No stock was added!', false);
                               // Navigator.of(context).pop();
                             }
                           },

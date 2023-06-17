@@ -88,16 +88,7 @@ class ProductUpdateService {
     final todoCollection = userRef.collection('products').doc(productId);
 
     final todoData = {
-      'productTitle': title,
-      'productBrand': brand,
-      'productPrice': price,
-      'productDetails': description,
-      'productSize':productSize,
-      'branch':branch,
       'productQuantity':quantity,
-      'productImage': downloadUrl,
-      'barcodeUrl': downloadBarcodeUrl,
-      'qrcodeUrl': downloadQrUrl,
       'updatedTime': FieldValue.serverTimestamp(),
     };
 

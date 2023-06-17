@@ -135,12 +135,14 @@ Stream<List<Product>> getStockOut(String productId) {
       .collection('users')
       .doc('qIglLalZbFgIOnO0r3Zu')
       .collection('basic_users')
-      .doc(user!.uid);
+      .doc(user!.uid)
+      .collection('products')
+      .doc(productId);
 
   final todoCollection = userRef.collection('stock_out');
 
   return todoCollection
-      .orderBy('soldAt', descending: true)
+      .orderBy('updatedtime', descending: true)
       .snapshots()
       .map((querySnapshot) => querySnapshot.docs.map((doc) {
     final data = doc.data();
@@ -183,12 +185,14 @@ Stream<List<Product>> getStockIn(String productId) {
       .collection('users')
       .doc('qIglLalZbFgIOnO0r3Zu')
       .collection('basic_users')
-      .doc(user!.uid);
+      .doc(user!.uid)
+      .collection('products')
+      .doc(productId);
 
   final todoCollection = userRef.collection('stock_in');
 
   return todoCollection
-      .orderBy('soldAt', descending: true)
+      .orderBy('updatedtime', descending: true)
       .snapshots()
       .map((querySnapshot) => querySnapshot.docs.map((doc) {
     final data = doc.data();

@@ -41,9 +41,13 @@ class _StockOutPageState extends State<StockOutPage> {
     // Create a new document in the "productout" collection
     final soldProduct = {
       'productId': widget.product.productId,
+      'stockInId': widget.product.productId,
       'productImage': widget.product.productImage,
       'barcodeId': widget.product.barcodeId,
       'barcodeUrl': widget.product.barcodeUrl,
+      'category': widget.product.category,
+      'color' : widget.product.color,
+      'stock': 'Stock Out',
       'productSize': widget.product.productSize,
       'qrcodeUrl': widget.product.qrcodeUrl,
       'branch': widget.product.branch,
@@ -53,7 +57,7 @@ class _StockOutPageState extends State<StockOutPage> {
       'productPrice': widget.product.productPrice,
       'productQuantity': _quantity,
       'userId': FirebaseAuth.instance.currentUser!.uid,
-      'soldAt': DateTime.now(),
+      'updatedAt': DateTime.now(),
     };
     await FirebaseFirestore.instance
         .collection('users')
@@ -71,7 +75,7 @@ class _StockOutPageState extends State<StockOutPage> {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('products')
         .doc(widget.product.productId)
-        .collection('stock_in')
+        .collection('stock_out')
         .doc(widget.product.productId)
         .set(soldProduct);
 
@@ -90,6 +94,7 @@ class _StockOutPageState extends State<StockOutPage> {
     await productUpdateService.updateProductQuantity(widget.product.productId, newQuantity);
 
     // Show a confirmation dialog
+    // ignore: use_build_context_synchronously
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
