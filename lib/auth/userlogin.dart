@@ -4,8 +4,9 @@ import 'package:shoes_inventory_ms/model/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:themed/themed.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -32,6 +33,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
       if (googleSignInAccount == null) return null;
 
@@ -43,14 +45,15 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
         idToken: googleSignInAuthentication.idToken,
       );
 
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
 
       final userDetails = {
         'first name': userCredential.user!.displayName!.split(' ')[0],
         'last name': userCredential.user!.displayName!.split(' ')[1],
         'username': userCredential.user!.email!.split('@')[0],
         'email': userCredential.user!.email!,
-        'role': 'basic',
+        'role': 'admin',
         'enabled': true,
       };
 
@@ -65,43 +68,50 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
   }
 
   Future<void> signInWithFacebook() async {
-    // Trigger the sign-in flow
-    final LoginResult result = await FacebookAuth.instance.login();
+    try {
+      // Trigger the sign-in flow
+      final LoginResult result = await FacebookAuth.instance.login();
 
-    // Check if the user successfully signed in
-    if (result.status == LoginStatus.success) {
-      // Retrieve the access token
-      final AccessToken accessToken = result.accessToken!;
+      // Check if the user successfully signed in
+      if (result.status == LoginStatus.success) {
+        // Retrieve the access token
+        final AccessToken accessToken = result.accessToken!;
 
-      // Retrieve the user data
-      final userData = await FacebookAuth.instance.getUserData(
-        fields: "first_name,last_name,email,name",
-      );
+        // Retrieve the user data
+        final userData = await FacebookAuth.instance.getUserData(
+          fields: "first_name,last_name,email,name",
+        );
 
-      // Extract the relevant user data
-      final userId = userData['userId'];
-      final firstName = userData['first name'];
-      final lastName = userData['last name'];
-      final email = userData['email'];
-      final userName = userData['name'];
+        // Extract the relevant user data
+        final userId = userData['id'];
+        final firstName = userData['first_name'];
+        final lastName = userData['last_name'];
+        final email = userData['email'];
+        final userName = userData['name'];
 
-      // Sign in with Firebase using the Facebook access token
-      final OAuthCredential credential =
-      FacebookAuthProvider.credential(accessToken.token);
+        // Sign in with Firebase using the Facebook access token
+        final OAuthCredential credential =
+        FacebookAuthProvider.credential(accessToken.token);
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+        await FirebaseAuth.instance.signInWithCredential(credential);
 
-      // Add user details to the database
-      addUserDetails(userId, firstName, lastName, userName, email, 'basic', true);
+        // Add user details to the database
+        addUserDetails(userId, firstName, lastName, userName, email, 'admin', 'true');
 
-      // Navigate to the home page
-      Navigator.pushNamed(context, '/home');
-    } else {
-      // Handle the error
-      _showMsg(result.message!, false);
+        // Navigate to the home page
+        Navigator.pushNamed(context, '/home');
+      } else if (result.status == LoginStatus.cancelled) {
+        // Handle canceled login
+        _showMsg('Login canceled by user.', false);
+      } else {
+        // Handle the error
+        _showMsg(result.message!, false);
+      }
+    } catch (e) {
+      print('Error: $e');
+      _showMsg('Error: $e', false);
     }
   }
-
 
   Future<void> signIn() async {
     try {
@@ -118,7 +128,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
           .doc(userCredential.user!.uid)
           .get();
 
-      if (userDoc.exists && userDoc.get('enabled') == true) {
+      if (userDoc.exists && userDoc.get('enabled') == 'true') {
         _showMsg('Logged In Successful!', true);
         Navigator.pushNamed(context, '/user');
       } else {
@@ -136,7 +146,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
     }
   }
 
-  Future addUserDetails(String userId, String firstName, String lastName, String userName, String email, String role, bool status) async{
+  Future addUserDetails(String userId, String firstName, String lastName, String userName, String email, String role, String status) async{
     final userRef = FirebaseFirestore.instance.collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu');
     final userDetailsRef = userRef.collection('basic_users')
@@ -185,8 +195,8 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
           _lastNameController.text.trim(),
           _userNameController.text.trim(),
           _emailController.text.trim(),
-          'basic',
-          true
+          'admin',
+          'true'
         );
         Navigator.of(context).pop();
         _showMsg('Account created!', true);

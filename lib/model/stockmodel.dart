@@ -38,7 +38,7 @@ class StockInModel {
     required this.productPrice,
     required this.productQuantity,
     required this.userId,
-    required this.updatedAt,
+    required this.updatedAt, required sizeSystem, required type,
   });
 
   factory StockInModel.fromMap(Map<String, dynamic> map) {
@@ -60,7 +60,7 @@ class StockInModel {
       productPrice: map['productPrice'],
       productQuantity: map['productQuantity'],
       userId: map['userId'],
-      updatedAt: map['updatedAt'].toDate(),
+      updatedAt: map['updatedAt'].toDate(), sizeSystem: map['sizeSystem'], type: map['type'],
     );
   }
 

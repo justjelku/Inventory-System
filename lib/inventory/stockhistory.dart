@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shoes_inventory_ms/inventory/productdetails.dart';
 import 'package:shoes_inventory_ms/inventory/scanproductdetails.dart';
+import 'package:shoes_inventory_ms/inventory/stockdetails.dart';
 import 'package:shoes_inventory_ms/model/productmodel.dart';
+import 'package:shoes_inventory_ms/model/stockmodel.dart';
 
 class StockHistoryPage extends StatelessWidget {
   final String productId;
@@ -42,7 +44,7 @@ class StockInHistoryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Product>>(
+    return StreamBuilder<List<StockInModel>>(
       stream: getStockIn(productId), // Replace with your stream for stock in history
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -59,7 +61,7 @@ class StockInHistoryTab extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProductDetailsPage(
+                      builder: (context) => StockDetailsPage(
                         product: stockInItem,
                       ),
                     ),
@@ -89,7 +91,7 @@ class StockOutHistoryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Product>>(
+    return StreamBuilder<List<StockInModel>>(
       stream: getStockOut(productId), // Replace with your stream for stock out history
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -106,7 +108,7 @@ class StockOutHistoryTab extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProductDetailsPage(
+                      builder: (context) => StockDetailsPage(
                         product: stockOutItem,
                       ),
                     ),
@@ -129,7 +131,7 @@ class StockOutHistoryTab extends StatelessWidget {
   }
 }
 
-Stream<List<Product>> getStockOut(String productId) {
+Stream<List<StockInModel>> getStockOut(String productId) {
   final user = FirebaseAuth.instance.currentUser;
   final userRef = FirebaseFirestore.instance
       .collection('users')
@@ -157,7 +159,7 @@ Stream<List<Product>> getStockOut(String productId) {
       productQuantity = int.parse(productQuantity);
     }
 
-    return Product(
+    return StockInModel(
       productId: doc.id,
       category: data['category'] ?? '',
       productSize: data['productSize'] ?? 0,
@@ -174,12 +176,12 @@ Stream<List<Product>> getStockOut(String productId) {
       qrcodeUrl: data['qrcodeUrl'] ?? '',
       productImage: data['productImage'] ?? '',
       branch: data['branch'],
-      type: data['type']
+      type: data['type'], stockInId: data['stockInId'], stock: data['stock'], updatedAt: data['updatedtime'],
     );
   }).toList());
 }
 
-Stream<List<Product>> getStockIn(String productId) {
+Stream<List<StockInModel>> getStockIn(String productId) {
   final user = FirebaseAuth.instance.currentUser;
   final userRef = FirebaseFirestore.instance
       .collection('users')
@@ -207,7 +209,7 @@ Stream<List<Product>> getStockIn(String productId) {
       productQuantity = int.parse(productQuantity);
     }
 
-    return Product(
+    return StockInModel(
       productId: doc.id,
       category: data['category'] ?? '',
       productSize: data['productSize'] ?? 0,
@@ -224,7 +226,7 @@ Stream<List<Product>> getStockIn(String productId) {
       qrcodeUrl: data['qrcodeUrl'] ?? '',
       productImage: data['productImage'] ?? '',
       branch: data['branch'],
-      type: data['type']
+      type: data['type'], stockInId: data['stockInId'], stock: data['stock'], updatedAt: data['updatedtime'],
     );
   }).toList());
 }

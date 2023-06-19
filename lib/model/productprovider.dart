@@ -9,6 +9,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+
 class ProductProvider with ChangeNotifier {
   final CollectionReference todos =
       FirebaseFirestore.instance.collection('products');
@@ -276,7 +277,7 @@ class ProductProvider with ChangeNotifier {
         .collection('basic_users')
         .doc(userId);
 
-    final todoCollection = userRef.collection('sold_products');
+    final todoCollection = userRef.collection('products');
 
     return todoCollection.snapshots().map((querySnapshot) => querySnapshot.docs
             .where((doc) => includeOutOfStock || doc['productQuantity'] > 0)
@@ -367,12 +368,14 @@ class ProductProvider with ChangeNotifier {
         .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
-        .doc(user!.uid);
+        .doc(user!.uid)
+        .collection('products')
+        .doc(productId);
 
     final todoCollection = userRef.collection('stock_out');
 
     return todoCollection
-        .orderBy('soldAt', descending: true)
+        .orderBy('updatedtime', descending: true)
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((doc) {
       final data = doc.data();
@@ -415,12 +418,14 @@ class ProductProvider with ChangeNotifier {
         .collection('users')
         .doc('qIglLalZbFgIOnO0r3Zu')
         .collection('basic_users')
-        .doc(user!.uid);
+        .doc(user!.uid)
+        .collection('products')
+        .doc(productId);
 
     final todoCollection = userRef.collection('stock_in');
 
     return todoCollection
-        .orderBy('soldAt', descending: true)
+        .orderBy('updatedtime', descending: true)
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs.map((doc) {
       final data = doc.data();

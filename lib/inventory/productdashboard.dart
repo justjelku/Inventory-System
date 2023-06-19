@@ -100,7 +100,7 @@ class ProductDashboard extends StatelessWidget {
                                 return _buildButton(
                                   context,
                                   icon: Icons.stacked_line_chart,
-                                  text: 'Product In $productCount',
+                                  text: 'Stocks $productCount',
                                   color: Colors.blue,
                                   onPressed: () {
                                     // Navigate to the View Products screen
@@ -188,7 +188,7 @@ class ProductDashboard extends StatelessWidget {
                                 return _buildButton(
                                   context,
                                   icon: Icons.inventory,
-                                  text: 'Total Products $productCount',
+                                  text: 'Total Stocks $productCount',
                                   color: Colors.green,
                                   onPressed: () {
                                     // Navigate to the View Products screen
@@ -318,7 +318,7 @@ class ProductDashboard extends StatelessWidget {
         .doc(userId);
 
     final todoCollection = userRef.collection('products');
-    final soldProductsCollection = userRef.collection('sold_products');
+    final soldProductsCollection = userRef.collection('stocks');
 
     final todoCountStream = todoCollection.snapshots().map((querySnapshot) {
       int totalQuantity = 0;
@@ -397,26 +397,26 @@ class ProductDashboard extends StatelessWidget {
 
 
 
-  Stream<int> getProductSales(String userId) {
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users')
-        .doc(userId);
-
-    final soldProductsCollection = userRef.collection('sold_products');
-
-    return soldProductsCollection.snapshots().map((querySnapshot) {
-      double totalSales = 0.0;
-      for (var doc in querySnapshot.docs) {
-        final data = doc.data();
-        var productQuantity = data['productQuantity'];
-        var productPrice = data['productPrice'];
-        totalSales += productPrice * productQuantity;
-      }
-      return totalSales.toInt();
-    });
-  }
+  // Stream<int> getProductSales(String userId) {
+  //   final userRef = FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc('qIglLalZbFgIOnO0r3Zu')
+  //       .collection('basic_users')
+  //       .doc(userId);
+  //
+  //   final soldProductsCollection = userRef.collection('sold_products');
+  //
+  //   return soldProductsCollection.snapshots().map((querySnapshot) {
+  //     double totalSales = 0.0;
+  //     for (var doc in querySnapshot.docs) {
+  //       final data = doc.data();
+  //       var productQuantity = data['productQuantity'];
+  //       var productPrice = data['productPrice'];
+  //       totalSales += productPrice * productQuantity;
+  //     }
+  //     return totalSales.toInt();
+  //   });
+  // }
 
   Stream<Map<String, int>> getBranchCount(String userId) {
     final userRef = FirebaseFirestore.instance
