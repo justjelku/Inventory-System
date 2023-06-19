@@ -17,7 +17,7 @@ class EditProduct extends StatefulWidget {
 
 class _EditProductState extends State<EditProduct> {
   late String _title;
-  late int _price;
+  late String _price;
   late String _imageF;
   late String _details;
   int? _shoeSize;
@@ -206,50 +206,54 @@ class _EditProductState extends State<EditProduct> {
                           hintText: 'Enter title',
                         ),
                       ),
-                      DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          labelText: 'Category',
-                        ),
-                        value: _category,
-                        onChanged: (String? value) {
-                          setState(() {
-                            if (value == 'Other') {
-                              _isOtherCategorySelected = true;
-                            } else {
-                              _category = value!;
-                              _isOtherCategorySelected = false;
-                            }
-                          });
-                        },
-                        items: const <DropdownMenuItem<String>>[
-                          DropdownMenuItem<String>(
-                            value: '',
-                            child: Text(''),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'Basketball Shoes',
-                            child: Text('Basketball Shoes'),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'Other',
-                            child: Text('Other'),
-                          ),
-                        ],
-                      ),
-                      if (_isOtherCategorySelected)
-                        TextFormField(
-                          initialValue: _category,
-                          onChanged: (value) {
-                            setState(() {
-                              _category = value;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                              hintText: 'Category', labelText: 'Category'),
-                          validator: (value) {
-                            return (value == '') ? "Category" : null;
-                          },
-                        ),
+                      // DropdownButtonFormField<String>(
+                      //   decoration: const InputDecoration(
+                      //     labelText: 'Category',
+                      //   ),
+                      //   value: _category,
+                      //   onChanged: (String? value) {
+                      //     setState(() {
+                      //       if (value == 'Other') {
+                      //         _isOtherCategorySelected = true;
+                      //       } else {
+                      //         _category = value!;
+                      //         _isOtherCategorySelected = false;
+                      //       }
+                      //     });
+                      //   },
+                      //   items: const <DropdownMenuItem<String>>[
+                      //     DropdownMenuItem<String>(
+                      //       value: '',
+                      //       child: Text(''),
+                      //     ),
+                      //     DropdownMenuItem<String>(
+                      //       value: 'Basketball Shoes',
+                      //       child: Text('Basketball Shoes'),
+                      //     ),
+                      //     DropdownMenuItem<String>(
+                      //       value: 'Men Shoes',
+                      //       child: Text('Men Shoes'),
+                      //     ),
+                      //     DropdownMenuItem<String>(
+                      //       value: 'Other',
+                      //       child: Text('Other'),
+                      //     ),
+                      //   ],
+                      // ),
+                      // if (_isOtherCategorySelected)
+                      //   TextFormField(
+                      //     initialValue: _category,
+                      //     onChanged: (value) {
+                      //       setState(() {
+                      //         _category = value;
+                      //       });
+                      //     },
+                      //     decoration: const InputDecoration(
+                      //         hintText: 'Category', labelText: 'Category'),
+                      //     validator: (value) {
+                      //       return (value == '') ? "Category" : null;
+                      //     },
+                      //   ),
                       const SizedBox(height: 16.0),
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
@@ -421,7 +425,7 @@ class _EditProductState extends State<EditProduct> {
                             hintText: "0.00", labelText: 'Price'),
                         onChanged: (value) {
                           setState(() {
-                            _price = int.parse(value);
+                            _price = (value);
                           });
                         },
                       ),

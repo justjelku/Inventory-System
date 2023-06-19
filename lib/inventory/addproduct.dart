@@ -563,7 +563,7 @@ class _AddProductState extends State<AddProduct> {
                                 productTitle: title,
                                 productBrand: brand,
                                 color: color,
-                                productPrice: int.parse(price),
+                                productPrice: price,
                                 productDetails: description,
                                 productQuantity: int.parse(quantity),
                                 userId: FirebaseAuth.instance.currentUser!.uid,

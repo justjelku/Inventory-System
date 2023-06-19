@@ -236,13 +236,13 @@ class ProductProvider with ChangeNotifier {
             .where((doc) => includeOutOfStock || doc['productQuantity'] > 0)
             .map((doc) {
           final data = doc.data();
-          var productPrice = data['productPrice'];
+          // var productPrice = data['productPrice'];
           var productSize = data['productSize'];
           var productQuantity = data['productQuantity'];
 
           // Check if productPrice is a String and convert to int if necessary
-          if (productPrice is String || productSize is String) {
-            productPrice = int.parse(productPrice);
+          if (productSize is String) {
+            // productPrice = int.parse(productPrice);
             productSize = int.parse(productSize);
             productQuantity = int.parse(productQuantity);
           }
@@ -255,7 +255,7 @@ class ProductProvider with ChangeNotifier {
             color: data['color'] ?? '',
             productTitle: data['productTitle'],
             productBrand: data['productBrand'],
-            productPrice: productPrice ?? 0,
+            productPrice: data['productPrice'],
             productDetails: data['productDetails'],
             productQuantity: productQuantity ?? 0,
             userId: data['userId'],

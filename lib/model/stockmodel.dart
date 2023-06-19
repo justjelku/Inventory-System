@@ -2,7 +2,7 @@ import 'dart:io';
 
 class StockInModel {
   final String productId;
-  final String stockInId;
+  final String stockinId;
   final String productImage;
   final String barcodeId;
   final String barcodeUrl;
@@ -22,7 +22,7 @@ class StockInModel {
 
   StockInModel({
     required this.productId,
-    required this.stockInId,
+    required this.stockinId,
     required this.productImage,
     required this.barcodeId,
     required this.barcodeUrl,
@@ -44,7 +44,7 @@ class StockInModel {
   factory StockInModel.fromMap(Map<String, dynamic> map) {
     return StockInModel(
       productId: map['productId'],
-      stockInId: map['stockInId'],
+      stockinId: map['stockinId'],
       productImage: map['productImage'],
       barcodeId: map['barcodeId'],
       barcodeUrl: map['barcodeUrl'],
@@ -67,7 +67,7 @@ class StockInModel {
   Map<String, dynamic> toMap() {
     return {
       'productId': productId,
-      'stockInId': stockInId,
+      'stockinId': stockinId,
       'productImage': productImage,
       'barcodeId': barcodeId,
       'barcodeUrl': barcodeUrl,

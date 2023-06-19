@@ -8,7 +8,7 @@ class Product {
   final String color;
   final String productTitle;
   final String productBrand;
-  final int productPrice;
+  final String productPrice;
   final String productDetails;
   final int productQuantity;
   late String barcodeId;
@@ -47,7 +47,7 @@ class Product {
     String? category,
     String? productTitle,
     String? productBrand,
-    int? productPrice,
+    String? productPrice,
     String? productDetails,
     int? productQuantity,
     String? barcodeId,

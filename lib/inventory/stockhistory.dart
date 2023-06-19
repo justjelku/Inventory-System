@@ -132,33 +132,20 @@ class StockOutHistoryTab extends StatelessWidget {
 }
 
 Stream<List<StockInModel>> getStockOut(String productId) {
-  final user = FirebaseAuth.instance.currentUser;
-  final userRef = FirebaseFirestore.instance
+  final collectionRef = FirebaseFirestore.instance
       .collection('users')
       .doc('qIglLalZbFgIOnO0r3Zu')
       .collection('basic_users')
-      .doc(user!.uid)
-      .collection('products')
-      .doc(productId);
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('stock');
 
-  final todoCollection = userRef.collection('stock_out');
+  final query = collectionRef
+      .where('stock', isEqualTo: 'Stock Out')
+      .where('productId', isEqualTo: productId)
+      .snapshots();
 
-  return todoCollection
-      .orderBy('updatedtime', descending: true)
-      .snapshots()
-      .map((querySnapshot) => querySnapshot.docs.map((doc) {
+  return query.map((querySnapshot) => querySnapshot.docs.map((doc) {
     final data = doc.data();
-    var productPrice = data['productPrice'];
-    var productSize = data['productSize'];
-    var productQuantity = data['productQuantity'];
-
-    // Check if productPrice is a String and convert to int if necessary
-    if (productPrice is String || productSize is String) {
-      productPrice = int.parse(productPrice);
-      productSize = int.parse(productSize);
-      productQuantity = int.parse(productQuantity);
-    }
-
     return StockInModel(
       productId: doc.id,
       category: data['category'] ?? '',
@@ -176,41 +163,29 @@ Stream<List<StockInModel>> getStockOut(String productId) {
       qrcodeUrl: data['qrcodeUrl'] ?? '',
       productImage: data['productImage'] ?? '',
       branch: data['branch'],
-      type: data['type'], stockInId: data['stockInId'], stock: data['stock'], updatedAt: data['updatedtime'],
+      type: data['type'], stockinId: data['stockInId'], stock: data['stock'], updatedAt: data['updatedtime'],
     );
   }).toList());
 }
 
 Stream<List<StockInModel>> getStockIn(String productId) {
-  final user = FirebaseAuth.instance.currentUser;
-  final userRef = FirebaseFirestore.instance
+  final collectionRef = FirebaseFirestore.instance
       .collection('users')
       .doc('qIglLalZbFgIOnO0r3Zu')
       .collection('basic_users')
-      .doc(user!.uid)
-      .collection('products')
-      .doc(productId);
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('stock');
 
-  final todoCollection = userRef.collection('stock_in');
+  final query = collectionRef
+      .where('stock', isEqualTo: 'Stock In')
+      .where('productId', isEqualTo: productId)
+      .snapshots();
 
-  return todoCollection
-      .orderBy('updatedtime', descending: true)
-      .snapshots()
-      .map((querySnapshot) => querySnapshot.docs.map((doc) {
+  return query.map((querySnapshot) => querySnapshot.docs.map((doc) {
     final data = doc.data();
-    var productPrice = data['productPrice'];
-    var productSize = data['productSize'];
-    var productQuantity = data['productQuantity'];
-
-    // Check if productPrice is a String and convert to int if necessary
-    if (productPrice is String || productSize is String) {
-      productPrice = int.parse(productPrice);
-      productSize = int.parse(productSize);
-      productQuantity = int.parse(productQuantity);
-    }
-
     return StockInModel(
       productId: doc.id,
+      stockinId: data['stockinId'],
       category: data['category'] ?? '',
       productSize: data['productSize'] ?? 0,
       sizeSystem: data['sizeSystem'] ?? '',
@@ -226,7 +201,57 @@ Stream<List<StockInModel>> getStockIn(String productId) {
       qrcodeUrl: data['qrcodeUrl'] ?? '',
       productImage: data['productImage'] ?? '',
       branch: data['branch'],
-      type: data['type'], stockInId: data['stockInId'], stock: data['stock'], updatedAt: data['updatedtime'],
+      type: data['type'], stock: data['stock'], updatedAt: data['updatedtime'],
     );
   }).toList());
 }
+
+// Stream<List<StockInModel>> getStockIn(String productId) {
+//   final user = FirebaseAuth.instance.currentUser;
+//   final userRef = FirebaseFirestore.instance
+//       .collection('users')
+//       .doc('qIglLalZbFgIOnO0r3Zu')
+//       .collection('basic_users')
+//       .doc(user!.uid)
+//       .collection('products')
+//       .doc(productId);
+//
+//   final todoCollection = userRef.collection('stock_in');
+//
+//   return todoCollection
+//       .orderBy('updatedtime', descending: true)
+//       .snapshots()
+//       .map((querySnapshot) => querySnapshot.docs.map((doc) {
+//     final data = doc.data();
+//     var productPrice = data['productPrice'];
+//     var productSize = data['productSize'];
+//     var productQuantity = data['productQuantity'];
+//
+//     // Check if productPrice is a String and convert to int if necessary
+//     if (productPrice is String || productSize is String) {
+//       productPrice = int.parse(productPrice);
+//       productSize = int.parse(productSize);
+//       productQuantity = int.parse(productQuantity);
+//     }
+//
+//     return StockInModel(
+//       productId: doc.id,
+//       category: data['category'] ?? '',
+//       productSize: data['productSize'] ?? 0,
+//       sizeSystem: data['sizeSystem'] ?? '',
+//       color: data['color'] ?? '',
+//       productTitle: data['productTitle'],
+//       productBrand: data['productBrand'],
+//       productPrice: data['productPrice'] ?? 0,
+//       productDetails: data['productDetails'],
+//       productQuantity: data['productQuantity'] ?? 0,
+//       userId: data['userId'],
+//       barcodeId: data['barcodeId'],
+//       barcodeUrl: data['barcodeUrl'] ?? '',
+//       qrcodeUrl: data['qrcodeUrl'] ?? '',
+//       productImage: data['productImage'] ?? '',
+//       branch: data['branch'],
+//       type: data['type'], stockInId: data['stockInId'], stock: data['stock'], updatedAt: data['updatedtime'],
+//     );
+//   }).toList());
+// }

@@ -41,7 +41,7 @@ class _StockInPageState extends State<StockInPage> {
     // Create a new document in the "productout" collection
     final soldProduct = {
       'productId': widget.product.productId,
-      'stockInId': widget.product.productId,
+      'stockinId': widget.product.productId,
       'productImage': widget.product.productImage,
       'barcodeId': widget.product.barcodeId,
       'barcodeUrl': widget.product.barcodeUrl,

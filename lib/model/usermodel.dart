@@ -5,7 +5,7 @@ class UserModel {
   final String username;
   final String email;
   final String role;
-  late bool status;
+  late String status;
   UserModel({
     required this.userId,
     required this.firstName,
@@ -23,7 +23,7 @@ class UserModel {
     String? username,
     String? email,
     String? role,
-    bool? status,
+    String? status,
     String? profilePictureUrl,
   }) {
     return UserModel(

@@ -30,7 +30,7 @@ class _ProductInState extends State<ProductIn> {
         ),
         StreamProvider<List<Product>>.value(
           value: ProductProvider()
-              .getProducts(FirebaseAuth.instance.currentUser!.uid, includeOutOfStock: false),
+              .getProduct(FirebaseAuth.instance.currentUser!.uid, includeOutOfStock: false),
           initialData: const [], // Use an empty list as the initial data
         ),
       ],
@@ -76,13 +76,13 @@ class _ProductInState extends State<ProductIn> {
                                   title: Text('Info'),
                                 ),
                               ),
-                              const PopupMenuItem(
-                                value: 'edit',
-                                child: ListTile(
-                                  leading: Icon(Icons.edit),
-                                  title: Text('Edit'),
-                                ),
-                              ),
+                              // const PopupMenuItem(
+                              //   value: 'edit',
+                              //   child: ListTile(
+                              //     leading: Icon(Icons.edit),
+                              //     title: Text('Edit'),
+                              //   ),
+                              // ),
                               const PopupMenuItem(
                                 value: 'delete',
                                 child: ListTile(
