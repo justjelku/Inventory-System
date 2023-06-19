@@ -177,7 +177,7 @@ class UserProvider with ChangeNotifier {
       'username': user.username,
       'email': user.email,
       'role': user.role,
-      'enabled': true,
+      'enabled': 'true',
       'profileUrl':'',
     };
 

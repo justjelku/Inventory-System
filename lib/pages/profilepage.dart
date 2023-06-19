@@ -153,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Status: ${data['enabled'] ? 'Enabled' : 'Disabled'}',
+                        'Status: ${data['enabled'] == 'true' ? 'Enabled' : 'Disabled'}',
                       ),
                       const SizedBox(height: 10),
                     ],
@@ -232,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         username: _userNameController.text,
                         email: _emailController.text,
                         role: 'basic',
-                        status: true,
+                        status: 'true',
                     );
 
                     Navigator.push(

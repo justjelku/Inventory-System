@@ -50,7 +50,7 @@ class _ManageUserState extends State<ManageUser> {
       lastName: '',
       username: '',
       role: '',
-      status: false,
+      status: 'false',
     );
     _getUserDetails();
   }
@@ -126,7 +126,7 @@ class _ManageUserState extends State<ManageUser> {
               email: currentUser.email ?? '',
               username: currentUser.email?.split('@')[0] ?? '',
               role: '',
-              status: true,
+              status: 'true',
             ).copyWith(
               userId: userData['userId'],
               firstName: userData['first name'],
@@ -378,8 +378,8 @@ class _ManageUserState extends State<ManageUser> {
                         trailing: PopupMenuButton(
                           itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                             PopupMenuItem(
-                              value: item.status ? 'disable' : 'enable',
-                              child: Text(item.status ? 'Disable' : 'Enable'),
+                              value: item.status == true ? 'disable' : 'enable',
+                              child: Text(item.status  == true ? 'Disable' : 'Enable'),
                             ),
                             const PopupMenuDivider(),
                             const PopupMenuItem(

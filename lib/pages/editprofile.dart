@@ -195,7 +195,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Status: ${userdata.status ? 'Enabled' : 'Disabled'}',
+                        'Status: ${userdata.status == 'true' ? 'Enabled' : 'Disabled'}',
                       ),
                       const SizedBox(height: 10),
                     ],
@@ -301,8 +301,8 @@ class _EditProfileState extends State<EditProfile> {
                                     lastName: _lastNameController.text,
                                     username: _userNameController.text,
                                     email: _emailController.text,
-                                    role: 'basic',
-                                    status: true,
+                                    role: 'admin',
+                                    status: 'true',
                                     profilePictureUrl: '',
                                   );
                                   UserProvider().updateUser(updatedUsers);
