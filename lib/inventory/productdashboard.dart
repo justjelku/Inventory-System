@@ -310,44 +310,6 @@ class ProductDashboard extends StatelessWidget {
     });
   }
 
-  Stream<int> getProductCount(String userId) {
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc('qIglLalZbFgIOnO0r3Zu')
-        .collection('basic_users')
-        .doc(userId);
-
-    final todoCollection = userRef.collection('products');
-    final soldProductsCollection = userRef.collection('stocks');
-
-    final todoCountStream = todoCollection.snapshots().map((querySnapshot) {
-      int totalQuantity = 0;
-      for (var doc in querySnapshot.docs) {
-        final data = doc.data();
-        int productQuantity = data['productQuantity'];
-        totalQuantity += productQuantity;
-      }
-      return totalQuantity;
-    });
-
-    final soldCountStream = soldProductsCollection.snapshots().map((querySnapshot) {
-      int totalQuantity = 0;
-      for (var doc in querySnapshot.docs) {
-        final data = doc.data();
-        int productQuantity = data['productQuantity'];
-        totalQuantity += productQuantity;
-      }
-      return totalQuantity;
-    });
-
-    return Rx.combineLatest<int, int>([todoCountStream, soldCountStream], (values) {
-      return values.fold(0, (previousValue, element) => previousValue + element);
-    });
-  }
-
-
-
-
   Stream<int> getStockOutCount(String userId) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
@@ -371,7 +333,6 @@ class ProductDashboard extends StatelessWidget {
     });
   }
 
-
   Stream<int> getStockInCount(String userId) {
     final userRef = FirebaseFirestore.instance
         .collection('users')
@@ -393,6 +354,19 @@ class ProductDashboard extends StatelessWidget {
       }
       return totalQuantity;
     });
+  }
+
+
+  Stream<int> getProductCount(String userId) {
+    final productInCountStream = getProductInCount(userId);
+    final stockOutCountStream = getStockOutCount(userId);
+    final stockInCountStream = getStockInCount(userId);
+
+    return Rx.combineLatest3(
+        productInCountStream,
+        stockOutCountStream,
+        stockInCountStream,
+            (pIn, sOut, sIn) => pIn + sOut + sIn);
   }
 
 

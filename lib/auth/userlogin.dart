@@ -368,55 +368,55 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
                         ),
                       )
                   ),
-                  const Text("or",
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontStyle: FontStyle.italic),
-                      textAlign: TextAlign.center),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () async {
-                            final userCredential = await signInWithGoogle();
-                            if (userCredential != null) {
-                              _showMsg('Logged In Successful!', true);
-                              Navigator.pushNamed(context, '/user');
-                            } else {
-                              _showMsg('Error: Unable to sign in with Google.', false);
-                            }
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/icons8-google-48.png', // Replace with your Google icon asset
-                                height: 45,
-                              ),
-                              const SizedBox(width: 10),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        TextButton(
-                          onPressed: signInWithFacebook,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/icons8-facebook-48.png', // Replace with your Facebook icon asset
-                                height: 50,
-                              ),
-                              const SizedBox(width: 10),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
+                  // const Text("or",
+                  //     style: TextStyle(
+                  //         fontSize: 15,
+                  //         color: Colors.black,
+                  //         fontStyle: FontStyle.italic),
+                  //     textAlign: TextAlign.center),
+                  // const SizedBox(height: 20),
+                  // Center(
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       TextButton(
+                  //         onPressed: () async {
+                  //           final userCredential = await signInWithGoogle();
+                  //           if (userCredential != null) {
+                  //             _showMsg('Logged In Successful!', true);
+                  //             Navigator.pushNamed(context, '/user');
+                  //           } else {
+                  //             _showMsg('Error: Unable to sign in with Google.', false);
+                  //           }
+                  //         },
+                  //         child: Row(
+                  //           mainAxisAlignment: MainAxisAlignment.center,
+                  //           children: [
+                  //             Image.asset(
+                  //               'assets/icons8-google-48.png', // Replace with your Google icon asset
+                  //               height: 45,
+                  //             ),
+                  //             const SizedBox(width: 10),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 20),
+                  //       TextButton(
+                  //         onPressed: signInWithFacebook,
+                  //         child: Row(
+                  //           mainAxisAlignment: MainAxisAlignment.center,
+                  //           children: [
+                  //             Image.asset(
+                  //               'assets/icons8-facebook-48.png', // Replace with your Facebook icon asset
+                  //               height: 50,
+                  //             ),
+                  //             const SizedBox(width: 10),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // )
                 ]
             )
         )

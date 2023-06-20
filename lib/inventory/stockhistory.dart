@@ -44,35 +44,29 @@ class StockInHistoryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<StockInModel>>(
-      stream: getStockIn(productId), // Replace with your stream for stock in history
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: getStockIn(productId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final stockInHistory = snapshot.data!;
+          final productList = snapshot.data!;
           return ListView.builder(
-            itemCount: stockInHistory.length,
+            itemCount: productList.length,
             itemBuilder: (context, index) {
-              final stockInItem = stockInHistory[index];
+              final productData = productList[index];
+              // Access the fields using the key-value pairs in productData map
+              final productTitle = productData['productTitle'];
+              final productQuantity = productData['productQuantity'];
+
+              // Return a widget to display the product information
               return ListTile(
-                leading: Image.network(stockInItem.productImage),
-                title: Text(stockInItem.productTitle),
-                subtitle: Text('Quantity: ${stockInItem.productQuantity}'),
-                onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => StockDetailsPage(
-                        product: stockInItem,
-                      ),
-                    ),
-                  );
-                },
+                title: Text(productTitle),
+                subtitle: Text('Quantity: $productQuantity'),
               );
             },
           );
         } else if (snapshot.hasError) {
           return const Center(
-            child: Text('Error loading stock in history'),
+            child: Text('Error loading products'),
           );
         } else {
           return const Center(
@@ -81,6 +75,22 @@ class StockInHistoryTab extends StatelessWidget {
         }
       },
     );
+  }
+  Stream<List<Map<String, dynamic>>> getStockIn(String productId) {
+    final collectionRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('stock');
+
+    final query = collectionRef
+        .where('stock', isEqualTo: 'Stock In')
+        .where('productId', isEqualTo: productId)
+        .snapshots();
+
+    return query.map((querySnapshot) =>
+        querySnapshot.docs.map((doc) => doc.data()).toList());
   }
 }
 
@@ -91,35 +101,29 @@ class StockOutHistoryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<StockInModel>>(
-      stream: getStockOut(productId), // Replace with your stream for stock out history
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: getStockOut(productId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final stockOutHistory = snapshot.data!;
+          final productList = snapshot.data!;
           return ListView.builder(
-            itemCount: stockOutHistory.length,
+            itemCount: productList.length,
             itemBuilder: (context, index) {
-              final stockOutItem = stockOutHistory[index];
+              final productData = productList[index];
+              // Access the fields using the key-value pairs in productData map
+              final productTitle = productData['productTitle'];
+              final productQuantity = productData['productQuantity'];
+
+              // Return a widget to display the product information
               return ListTile(
-                leading: Image.network(stockOutItem.productImage),
-                title: Text(stockOutItem.productTitle),
-                subtitle: Text('Quantity: ${stockOutItem.productQuantity}'),
-                onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => StockDetailsPage(
-                        product: stockOutItem,
-                      ),
-                    ),
-                  );
-                },
+                title: Text(productTitle),
+                subtitle: Text('Quantity: $productQuantity'),
               );
             },
           );
         } else if (snapshot.hasError) {
           return const Center(
-            child: Text('Error loading stock out history'),
+            child: Text('Error loading products'),
           );
         } else {
           return const Center(
@@ -129,82 +133,25 @@ class StockOutHistoryTab extends StatelessWidget {
       },
     );
   }
+
+  Stream<List<Map<String, dynamic>>> getStockOut(String productId) {
+    final collectionRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc('qIglLalZbFgIOnO0r3Zu')
+        .collection('basic_users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('stock');
+
+    final query = collectionRef
+        .where('stock', isEqualTo: 'Stock Out')
+        .where('productId', isEqualTo: productId)
+        .snapshots();
+
+    return query.map((querySnapshot) =>
+        querySnapshot.docs.map((doc) => doc.data()).toList());
+  }
 }
 
-Stream<List<StockInModel>> getStockOut(String productId) {
-  final collectionRef = FirebaseFirestore.instance
-      .collection('users')
-      .doc('qIglLalZbFgIOnO0r3Zu')
-      .collection('basic_users')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('stock');
-
-  final query = collectionRef
-      .where('stock', isEqualTo: 'Stock Out')
-      .where('productId', isEqualTo: productId)
-      .snapshots();
-
-  return query.map((querySnapshot) => querySnapshot.docs.map((doc) {
-    final data = doc.data();
-    return StockInModel(
-      productId: doc.id,
-      category: data['category'] ?? '',
-      productSize: data['productSize'] ?? 0,
-      sizeSystem: data['sizeSystem'] ?? '',
-      color: data['color'] ?? '',
-      productTitle: data['productTitle'],
-      productBrand: data['productBrand'],
-      productPrice: data['productPrice'] ?? 0,
-      productDetails: data['productDetails'],
-      productQuantity: data['productQuantity'] ?? 0,
-      userId: data['userId'],
-      barcodeId: data['barcodeId'],
-      barcodeUrl: data['barcodeUrl'] ?? '',
-      qrcodeUrl: data['qrcodeUrl'] ?? '',
-      productImage: data['productImage'] ?? '',
-      branch: data['branch'],
-      type: data['type'], stockinId: data['stockInId'], stock: data['stock'], updatedAt: data['updatedtime'],
-    );
-  }).toList());
-}
-
-Stream<List<StockInModel>> getStockIn(String productId) {
-  final collectionRef = FirebaseFirestore.instance
-      .collection('users')
-      .doc('qIglLalZbFgIOnO0r3Zu')
-      .collection('basic_users')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('stock');
-
-  final query = collectionRef
-      .where('stock', isEqualTo: 'Stock In')
-      .where('productId', isEqualTo: productId)
-      .snapshots();
-
-  return query.map((querySnapshot) => querySnapshot.docs.map((doc) {
-    final data = doc.data();
-    return StockInModel(
-      productId: doc.id,
-      stockinId: data['stockinId'],
-      category: data['category'] ?? '',
-      productSize: data['productSize'] ?? 0,
-      sizeSystem: data['sizeSystem'] ?? '',
-      color: data['color'] ?? '',
-      productTitle: data['productTitle'],
-      productBrand: data['productBrand'],
-      productPrice: data['productPrice'] ?? 0,
-      productDetails: data['productDetails'],
-      productQuantity: data['productQuantity'] ?? 0,
-      userId: data['userId'],
-      barcodeId: data['barcodeId'],
-      barcodeUrl: data['barcodeUrl'] ?? '',
-      qrcodeUrl: data['qrcodeUrl'] ?? '',
-      productImage: data['productImage'] ?? '',
-      branch: data['branch'],
-      type: data['type'], stock: data['stock'], updatedAt: data['updatedtime'],
-    );
-  }).toList());
-}
 
 // Stream<List<StockInModel>> getStockIn(String productId) {
 //   final user = FirebaseAuth.instance.currentUser;
