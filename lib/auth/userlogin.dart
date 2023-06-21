@@ -20,13 +20,18 @@ class BasicUserLogin extends StatefulWidget {
   State<BasicUserLogin> createState() => _BasicUserLoginState();
 }
 
-class _BasicUserLoginState extends State<BasicUserLogin> {
+class _BasicUserLoginState extends State<BasicUserLogin>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
+  bool _isButtonDisabled = false;
 
   var formKey = GlobalKey<FormState>();
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -115,6 +120,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
 
   Future<void> signIn() async {
     try {
+      _toggleButtonState(); // Disable the button
       final userCredential =
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
@@ -143,6 +149,8 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
       } else {
         _showMsg('Error: ${e.message}', false);
       }
+    } finally {
+      _toggleButtonState(); // Enable the button
     }
   }
 
@@ -245,6 +253,7 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
+    _animationController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
     _userNameController.dispose();
@@ -252,6 +261,24 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
     _confirmPasswordController.dispose();
     _emailController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.5).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
+
+  void _toggleButtonState() {
+    setState(() {
+      _isButtonDisabled = !_isButtonDisabled;
+    });
   }
 
   @override
@@ -327,26 +354,17 @@ class _BasicUserLoginState extends State<BasicUserLogin> {
                       )
                   ),
                   const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: GestureDetector(
-                      onTap: signIn,
-                      child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: primaryBtnColor,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: const Center(
-                            child: Text("Sign In",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17
-                                )
-                            ),
-                          )
-                      ),
-                    ),
+                  AnimatedBuilder(
+                    animation: _opacityAnimation,
+                    builder: (context, child) {
+                      return Opacity(
+                        opacity: _opacityAnimation.value,
+                        child: ElevatedButton(
+                          onPressed: _isButtonDisabled ? null : signIn, // Disable the button if _isButtonDisabled is true
+                          child: Text('Sign In'),
+                        ),
+                      );
+                    },
                   ),
                   TextButton(
                       onPressed: (){

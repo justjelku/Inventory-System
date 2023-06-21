@@ -17,10 +17,10 @@ class EditProduct extends StatefulWidget {
 
 class _EditProductState extends State<EditProduct> {
   late String _title;
-  late String _price;
+  late int _price;
   late String _imageF;
   late String _details;
-  int? _shoeSize;
+  String? _shoeSize;
   String? _category;
   String? _color;
   String? _selectedColor;
@@ -425,7 +425,7 @@ class _EditProductState extends State<EditProduct> {
                             hintText: "0.00", labelText: 'Price'),
                         onChanged: (value) {
                           setState(() {
-                            _price = (value);
+                            _price = int.parse(value);
                           });
                         },
                       ),
@@ -489,9 +489,9 @@ class _EditProductState extends State<EditProduct> {
                           if (_formKey.currentState!.validate()) {
                             final updatedTodo = widget.todo.copyWith(
                               productTitle: _title,
-                              productPrice: _price,
+                              productPrice: int.parse(_price as String),
                               category: _category,
-                              productSize: int.parse(_selectedSize!),
+                              productSize: _selectedSize!,
                               sizeSystem: _selectedSystem,
                               color: color,
                               productDetails: _details,

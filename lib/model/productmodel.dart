@@ -3,12 +3,12 @@ import 'dart:io';
 class Product {
   final String productId;
   final String category;
-  final int productSize;
+  final String productSize;
   final String sizeSystem;
   final String color;
   final String productTitle;
   final String productBrand;
-  final String productPrice;
+  final int productPrice;
   final String productDetails;
   final int productQuantity;
   late String barcodeId;
@@ -41,13 +41,13 @@ class Product {
 
   Product copyWith({
     String? productId,
-    int? productSize,
+    String? productSize,
     String? sizeSystem,
     String? color,
     String? category,
     String? productTitle,
     String? productBrand,
-    String? productPrice,
+    int? productPrice,
     String? productDetails,
     int? productQuantity,
     String? barcodeId,

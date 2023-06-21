@@ -237,20 +237,20 @@ class ProductProvider with ChangeNotifier {
             .map((doc) {
           final data = doc.data();
           // var productPrice = data['productPrice'];
-          var productSize = data['productSize'];
+          // var productSize = data['productSize'];
           var productQuantity = data['productQuantity'];
 
           // Check if productPrice is a String and convert to int if necessary
-          if (productSize is String) {
+          if (productQuantity is String) {
             // productPrice = int.parse(productPrice);
-            productSize = int.parse(productSize);
+            // productSize = int.parse(productSize);
             productQuantity = int.parse(productQuantity);
           }
 
           return Product(
             productId: doc.id,
             category: data['category'] ?? '',
-            productSize: data['productSize'] ?? 0,
+            productSize: data['productSize'] ?? '',
             sizeSystem: data['sizeSystem'] ?? '',
             color: data['color'] ?? '',
             productTitle: data['productTitle'],

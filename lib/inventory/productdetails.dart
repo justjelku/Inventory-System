@@ -18,10 +18,10 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   late String _title;
   late String _brand;
-  late String _price;
+  late int _price;
   late String _imageF;
   late String _details;
-  int? _shoeSize;
+  String? _shoeSize;
   late String _branch;
   late int _quantity;
 
